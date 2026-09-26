@@ -1,0 +1,28 @@
+# Generated Unreal and IDE files
+/Binaries/
+/Intermediate/
+/Saved/
+/DerivedDataCache/
+/.vs/
+/.idea/
+/.vscode/
+*.sln
+*.slnx
+*.suo
+*.opensdf
+*.sdf
+*.VC.db
+*.VC.opendb
+*.sln.docstates
+
+# Recoverable pre-reset files; these stay locally outside the active project.
+/Backups/
+
+# Generated files in future project plugins
+/Plugins/**/Binaries/
+/Plugins/**/Intermediate/
+/Plugins/**/Saved/
+
+# Local task/tool configuration
+/.codex/
+/.agents/

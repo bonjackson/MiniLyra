@@ -1,0 +1,16 @@
+* text=auto
+*.cs text eol=lf
+*.cpp text eol=lf
+*.h text eol=lf
+*.ini text eol=lf
+*.md text eol=lf
+*.ps1 text eol=crlf
+*.py text eol=lf
+*.uproject text eol=lf
+*.uplugin text eol=lf
+
+# Unreal assets are binary. Git LFS is already installed on this machine.
+*.uasset filter=lfs diff=lfs merge=lfs -text
+*.umap filter=lfs diff=lfs merge=lfs -text
+*.ubulk filter=lfs diff=lfs merge=lfs -text
+*.uexp filter=lfs diff=lfs merge=lfs -text
