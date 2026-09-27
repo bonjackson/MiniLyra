@@ -10,7 +10,7 @@
 >
 > 本文最初根据源码、配置与资产调查编写；执行进度和实际验证结果见下方更新及 `MiniLyraProgress.md`。
 
-> **任务 01–02 执行更新（2026-09-27）：** 用户明确改为从空项目开始。旧源码、配置、Content 与生成目录已移至 `Backups/Task01_PreReset_20260927`，当前活动工程从最小 C++ 模块继续；任务 01 的 Editor 构建与基础地图加载、任务 02 的 Mini 素材和灰盒图命令行加载均已通过。下方第二节保留为规划时的历史调查，不能视为当前实现。实际进度以 `Docs/MiniLyraProgress.md` 为准，任务 03–30 尚未完成。
+> **任务 01–03 执行更新（2026-09-27）：** 用户明确改为从空项目开始。旧源码、配置、Content 与生成目录已移至 `Backups/Task01_PreReset_20260927`，当前活动工程从最小 C++ 模块继续；任务 01 的 Editor 构建与基础地图加载、任务 02 的 Mini 素材和灰盒图命令行加载、任务 03 的插件／Tag／扩展事件探针均已通过。下方第二节保留为规划时的历史调查，不能视为当前实现。实际进度以 `Docs/MiniLyraProgress.md` 为准，任务 04–30 尚未完成。
 
 ## 一、项目定位与最终成果
 
@@ -222,7 +222,7 @@ Mini 功能插件首版可采用内容插件，复用 `FPS` 中的通用原生�
 | --- | --- | --- | --- | --- |
 | [x] | 01 | 建立范围与构建基线 | 无 | 空项目 Editor 构建、基础地图命令行加载已通过 |
 | [x] | 02 | 审计资源与建立 Mini 内容入口 | 01 | 49 包资源白名单、独立灰盒训练图与命令行加载验证 |
-| [ ] | 03 | 插件、模块、Tag 与日志基础 | 01–02 | 所需基础依赖可编译加载 |
+| [x] | 03 | 插件、模块、Tag 与日志基础 | 01–02 | 两个 target 编译、插件加载与扩展事件探针通过 |
 | [ ] | 04 | AssetManager 与数据定义 | 03 | 能按 ID 找到真实 Experience |
 | [ ] | 05 | Experience 异步加载状态机 | 04 | 成功与失败路径都可观察 |
 | [ ] | 06 | GameFeature 激活与可回收 Actions | 05 | 注入、撤销、重复 PIE 可验证 |
@@ -279,6 +279,7 @@ Mini 功能插件首版可采用内容插件，复用 `FPS` 中的通用原生�
 - **迁移细节：** 本机 `UIExtension.uplugin` 有重复的 `Plugins` 字段，迁入副本应整理为合法的单一依赖数组。保留 CommonGame 所需 CommonUser／OnlineFramework 等基础依赖，首版不启用 EOS／Steam。移出 GameInstance 主链中无关的反射式会话探测与加密演示数据，记录原用途。
 - **产物：** 明确的 `.uproject`、Build.cs、插件依赖清单与 Tag 命名表；核定后续 Common／Modular 基类选择。
 - **验收：** Editor 与 Game target 的编译均不缺模块，Tag 可查询，插件载入无依赖错误。先用日志验证扩展接收者机制，不把所有插件都设为自动 Active。
+- **执行结果：** 五个 Lyra 项目插件已按源码迁入，所需引擎插件已启用；`FPS` 建立 CommonGame／ModularGameplay 的直接模块依赖、四个 Native InitState Tag 与四类日志。`UMiniGameInstance` 继承 `UCommonGameInstance`；最小 UI Manager 子类、本地玩家／Viewport 配置和 `GameFeatureData` 扫描规则满足基础启动要求。Editor、Game target 编译通过；`Scripts/VerifyTask03.ps1` 在未 Cook 的编辑器游戏进程中检查到五个插件加载、Tag 查询和三个扩展事件，退出码为 0。正式 UI、GameFeature 激活和角色初始化留给后续任务；详见 `Docs/Task03/PluginDependencies.md`。
 
 #### 任务 04：实现 MiniAssetManager 与三类数据定义
 

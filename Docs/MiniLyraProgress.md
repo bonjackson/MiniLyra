@@ -6,7 +6,8 @@
 
 - [x] 任务 01：范围冻结、空项目基线、本地恢复点、Editor 构建、基础场景加载。
 - [x] 任务 02：资产审计、49 包迁入 `/Game/Mini`、灰盒训练图及命令行加载验证。
-- [ ] 任务 03–30：尚未实施。
+- [x] 任务 03：基础插件、模块、Tag 与日志完成；Editor／Game 编译和运行探针通过。
+- [ ] 任务 04–30：尚未实施。
 
 用户已确认第三人称、2–4 人竞技场，并明确允许忽略旧实现、从空项目开始。任务 01 据此重置活动源码和配置，保留旧工程文件作为本地备份；任务 02 在该空基线上建立独立的 Mini 内容入口。之前的 MiniExperience 启动壳不计作已完成框架。
 
@@ -97,22 +98,30 @@ MINI_BASELINE_VERIFICATION_PASSED
 
 执行 `Scripts/VerifyTask02.ps1`，UE 5.8 编辑器 commandlet 正常退出并写入 `MINI_TASK02_VERIFICATION_PASSED`。验证实际加载全部 49 个资源包，重开地图，确认 `/Script/Engine.WorldSettings`、地图结构，以及没有 `/Script/LyraGame` 或旧 `/Game` 路径的包依赖。结构化结果见 [任务 02 验证结果](Task02/Verification.json)；本地日志为 `Saved/Logs/Task02-Verification.log`。尚未进行 GUI、PIE、独立程序、打包或联机验证，也未实现可玩的训练模式。
 
-## 插件：现在与以后分别需要什么
+## 任务 03：插件、模块、Tag 与日志基础（完成）
 
-| 插件 | 来源 | 本期处理 | 后续安排 |
+已从本机 Lyra 工程迁入 `ModularGameplayActors`、`GameplayMessageRouter`、`CommonGame`、`CommonUser`、`UIExtension` 的源代码和插件描述，共 84 个文件；`UIExtension.uplugin` 的两个重复 `Plugins` 字段已合并。`FPS.uproject` 启用所需的引擎插件及这五个项目插件。插件来源、传递依赖、FPS 直接模块依赖与后续使用边界见 [任务 03 依赖说明](Task03/PluginDependencies.md)。均来自已安装的 UE 5.8 和本机 Lyra，当前不需要额外下载安装 UE 插件。
+
+新 `UMiniGameInstance` 继承 `UCommonGameInstance`，统一注册 `InitState.Spawned → DataAvailable → DataInitialized → GameplayReady`；四个 Native Tags 与 `LogMiniExperience`、`LogMiniInit`、`LogMiniAbility`、`LogMiniEquipment` 日志类别已建。为满足 CommonGame 的本地玩家生命周期，增加最小具体 `UMiniUIManagerSubsystem`，配置 `CommonLocalPlayer` 和 `CommonGameViewportClient`；为 GameFeatures 增加 `GameFeatureData` 扫描规则。这些是基础依赖配置，不包含实际 UI 或 GameFeature 玩法。
+
+`FPSEditor Win64 Development` 与 `FPS Win64 Development` 均编译成功。执行 `Scripts/VerifyTask03.ps1` 时，未 Cook 的 `UnrealEditor-Cmd.exe -game` 进程退出码为 0；日志确认五个项目插件加载、四态注册、全部四个 Tag 可查询，并收到临时 `AModularPawn` 的 `ReceiverAdded`、`GameActorReady`、`ReceiverRemoved` 事件。日志没有 `Error:` 记录；完整记录在本机 `Saved/Logs/Task03-Verification.log`。该探针不验证独立 Game 程序运行、Cook、正式 Experience、GAS、UI 或联机；后续任务分别验收。
+
+## 插件状态与后续安排
+
+| 插件 | 来源 | 当前状态 | 后续安排 |
 | --- | --- | --- | --- |
 | ModelingToolsEditorMode | 引擎自带 | 保留模板原有的 Editor-only 启用项 | 可用于灰盒；不是运行时框架依赖 |
-| PythonScriptPlugin | 引擎自带 | 仅在验证命令中临时启用 | 没写入项目长期插件列表，不需要下载 |
-| ControlRig | 引擎自带 | 本期迁入资源的软引用涉及 ControlRig；命令行资源加载已通过 | 后续实际使用角色动画图时核查启用与运行时配置 |
+| PythonScriptPlugin | 引擎自带 | 仅在任务 02 验证命令中临时启用 | 没写入项目长期插件列表，不需要下载 |
+| ControlRig | 引擎自带 | 任务 02 迁入资源的软引用涉及 ControlRig；命令行资源加载已通过 | 实际使用角色动画图时核查启用与运行时配置 |
 | AndroidFileServer | 引擎自带 | 显式禁用 | 首版只做 Windows，避免启动时写入无关 Android 文件服务配置 |
-| GameplayAbilities（GAS） | 引擎自带 | 本次不接入 | 任务 03 启用，09 开始实现能力宿主 |
-| GameFeatures、ModularGameplay | 引擎自带 | 本次不接入 | 任务 03 启用，06 开始实际装配 |
-| EnhancedInput | 引擎自带 | 本次输入使用 Engine 基础类型 | 任务 03／10 接入 |
-| CommonUI／CommonInput | 引擎自带 | 本次不接入 UI | 任务 03 核清依赖，19 实现 UI |
-| ModularGameplayActors、GameplayMessageRouter | 本机 Lyra 的 `Plugins` | 不复制到空基线 | 任务 03 按依赖迁入 |
-| CommonGame、CommonUser、UIExtension | 本机 Lyra 的 `Plugins` | 不复制到空基线 | 任务 03 迁入并核查依赖和插件描述 |
+| GameplayAbilities（GAS） | 引擎自带 | 任务 03 已启用 | 任务 09 开始实现能力宿主 |
+| GameFeatures、ModularGameplay | 引擎自带 | 任务 03 已启用 | 任务 06 开始实际玩法装配 |
+| EnhancedInput | 引擎自带 | 任务 03 已启用 | 任务 10 接入 InputTag 输入 |
+| CommonUI／CommonInput | 引擎自带 | 任务 03 已核清并启用 CommonUI | 任务 19 实现 UI；CommonInput 是模块，不是独立插件 |
+| ModularGameplayActors、GameplayMessageRouter | 本机 Lyra 的 `Plugins` | 任务 03 已迁入 | 按需调用运行时模块 |
+| CommonGame、CommonUser、UIExtension | 本机 Lyra 的 `Plugins` | 任务 03 已迁入并核查依赖 | 会话与 HUD 在后续任务实现 |
 
-这里“不需要安装”指不用额外下载／购买。到对应任务仍然需要**启用引擎插件、复制 Lyra 的项目插件、配置 Build.cs 和 `.uproject`**，不能跳过这些步骤。CommonGame 的 CommonUser／OnlineFramework 传递依赖必须保留，即使首版不做平台登录。
+这里“不需要安装”指不用额外下载／购买；引擎插件启用、Lyra 项目插件迁入及 Build.cs／`.uproject` 配置已在任务 03 完成。CommonGame 的 CommonUser／OnlineFramework 传递依赖仍保留，即使首版不做平台登录。
 
 ## 本次问题与处理
 
@@ -141,4 +150,4 @@ git status --short
 
 ## 下一次入口
 
-执行任务 03：按实际依赖引入基础引擎与 Lyra 项目插件，建立模块、Native Tags 和日志类别；先确认资源与框架插件可在当前空基线共同加载，再逐项实现 Experience／GAS。
+执行任务 04：实现 MiniAssetManager 与 Experience／ActionSet／PawnData 的真实数据定义和扫描规则，创建第一个能按 ID 找到的 Experience 资产。
