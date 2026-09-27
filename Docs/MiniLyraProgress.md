@@ -8,7 +8,8 @@
 - [x] 任务 02：资产审计、49 包迁入 `/Game/Mini`、灰盒训练图及命令行加载验证。
 - [x] 任务 03：基础插件、模块、Tag 与日志完成；Editor／Game 编译和运行探针通过。
 - [x] 任务 04：三类原生数据资产、AssetManager 与地图 Experience 入口完成；Editor／Game 构建及正反例探针通过。
-- [ ] 任务 05–30：尚未实施。
+- [x] 任务 05：GameMode／GameState／Experience 异步状态机完成；Editor／Game 构建及双进程正反例探针通过。
+- [ ] 任务 06–30：尚未实施。
 
 用户已确认第三人称、2–4 人竞技场，并明确允许忽略旧实现、从空项目开始。任务 01 据此重置活动源码和配置，保留旧工程文件作为本地备份；任务 02 在该空基线上建立独立的 Mini 内容入口。之前的 MiniExperience 启动壳不计作已完成框架。
 
@@ -113,6 +114,12 @@ MINI_BASELINE_VERIFICATION_PASSED
 
 Editor 与 Game target 再次构建成功。在新编辑器进程中，三个数据资产仍是预期原生实例，地图的 `MiniWorldSettings` 和 Experience 覆盖项持久存在；`Scripts/VerifyTask04.ps1` 的未 Cook 编辑器游戏探针按 ID 找到并加载目标资产，验证地图覆盖项相同。未知 ID、空 DefaultPawnData 和空 PawnClass 均按预期返回明确错误，探针退出码为 0。任务 01–03 的回归脚本也通过。三类资产已配置 `AlwaysCook`，但尚未执行 Cook、打包、独立 Game 运行或联机验证；正式 Experience 状态机和 GameFeature 装配分别属于任务 05、06。
 
+## 任务 05：Experience 异步加载与失败状态（完成）
+
+已建立 `MiniGameMode`、`MiniGameState` 和 `MiniExperienceManagerComponent`。服务器下一帧按“地图覆盖 → 项目默认”选 ID，覆盖项非空但无效时明确失败；GameState 组件复制 ID，客户端收到后独立异步加载。组件区分 `Unloaded`、`LoadingAssets`、`LoadingFeatures`、`ExecutingActions`、`Loaded`、`Failed`、`Deactivating`，并提供失败原因、立即或稍后调用的终态订阅、调试状态文本及结束世界时的回调失效处理。任务 05 只允许当前无 GameFeature／Action 的训练 Experience 进入 `Loaded`；配置了这些功能但尚未执行时会报错。GameMode 暂将玩家保留为 spectator，不提前生成默认 Pawn。
+
+`Scripts/VerifyTask05.ps1` 已通过两次真实进程的监听服务器／客户端验收：正常场景确认地图覆盖项、同一复制 ID、两端本地 `Loaded` 和迟订阅；无效 ID 场景确认两端 `Failed` 与明确原因。Editor 和 Game target 均构建成功，任务 03、04 回归脚本再次通过。结束世界时的回调安全依靠弱引用、加载代次和取消顺序做了源码审查；本次没有稳定重现正在加载时结束世界的竞态，因此不声称这项已被动态探针覆盖。实现、日志路径、运行命令和范围界限见 [任务 05 加载流程](Task05/ExperienceFlow.md)。
+
 ## 插件状态与后续安排
 
 | 插件 | 来源 | 当前状态 | 后续安排 |
@@ -157,4 +164,4 @@ git status --short
 
 ## 下一次入口
 
-执行任务 05：建立 GameMode／GameState／ExperienceManager 的异步加载状态机，实现“地图覆盖 → 项目默认”选择、服务器与客户端各自加载、失败与退出清理；任务 06 再接 GameFeature 激活和 Action 装配。
+执行任务 06：接入 GameFeature 激活与可撤销 Action，并验证功能注入、退出回收及重复 PIE；任务 05 的空装配阶段不得直接推广到包含 GameFeature 的 Experience。

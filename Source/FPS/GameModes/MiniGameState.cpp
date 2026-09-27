@@ -1,0 +1,85 @@
+#include "MiniGameState.h"
+
+#include "GameModes/MiniExperienceDefinition.h"
+#include "GameModes/MiniExperienceManagerComponent.h"
+#include "Misc/CommandLine.h"
+#include "Misc/Parse.h"
+#include "System/MiniLogChannels.h"
+
+namespace
+{
+const TCHAR* GetMiniNetModeName(const ENetMode NetMode)
+{
+	switch (NetMode)
+	{
+	case NM_Standalone: return TEXT("Standalone");
+	case NM_DedicatedServer: return TEXT("DedicatedServer");
+	case NM_ListenServer: return TEXT("ListenServer");
+	case NM_Client: return TEXT("Client");
+	default: return TEXT("Unknown");
+	}
+}
+}
+
+AMiniGameState::AMiniGameState(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer)
+{
+	ExperienceManagerComponent = CreateDefaultSubobject<UMiniExperienceManagerComponent>(TEXT("ExperienceManagerComponent"));
+}
+
+void AMiniGameState::BeginPlay()
+{
+	Super::BeginPlay();
+
+	if (!FParse::Param(FCommandLine::Get(), TEXT("MiniProbeExperienceFlow")))
+	{
+		return;
+	}
+	if (!ExperienceManagerComponent)
+	{
+		UE_LOG(LogMiniExperience, Error, TEXT("MiniFlowProbe FAIL: ExperienceManagerComponent is missing"));
+		return;
+	}
+
+	ExperienceManagerComponent->CallOrRegister_OnExperienceLoaded(
+		FOnMiniExperienceLoaded::FDelegate::CreateUObject(this, &ThisClass::HandleFlowProbeLoaded));
+	ExperienceManagerComponent->CallOrRegister_OnExperienceFailed(
+		FOnMiniExperienceFailed::FDelegate::CreateUObject(this, &ThisClass::HandleFlowProbeFailed));
+}
+
+void AMiniGameState::HandleFlowProbeLoaded(const UMiniExperienceDefinition* Experience)
+{
+	bFlowProbeLateSubscriberCalled = false;
+	ExperienceManagerComponent->CallOrRegister_OnExperienceLoaded(
+		FOnMiniExperienceLoaded::FDelegate::CreateWeakLambda(this,
+			[this](const UMiniExperienceDefinition* LateExperience)
+			{
+				bFlowProbeLateSubscriberCalled = LateExperience != nullptr;
+			}));
+
+	const TCHAR* NetModeName = GetMiniNetModeName(GetNetMode());
+	if (Experience && bFlowProbeLateSubscriberCalled)
+	{
+		UE_LOG(LogMiniExperience, Display, TEXT("MiniFlowProbe PASS: NetMode=%s ID=%s LateSubscriber=1"),
+			NetModeName, *ExperienceManagerComponent->GetCurrentExperienceId().ToString());
+	}
+	else
+	{
+		UE_LOG(LogMiniExperience, Error, TEXT("MiniFlowProbe FAIL: NetMode=%s ID=%s LateSubscriber=%d Experience=%s"),
+			NetModeName, *ExperienceManagerComponent->GetCurrentExperienceId().ToString(),
+			bFlowProbeLateSubscriberCalled, *GetNameSafe(Experience));
+	}
+}
+
+void AMiniGameState::HandleFlowProbeFailed(const FString& Reason)
+{
+	const TCHAR* NetModeName = GetMiniNetModeName(GetNetMode());
+	if (FParse::Param(FCommandLine::Get(), TEXT("MiniProbeInvalidExperience")))
+	{
+		UE_LOG(LogMiniExperience, Display, TEXT("MiniFlowProbe FAIL_EXPECTED: NetMode=%s Reason=%s"), NetModeName, *Reason);
+	}
+	else
+	{
+		UE_LOG(LogMiniExperience, Error, TEXT("MiniFlowProbe FAIL: NetMode=%s Reason=%s"), NetModeName, *Reason);
+	}
+}
