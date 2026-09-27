@@ -9,7 +9,8 @@
 - [x] 任务 03：基础插件、模块、Tag 与日志完成；Editor／Game 编译和运行探针通过。
 - [x] 任务 04：三类原生数据资产、AssetManager 与地图 Experience 入口完成；Editor／Game 构建及正反例探针通过。
 - [x] 任务 05：GameMode／GameState／Experience 异步状态机完成；Editor／Game 构建及双进程正反例探针通过。
-- [ ] 任务 06–30：尚未实施。
+- [x] 任务 06：GameFeature 装配与回收、双端探针、连续三次 PIE、Cook 和独立打包单机烟测通过。
+- [ ] 任务 07–30：尚未实施。
 
 用户已确认第三人称、2–4 人竞技场，并明确允许忽略旧实现、从空项目开始。任务 01 据此重置活动源码和配置，保留旧工程文件作为本地备份；任务 02 在该空基线上建立独立的 Mini 内容入口。之前的 MiniExperience 启动壳不计作已完成框架。
 
@@ -120,6 +121,14 @@ Editor 与 Game target 再次构建成功。在新编辑器进程中，三个数
 
 `Scripts/VerifyTask05.ps1` 已通过两次真实进程的监听服务器／客户端验收：正常场景确认地图覆盖项、同一复制 ID、两端本地 `Loaded` 和迟订阅；无效 ID 场景确认两端 `Failed` 与明确原因。Editor 和 Game target 均构建成功，任务 03、04 回归脚本再次通过。结束世界时的回调安全依靠弱引用、加载代次和取消顺序做了源码审查；本次没有稳定重现正在加载时结束世界的竞态，因此不声称这项已被动态探针覆盖。实现、日志路径、运行命令和范围界限见 [任务 05 加载流程](Task05/ExperienceFlow.md)。
 
+## 任务 06：GameFeature 激活与 Action 回收（完成）
+
+新增内容插件 `MiniShooterCore` 及其 `GameFeatureData`，使用引擎自带 `UGameFeatureAction_AddComponents` 向 `MiniGameState` 注入测试组件。训练 Experience 自身也通过一个 AddComponents Action 注入另一类组件；Experience 与 ActionSet 都声明同一插件，用来验证按 URL 去重。Manager 现在按本地 World 依次解析／激活必需插件、执行 Actions，完成后才进入 `Loaded`。World 结束或失败时逆序撤销 Experience 自有 Action 和插件 lease；进程级使用者计数保护同进程其他 World。另有缺失必需插件的负例 Experience，要求服务器与客户端分别进入 `Failed`。
+
+Editor／Game target 构建通过；`Scripts/Task06CreateAssets.ps1` 重复运行没有 GameFeatureData 加载错误。`Scripts/VerifyTask06.ps1` 的真实双进程有效与缺失插件场景均通过，两端各只激活一次插件、各注入两种活动数量为 1 的组件；额外的三轮 World travel 均观察到撤销及释放。`Scripts/VerifyTask06PIE.ps1` 又在同一 `UnrealEditor.exe` 进程内完成**真实连续三次 PIE**，每轮 `UEDPIE` World 的两种 marker 各添加和撤销一次，Action 与插件 lease 均回收，无重复注入；证据在 `Saved/Logs/Task06-PIE.log`。最小 Windows 地图 Cook 进程退出码 0，报告 513 个已 Cook 包、0 error／0 warning；用 UE `DumpAssetRegistry` 确认 Cook 产物包含 `/MiniShooterCore/GameFeatureData.GameFeatureData`、训练 Experience 与地图。
+
+完整打包前两次未成功，分别因为 staging 所需 Cook 目录结构不符，以及 IoStore staging 的 Zen 服务连接未就绪。第三次 `RunUAT BuildCookRun` 使用 `-pak -skipiostore -AdditionalCookerOptions=-SkipZenStore`，从 C 盘新目录 Cook／Stage，`Saved/Logs/Task06-PackageLooseConsole.log` 报告 513 包、0 error／0 warning 和 `BUILD SUCCESSFUL`。从 stage 目录直接运行 `FPS.exe`，`Saved/Logs/Task06-PackagedSmoke.log` 确认训练图 Experience `Loaded`、两种 marker 注入和 `MiniFlowProbe PASS`。这验证了**打包程序单机启动**；打包后联机尚未测试，IoStore 的 Zen staging 问题也未解决。实现、日志与测试边界见 [任务 06 装配说明](Task06/FeatureAssembly.md)。
+
 ## 插件状态与后续安排
 
 | 插件 | 来源 | 当前状态 | 后续安排 |
@@ -129,7 +138,7 @@ Editor 与 Game target 再次构建成功。在新编辑器进程中，三个数
 | ControlRig | 引擎自带 | 任务 02 迁入资源的软引用涉及 ControlRig；命令行资源加载已通过 | 实际使用角色动画图时核查启用与运行时配置 |
 | AndroidFileServer | 引擎自带 | 显式禁用 | 首版只做 Windows，避免启动时写入无关 Android 文件服务配置 |
 | GameplayAbilities（GAS） | 引擎自带 | 任务 03 已启用 | 任务 09 开始实现能力宿主 |
-| GameFeatures、ModularGameplay | 引擎自带 | 任务 03 已启用 | 任务 06 开始实际玩法装配 |
+| GameFeatures、ModularGameplay | 引擎自带 | 任务 06 已用于 `MiniShooterCore` 激活与 AddComponents 注入 | 后续 Action 类型沿用本次的 World 作用域和回收路径 |
 | EnhancedInput | 引擎自带 | 任务 03 已启用 | 任务 10 接入 InputTag 输入 |
 | CommonUI／CommonInput | 引擎自带 | 任务 03 已核清并启用 CommonUI | 任务 19 实现 UI；CommonInput 是模块，不是独立插件 |
 | ModularGameplayActors、GameplayMessageRouter | 本机 Lyra 的 `Plugins` | 任务 03 已迁入 | 按需调用运行时模块 |
@@ -164,4 +173,4 @@ git status --short
 
 ## 下一次入口
 
-执行任务 06：接入 GameFeature 激活与可撤销 Action，并验证功能注入、退出回收及重复 PIE；任务 05 的空装配阶段不得直接推广到包含 GameFeature 的 Experience。
+执行任务 07，建立 Modular 角色骨架与 Experience 就绪后的出生门控。任务 06 的连续三次 PIE 与 Pak 打包程序单机烟测已通过；打包后联机、IoStore staging 及同进程不同 Experience 的多个 World 并存仍需后续验收。UE 内置 GameFeatureData AddComponents 随插件在进程级激活，当前 lease 防止过早卸载，但不阻止它注入到未请求插件的并存 World；详见任务 06 文档。

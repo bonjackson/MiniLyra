@@ -60,6 +60,10 @@
 			"Enabled": true
 		},
 		{
+			"Name": "MiniShooterCore",
+			"Enabled": true
+		},
+		{
 			"Name": "ModelingToolsEditorMode",
 			"Enabled": true,
 			"TargetAllowList": [

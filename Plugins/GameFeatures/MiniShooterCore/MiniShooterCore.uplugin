@@ -1,0 +1,16 @@
+{
+  "FileVersion": 3,
+  "Version": 1,
+  "VersionName": "1.0",
+  "FriendlyName": "Mini Shooter Core",
+  "Description": "Experience-activated gameplay feature for Mini Lyra.",
+  "Category": "Game Features",
+  "CanContainContent": true,
+  "ExplicitlyLoaded": true,
+  "EnabledByDefault": false,
+  "BuiltInInitialFeatureState": "Registered",
+  "Plugins": [
+    { "Name": "GameFeatures", "Enabled": true },
+    { "Name": "ModularGameplay", "Enabled": true }
+  ]
+}

@@ -61,6 +61,13 @@ void AMiniGameMode::HandleMatchAssignmentIfNotExpectingOne()
 		ExperienceManager->SetCurrentExperience(MissingId);
 		return;
 	}
+	if (FParse::Param(FCommandLine::Get(), TEXT("MiniProbeMissingGameFeature")))
+	{
+		const FPrimaryAssetId ProbeId(FMiniPrimaryAssetTypes::Experience, TEXT("DA_MiniMissingFeatureExperience"));
+		UE_LOG(LogMiniExperience, Display, TEXT("MiniGameMode selecting missing-feature probe ID %s"), *ProbeId.ToString());
+		ExperienceManager->SetCurrentExperience(ProbeId);
+		return;
+	}
 
 	UMiniAssetManager* AssetManager = UMiniAssetManager::GetMiniAssetManager();
 	if (!AssetManager)

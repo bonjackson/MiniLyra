@@ -5,6 +5,8 @@
 #include "MiniExperienceManagerComponent.generated.h"
 
 struct FStreamableHandle;
+struct FMiniFeatureActivationLease;
+class UGameFeatureAction;
 class UMiniExperienceDefinition;
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnMiniExperienceLoaded, const UMiniExperienceDefinition* /*Experience*/);
@@ -68,6 +70,10 @@ private:
 	void HandleAssetsLoaded(uint32 ExpectedGeneration);
 	void HandleAssetsCanceled(uint32 ExpectedGeneration);
 	void CompleteExperienceLoad();
+	void ActivateNextGameFeature(uint32 ExpectedGeneration);
+	void HandleGameFeatureActivated(const TSharedRef<FMiniFeatureActivationLease>& Lease, uint32 ExpectedGeneration, bool bSucceeded, const FString& Error);
+	void ExecuteExperienceActions();
+	void CleanupExperienceActionsAndFeatures();
 	void FailExperience(const FString& Reason);
 	void SetLoadState(EMiniExperienceLoadState NewState);
 	void CancelPendingLoad();
@@ -85,6 +91,14 @@ private:
 	EMiniExperienceLoadState LoadState = EMiniExperienceLoadState::Unloaded;
 	FString FailureReason;
 	TSharedPtr<FStreamableHandle> AssetLoadHandle;
+	TArray<FString> GameFeaturePluginURLs;
+	TArray<TSharedPtr<FMiniFeatureActivationLease>> GameFeatureLeases;
+	int32 NextGameFeatureIndex = 0;
+
+	// Keep activated action objects alive until their world-scoped deactivation begins.
+	UPROPERTY(Transient)
+	TArray<TObjectPtr<UGameFeatureAction>> ActivatedActions;
+	FName ActionWorldContextHandle;
 	uint32 LoadGeneration = 0;
 	bool bEndingPlay = false;
 

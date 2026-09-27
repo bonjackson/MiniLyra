@@ -225,7 +225,7 @@ Mini 功能插件首版可采用内容插件，复用 `FPS` 中的通用原生�
 | [x] | 03 | 插件、模块、Tag 与日志基础 | 01–02 | 两个 target 编译、插件加载与扩展事件探针通过 |
 | [x] | 04 | AssetManager 与数据定义 | 03 | 原生实例资产、地图覆盖项和按 ID 加载已验证 |
 | [x] | 05 | Experience 异步加载状态机 | 04 | 两端独立加载、迟订阅与无效 ID 失败均经双进程探针验证 |
-| [ ] | 06 | GameFeature 激活与可回收 Actions | 05 | 注入、撤销、重复 PIE 可验证 |
+| [x] | 06 | GameFeature 激活与可回收 Actions | 05 | 双端与连续三次 PIE、Cook 及打包单机烟测通过 |
 | [ ] | 07 | Modular 角色骨架与出生门控 | 06 | 资源就绪后才生成正确角色 |
 | [ ] | 08 | PawnExtension／Hero 初始化协作 | 07 | 复制顺序改变仍能推进状态 |
 | [ ] | 09 | PlayerState ASC 与 AbilitySet | 08 | ASC 正确绑定与能力成组授予 |
@@ -308,6 +308,7 @@ Mini 功能插件首版可采用内容插件，复用 `FPS` 中的通用原生�
 - **产物：** 一个通过 Experience 激活的最小插件；一个可观察的测试组件；后续 AddAbilities／Input／Widget 共用的生命周期基础。
 - **验收：** 功能出现与撤销都能观察；连续三次 PIE 不重复注入；服务器与客户端状态独立；任一必需插件失败时不进入 Loaded。早做一次最小地图 Cook／打包烟雾检查，确认插件被发现。
 - **边界：** 不承诺运行中热切换整个 Experience；正常退出和失败回滚必须可用。
+- **执行结果：** `MiniShooterCore` 内容插件、GameFeatureData、两个 AddComponents marker、按 URL 去重激活、Experience 自有 Action 的 World 作用域撤销及进程级插件使用者计数已接通。Editor／Game 构建、资产脚本重复运行、双进程有效／缺失插件探针、三轮 World travel 与 `Scripts/VerifyTask06PIE.ps1` 的真实连续三次 PIE 均通过。最小地图 Cook 退出码 0，报告 513 个已 Cook 包、0 error／0 warning；Cook `AssetRegistry.bin` 确认包含 GameFeatureData、训练 Experience 和地图。完整打包前两次在 staging 失败；第三次用 `-pak -skipiostore -AdditionalCookerOptions=-SkipZenStore` 成功 Cook／Stage，独立 `FPS.exe` 单机启动后 Experience `Loaded` 且两种 marker 注入。IoStore staging 的 Zen 问题、打包后联机及同进程不同 Experience 的 World 并存未验收；UE 内置 GameFeatureData AddComponents 是进程级激活，可能影响未请求插件的并存 World。详见 `Docs/Task06/FeatureAssembly.md`。
 
 #### 任务 07：建立 Modular 角色骨架与出生门控
 
