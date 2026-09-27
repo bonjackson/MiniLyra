@@ -11,7 +11,7 @@ if world is None or not world.get_path_name().startswith(MAP_PATH + "."):
     raise RuntimeError(f"Unexpected editor world: {world}")
 
 settings_class = world.get_world_settings().get_class().get_path_name()
-if settings_class != "/Script/Engine.WorldSettings":
+if settings_class not in {"/Script/Engine.WorldSettings", "/Script/FPS.MiniWorldSettings"}:
     raise RuntimeError(f"Unexpected WorldSettings class: {settings_class}")
 
 unreal.log(f"MINI_BASELINE_MAP_LOADED={world.get_path_name()}")

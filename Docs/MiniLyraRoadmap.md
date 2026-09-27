@@ -10,7 +10,7 @@
 >
 > 本文最初根据源码、配置与资产调查编写；执行进度和实际验证结果见下方更新及 `MiniLyraProgress.md`。
 
-> **任务 01–03 执行更新（2026-09-27）：** 用户明确改为从空项目开始。旧源码、配置、Content 与生成目录已移至 `Backups/Task01_PreReset_20260927`，当前活动工程从最小 C++ 模块继续；任务 01 的 Editor 构建与基础地图加载、任务 02 的 Mini 素材和灰盒图命令行加载、任务 03 的插件／Tag／扩展事件探针均已通过。下方第二节保留为规划时的历史调查，不能视为当前实现。实际进度以 `Docs/MiniLyraProgress.md` 为准，任务 04–30 尚未完成。
+> **任务 01–04 执行更新（2026-09-27）：** 用户明确改为从空项目开始。旧源码、配置、Content 与生成目录已移至 `Backups/Task01_PreReset_20260927`，当前活动工程从最小 C++ 模块继续；任务 01 的 Editor 构建与基础地图加载、任务 02 的 Mini 素材和灰盒图命令行加载、任务 03 的插件／Tag／扩展事件探针、任务 04 的真实 Experience 资产扫描与加载探针均已通过。下方第二节保留为规划时的历史调查，不能视为当前实现。实际进度以 `Docs/MiniLyraProgress.md` 为准，任务 05–30 尚未完成。
 
 ## 一、项目定位与最终成果
 
@@ -223,7 +223,7 @@ Mini 功能插件首版可采用内容插件，复用 `FPS` 中的通用原生�
 | [x] | 01 | 建立范围与构建基线 | 无 | 空项目 Editor 构建、基础地图命令行加载已通过 |
 | [x] | 02 | 审计资源与建立 Mini 内容入口 | 01 | 49 包资源白名单、独立灰盒训练图与命令行加载验证 |
 | [x] | 03 | 插件、模块、Tag 与日志基础 | 01–02 | 两个 target 编译、插件加载与扩展事件探针通过 |
-| [ ] | 04 | AssetManager 与数据定义 | 03 | 能按 ID 找到真实 Experience |
+| [x] | 04 | AssetManager 与数据定义 | 03 | 原生实例资产、地图覆盖项和按 ID 加载已验证 |
 | [ ] | 05 | Experience 异步加载状态机 | 04 | 成功与失败路径都可观察 |
 | [ ] | 06 | GameFeature 激活与可回收 Actions | 05 | 注入、撤销、重复 PIE 可验证 |
 | [ ] | 07 | Modular 角色骨架与出生门控 | 06 | 资源就绪后才生成正确角色 |
@@ -288,6 +288,7 @@ Mini 功能插件首版可采用内容插件，复用 `FPS` 中的通用原生�
 - **产物：** 实例资产 `DA_MiniPracticeExperience` 和空 ActionSet；把项目默认 ID 更新为真实资产，WorldSettings 改为明确类型与验证逻辑。
 - **验收：** 用 ID 能查到唯一资产并加载；未知 ID、空 PawnData 等必填数据可给出明确错误。确认扫描 `bHasBlueprintClasses=false` 与实例加载匹配。
 - **边界：** 保留通用 AssetManager，不照搬 Lyra 的大型启动任务调度、热修复或全部 GameData。
+- **执行结果：** `MiniAssetManager` 与三类原生 `UPrimaryDataAsset` 已建立，项目默认 ID 指向真实 `DA_MiniPracticeExperience`。训练图保存 `MiniWorldSettings` 和该 Experience 的覆盖项；PawnData 暂用引擎 `Pawn` 类，ActionSet 保持空。Editor／Game target 构建成功；新进程重开资产与地图、未 Cook 编辑器游戏按 ID 加载及未知 ID／空 DefaultPawnData／空 PawnClass 负例均通过。三类扫描项配置 `AlwaysCook`，本次未实际 Cook 或打包，异步加载留给任务 05。详见 `Docs/Task04/AssetDefinitions.md`。
 
 #### 任务 05：补全 Experience 异步加载与失败状态
 

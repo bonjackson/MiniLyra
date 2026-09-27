@@ -61,7 +61,7 @@ if not level_editor.load_level(MAP_PATH):
     raise RuntimeError(f"Could not load map: {MAP_PATH}")
 world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
 settings_class = world.get_world_settings().get_class().get_path_name()
-if settings_class != "/Script/Engine.WorldSettings":
+if settings_class not in {"/Script/Engine.WorldSettings", "/Script/FPS.MiniWorldSettings"}:
     raise RuntimeError(f"Unexpected WorldSettings: {settings_class}")
 
 actors = unreal.EditorLevelLibrary.get_all_level_actors()

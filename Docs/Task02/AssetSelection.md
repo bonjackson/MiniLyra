@@ -41,12 +41,12 @@
 
 ## `/Game/Mini` 与默认地图
 
-`/Game/Mini/Maps/L_MiniPractice` 是约 4000 × 3000 cm 的灰盒训练图：一块地面、四周边墙、6 处掩体、4 个 `PlayerStart`、3 组静态可见训练靶及一盏方向光。训练靶目前只是几何体，不处理命中或伤害。`Config/DefaultEngine.ini` 的 `EditorStartupMap` 和 `GameDefaultMap` 均指向该地图；地图使用 `/Script/Engine.WorldSettings`，Experience 与专用 WorldSettings 留待任务 04。
+`/Game/Mini/Maps/L_MiniPractice` 是约 4000 × 3000 cm 的灰盒训练图：一块地面、四周边墙、6 处掩体、4 个 `PlayerStart`、3 组静态可见训练靶及一盏方向光。训练靶目前只是几何体，不处理命中或伤害。`Config/DefaultEngine.ini` 的 `EditorStartupMap` 和 `GameDefaultMap` 均指向该地图。任务 02 验收时地图使用 `/Script/Engine.WorldSettings`；任务 04 已将其更新为 `MiniWorldSettings` 并配置 Experience，见 [任务 04 资产定义](../Task04/AssetDefinitions.md)。
 
-地图和资源共 50 个 `/Game/Mini` 包：49 个 `.uasset` 加 1 个 `.umap`。灰盒图提供后续功能的稳定加载入口，不代表可玩的训练模式已经完成。
+任务 02 当时地图和资源共 50 个 `/Game/Mini` 包：49 个 `.uasset` 加 1 个 `.umap`。任务 04 另加 3 个数据资产。灰盒图提供后续功能的稳定加载入口，不代表可玩的训练模式已经完成。
 
 ## 验证范围
 
-执行 `Scripts/VerifyTask02.ps1` 后，UE 5.8 编辑器 commandlet 正常退出，并在日志中写入 `MINI_TASK02_VERIFICATION_PASSED`。脚本逐个加载 49 个资源包，重新打开地图，检查 4 个出生点、6 个掩体、3 个靶牌、地面尺度、引擎 `WorldSettings`，并检查这些包没有 `/Script/LyraGame` 或旧 `/Game` 路径的硬／软包依赖。结构化结果见 [Verification.json](Verification.json)，本机日志位于 `Saved/Logs/Task02-Verification.log`。
+任务 02 当时执行 `Scripts/VerifyTask02.ps1`，UE 5.8 编辑器 commandlet 正常退出，并在日志中写入 `MINI_TASK02_VERIFICATION_PASSED`。脚本逐个加载 49 个资源包，重新打开地图，检查 4 个出生点、6 个掩体、3 个靶牌、地面尺度、当时的引擎 `WorldSettings`，并检查这些包没有 `/Script/LyraGame` 或旧 `/Game` 路径的硬／软包依赖。任务 04 完成后，回归脚本已改为兼容 `MiniWorldSettings`；任务 04 的 `Task04VerifyAssets.py` 则严格要求它。[Verification.json](Verification.json) 是任务 04 重跑后的当前报告，显示 **53 包**（原 50 包加 3 个数据资产）和 `/Script/FPS.MiniWorldSettings`，不再是任务 02 的历史快照。本机日志位于 `Saved/Logs/Task02-Verification.log`。
 
 这是命令行编辑器加载与包引用验证；图形界面、PIE、独立程序、打包和联机尚未执行。任务 02 不需要额外下载安装插件。PythonScriptPlugin 仅在命令行验证中临时启用；ControlRig 属于引擎提供的功能，后续如实际使用其动画图，再检查相应项目配置。

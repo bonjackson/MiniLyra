@@ -7,7 +7,8 @@
 - [x] 任务 01：范围冻结、空项目基线、本地恢复点、Editor 构建、基础场景加载。
 - [x] 任务 02：资产审计、49 包迁入 `/Game/Mini`、灰盒训练图及命令行加载验证。
 - [x] 任务 03：基础插件、模块、Tag 与日志完成；Editor／Game 编译和运行探针通过。
-- [ ] 任务 04–30：尚未实施。
+- [x] 任务 04：三类原生数据资产、AssetManager 与地图 Experience 入口完成；Editor／Game 构建及正反例探针通过。
+- [ ] 任务 05–30：尚未实施。
 
 用户已确认第三人称、2–4 人竞技场，并明确允许忽略旧实现、从空项目开始。任务 01 据此重置活动源码和配置，保留旧工程文件作为本地备份；任务 02 在该空基线上建立独立的 Mini 内容入口。之前的 MiniExperience 启动壳不计作已完成框架。
 
@@ -94,9 +95,9 @@ MINI_BASELINE_VERIFICATION_PASSED
 
 从独立审计工程筛选 UE 5.8 模板的 Manny 角色网格与基础移动动画、Lyra 的步枪和手枪网格及开火动画。8 个种子资源的硬／软 `/Game` 依赖闭包共 49 包，已迁到 `/Game/Mini/Characters` 和 `/Game/Mini/Weapons`。两把枪的静态网格只审计、未迁入；原版 Experience、PawnData、Hero 和武器能力蓝图留给后续 Mini 实现。具体来源、种子路径及重建清单见 [任务 02 资产取舍](Task02/AssetSelection.md)。
 
-`/Game/Mini/Maps/L_MiniPractice` 已建立约 4000 × 3000 cm 的地面、四周边墙、6 处掩体、4 个出生点、3 组静态训练靶和方向光。`Config/DefaultEngine.ini` 的编辑器与游戏默认地图均指向该图。当前活动 `Content/Mini` 共 49 个 `.uasset` 和 1 个 `.umap`；旧 Content 仍保存在 `Backups/Task01_PreReset_20260927`，没有作为活动资产整体回迁。
+`/Game/Mini/Maps/L_MiniPractice` 已建立约 4000 × 3000 cm 的地面、四周边墙、6 处掩体、4 个出生点、3 组静态训练靶和方向光。`Config/DefaultEngine.ini` 的编辑器与游戏默认地图均指向该图。任务 02 完成时，活动 `Content/Mini` 共 49 个 `.uasset` 和 1 个 `.umap`；任务 04 又加入 3 个数据资产并更新地图的 WorldSettings。旧 Content 仍保存在 `Backups/Task01_PreReset_20260927`，没有作为活动资产整体回迁。
 
-执行 `Scripts/VerifyTask02.ps1`，UE 5.8 编辑器 commandlet 正常退出并写入 `MINI_TASK02_VERIFICATION_PASSED`。验证实际加载全部 49 个资源包，重开地图，确认 `/Script/Engine.WorldSettings`、地图结构，以及没有 `/Script/LyraGame` 或旧 `/Game` 路径的包依赖。结构化结果见 [任务 02 验证结果](Task02/Verification.json)；本地日志为 `Saved/Logs/Task02-Verification.log`。尚未进行 GUI、PIE、独立程序、打包或联机验证，也未实现可玩的训练模式。
+任务 02 当时执行 `Scripts/VerifyTask02.ps1`，UE 5.8 编辑器 commandlet 正常退出并写入 `MINI_TASK02_VERIFICATION_PASSED`。验证实际加载全部 49 个资源包，重开地图，确认当时的 `/Script/Engine.WorldSettings`、地图结构，以及没有 `/Script/LyraGame` 或旧 `/Game` 路径的包依赖。任务 04 已将该地图更新为 `MiniWorldSettings`；任务 02 的回归脚本现兼容两种 WorldSettings，而任务 04 的资产复核严格要求 Mini 类。[任务 02 验证结果](Task02/Verification.json) 是重跑后的当前报告，记录 53 包及 `/Script/FPS.MiniWorldSettings`，本地日志为 `Saved/Logs/Task02-Verification.log`。尚未进行 GUI、PIE、独立程序、打包或联机验证，也未实现可玩的训练模式。
 
 ## 任务 03：插件、模块、Tag 与日志基础（完成）
 
@@ -105,6 +106,12 @@ MINI_BASELINE_VERIFICATION_PASSED
 新 `UMiniGameInstance` 继承 `UCommonGameInstance`，统一注册 `InitState.Spawned → DataAvailable → DataInitialized → GameplayReady`；四个 Native Tags 与 `LogMiniExperience`、`LogMiniInit`、`LogMiniAbility`、`LogMiniEquipment` 日志类别已建。为满足 CommonGame 的本地玩家生命周期，增加最小具体 `UMiniUIManagerSubsystem`，配置 `CommonLocalPlayer` 和 `CommonGameViewportClient`；为 GameFeatures 增加 `GameFeatureData` 扫描规则。这些是基础依赖配置，不包含实际 UI 或 GameFeature 玩法。
 
 `FPSEditor Win64 Development` 与 `FPS Win64 Development` 均编译成功。执行 `Scripts/VerifyTask03.ps1` 时，未 Cook 的 `UnrealEditor-Cmd.exe -game` 进程退出码为 0；日志确认五个项目插件加载、四态注册、全部四个 Tag 可查询，并收到临时 `AModularPawn` 的 `ReceiverAdded`、`GameActorReady`、`ReceiverRemoved` 事件。日志没有 `Error:` 记录；完整记录在本机 `Saved/Logs/Task03-Verification.log`。该探针不验证独立 Game 程序运行、Cook、正式 Experience、GAS、UI 或联机；后续任务分别验收。
+
+## 任务 04：AssetManager 与数据定义（完成）
+
+`UMiniAssetManager` 取代引擎默认 AssetManager，注册 `MiniExperienceDefinition`、`MiniExperienceActionSet`、`MiniPawnData` 三类原生数据资产实例的扫描项；项目默认 ID 为 `MiniExperienceDefinition:DA_MiniPracticeExperience`。`DA_MiniPracticeExperience` 引用 `DA_MiniPracticePawnData` 和空的 `DA_MiniPracticeActionSet`。PawnData 暂用引擎 `Pawn` 类作为必填占位，任务 07 再换正式角色。训练图现使用 `AMiniWorldSettings`，并保存指向该 Experience 的软对象引用。详细路径、配置、验证方法与边界见 [任务 04 资产定义](Task04/AssetDefinitions.md)。
+
+Editor 与 Game target 再次构建成功。在新编辑器进程中，三个数据资产仍是预期原生实例，地图的 `MiniWorldSettings` 和 Experience 覆盖项持久存在；`Scripts/VerifyTask04.ps1` 的未 Cook 编辑器游戏探针按 ID 找到并加载目标资产，验证地图覆盖项相同。未知 ID、空 DefaultPawnData 和空 PawnClass 均按预期返回明确错误，探针退出码为 0。任务 01–03 的回归脚本也通过。三类资产已配置 `AlwaysCook`，但尚未执行 Cook、打包、独立 Game 运行或联机验证；正式 Experience 状态机和 GameFeature 装配分别属于任务 05、06。
 
 ## 插件状态与后续安排
 
@@ -150,4 +157,4 @@ git status --short
 
 ## 下一次入口
 
-执行任务 04：实现 MiniAssetManager 与 Experience／ActionSet／PawnData 的真实数据定义和扫描规则，创建第一个能按 ID 找到的 Experience 资产。
+执行任务 05：建立 GameMode／GameState／ExperienceManager 的异步加载状态机，实现“地图覆盖 → 项目默认”选择、服务器与客户端各自加载、失败与退出清理；任务 06 再接 GameFeature 激活和 Action 装配。

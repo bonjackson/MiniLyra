@@ -7,6 +7,10 @@
 #include "Misc/CommandLine.h"
 #include "Misc/Parse.h"
 #include "ModularPawn.h"
+#include "Character/MiniPawnData.h"
+#include "GameModes/MiniExperienceDefinition.h"
+#include "GameModes/MiniWorldSettings.h"
+#include "System/MiniAssetManager.h"
 #include "MiniGameplayTags.h"
 #include "MiniLogChannels.h"
 
@@ -45,7 +49,9 @@ void UMiniGameInstance::OnStart()
 {
 	Super::OnStart();
 
-	if (FParse::Param(FCommandLine::Get(), TEXT("MiniProbeReceivers")))
+	bProbeReceiversRequested = FParse::Param(FCommandLine::Get(), TEXT("MiniProbeReceivers"));
+	bProbeExperienceRequested = FParse::Param(FCommandLine::Get(), TEXT("MiniProbeExperience"));
+	if (bProbeReceiversRequested || bProbeExperienceRequested)
 	{
 		UWorld* World = GetWorld();
 		if (World && World->IsGameWorld() && !World->HasBegunPlay())
@@ -55,7 +61,7 @@ void UMiniGameInstance::OnStart()
 		}
 		else
 		{
-			RunReceiverProbe();
+			RunRequestedProbes();
 		}
 	}
 }
@@ -80,10 +86,24 @@ void UMiniGameInstance::HandleProbeWorldBeginPlay()
 	}
 	ProbeWorldBeginPlayHandle.Reset();
 	ProbeWorld.Reset();
-	RunReceiverProbe();
+	RunRequestedProbes();
 }
 
-void UMiniGameInstance::RunReceiverProbe()
+void UMiniGameInstance::RunRequestedProbes()
+{
+	bool bPassed = true;
+	if (bProbeReceiversRequested)
+	{
+		bPassed = RunReceiverProbe() && bPassed;
+	}
+	if (bProbeExperienceRequested)
+	{
+		bPassed = RunExperienceProbe() && bPassed;
+	}
+	FPlatformMisc::RequestExitWithStatus(false, bPassed ? 0 : 1, TEXT("MiniProbes"));
+}
+
+bool UMiniGameInstance::RunReceiverProbe()
 {
 	const UGameplayTagsManager& TagManager = UGameplayTagsManager::Get();
 	const bool bTagsValid =
@@ -94,8 +114,7 @@ void UMiniGameInstance::RunReceiverProbe()
 	if (!bTagsValid)
 	{
 		UE_LOG(LogMiniInit, Error, TEXT("MiniTagProbe FAIL: a native InitState tag is missing or mismatched"));
-		FPlatformMisc::RequestExitWithStatus(false, 1, TEXT("MiniTagProbe"));
-		return;
+		return false;
 	}
 	UE_LOG(LogMiniInit, Display, TEXT("MiniTagProbe PASS: all four InitState tags are queryable"));
 
@@ -104,8 +123,7 @@ void UMiniGameInstance::RunReceiverProbe()
 	if (!World || !World->IsGameWorld() || !World->HasBegunPlay() || !ComponentManager)
 	{
 		UE_LOG(LogMiniInit, Error, TEXT("MiniReceiverProbe FAIL: no started game world or component manager"));
-		FPlatformMisc::RequestExitWithStatus(false, 1, TEXT("MiniReceiverProbe"));
-		return;
+		return false;
 	}
 
 	ReceiverProbeHandle = ComponentManager->AddExtensionHandler(
@@ -114,8 +132,7 @@ void UMiniGameInstance::RunReceiverProbe()
 	if (!ReceiverProbeHandle.IsValid())
 	{
 		UE_LOG(LogMiniInit, Error, TEXT("MiniReceiverProbe FAIL: extension handler could not be registered"));
-		FPlatformMisc::RequestExitWithStatus(false, 1, TEXT("MiniReceiverProbe"));
-		return;
+		return false;
 	}
 
 	FActorSpawnParameters SpawnParameters;
@@ -139,7 +156,95 @@ void UMiniGameInstance::RunReceiverProbe()
 			bProbeReceiverAdded, bProbeGameActorReady, bProbeReceiverRemoved);
 	}
 	ReceiverProbeHandle.Reset();
-	FPlatformMisc::RequestExitWithStatus(false, bPassed ? 0 : 1, TEXT("MiniReceiverProbe"));
+	return bPassed;
+}
+
+bool UMiniGameInstance::RunExperienceProbe()
+{
+	UMiniAssetManager* Manager = UMiniAssetManager::GetMiniAssetManager();
+	if (!Manager)
+	{
+		UE_LOG(LogMiniExperience, Error, TEXT("MiniExperienceProbe FAIL: MiniAssetManager is not configured"));
+		return false;
+	}
+
+	FPrimaryAssetId DefaultId;
+	FString Error;
+	if (!Manager->TryGetDefaultExperienceId(DefaultId, Error))
+	{
+		UE_LOG(LogMiniExperience, Error, TEXT("MiniExperienceProbe FAIL: project default: %s"), *Error);
+		return false;
+	}
+
+	TArray<FPrimaryAssetId> ScannedIds;
+	Manager->GetPrimaryAssetIdList(FMiniPrimaryAssetTypes::Experience, ScannedIds);
+	int32 MatchingIds = 0;
+	for (const FPrimaryAssetId& Id : ScannedIds)
+	{
+		MatchingIds += (Id == DefaultId) ? 1 : 0;
+	}
+	if (MatchingIds != 1)
+	{
+		UE_LOG(LogMiniExperience, Error, TEXT("MiniExperienceProbe FAIL: expected one scanned entry for %s, found %d"),
+			*DefaultId.ToString(), MatchingIds);
+		return false;
+	}
+	const FSoftObjectPath RegisteredPath = Manager->GetPrimaryAssetPath(DefaultId);
+	const FSoftObjectPath ExpectedPath(TEXT("/Game/Mini/System/Experiences/DA_MiniPracticeExperience.DA_MiniPracticeExperience"));
+	if (RegisteredPath != ExpectedPath)
+	{
+		UE_LOG(LogMiniExperience, Error, TEXT("MiniExperienceProbe FAIL: ID %s maps to %s, expected %s"),
+			*DefaultId.ToString(), *RegisteredPath.ToString(), *ExpectedPath.ToString());
+		return false;
+	}
+
+	UMiniExperienceDefinition* Experience = Manager->LoadExperienceSynchronously(DefaultId, Error);
+	if (!Experience)
+	{
+		UE_LOG(LogMiniExperience, Error, TEXT("MiniExperienceProbe FAIL: %s"), *Error);
+		return false;
+	}
+
+	UWorld* World = GetWorld();
+	const AMiniWorldSettings* WorldSettings = World ? Cast<AMiniWorldSettings>(World->GetWorldSettings()) : nullptr;
+	if (!WorldSettings)
+	{
+		UE_LOG(LogMiniExperience, Error, TEXT("MiniExperienceProbe FAIL: current map does not use MiniWorldSettings"));
+		return false;
+	}
+	const FPrimaryAssetId MapId = WorldSettings->GetDefaultGameplayExperience(&Error);
+	if (MapId != DefaultId)
+	{
+		UE_LOG(LogMiniExperience, Error, TEXT("MiniExperienceProbe FAIL: map ID '%s' differs from project default '%s': %s"),
+			*MapId.ToString(), *DefaultId.ToString(), *Error);
+		return false;
+	}
+
+	const FPrimaryAssetId UnknownId(FMiniPrimaryAssetTypes::Experience, TEXT("DA_MiniDefinitelyMissing"));
+	FString UnknownError;
+	const bool bUnknownRejected = !Manager->TryValidateExperienceId(UnknownId, UnknownError)
+		&& UnknownError.Contains(TEXT("Unknown Experience ID"));
+	UMiniExperienceDefinition* EmptyExperience = NewObject<UMiniExperienceDefinition>(this);
+	FString EmptyError;
+	const bool bEmptyPawnDataRejected = !EmptyExperience->ValidateDefinition(EmptyError)
+		&& EmptyError.Contains(TEXT("DefaultPawnData"));
+	UMiniPawnData* EmptyPawnData = NewObject<UMiniPawnData>(this);
+	FString EmptyPawnError;
+	const bool bEmptyPawnClassRejected = !EmptyPawnData->ValidatePawnData(EmptyPawnError)
+		&& EmptyPawnError.Contains(TEXT("PawnClass"));
+	if (!bUnknownRejected || !bEmptyPawnDataRejected || !bEmptyPawnClassRejected)
+	{
+		UE_LOG(LogMiniExperience, Error, TEXT("MiniExperienceProbe FAIL: negative validation: unknown='%s', empty experience='%s', empty pawn='%s'"),
+			*UnknownError, *EmptyError, *EmptyPawnError);
+		return false;
+	}
+
+	UE_LOG(LogMiniExperience, Display, TEXT("MiniExperienceProbe PASS: ID=%s Path=%s PawnData=%s MapOverride=%s"),
+		*DefaultId.ToString(), *Manager->GetPrimaryAssetPath(DefaultId).ToString(),
+		*GetPathNameSafe(Experience->DefaultPawnData.Get()), *MapId.ToString());
+	UE_LOG(LogMiniExperience, Display, TEXT("MiniExperienceProbe negative cases PASS: %s; %s; %s"),
+		*UnknownError, *EmptyError, *EmptyPawnError);
+	return true;
 }
 
 void UMiniGameInstance::HandleReceiverProbeEvent(AActor* Actor, FName EventName)

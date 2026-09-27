@@ -1,7 +1,7 @@
 {
   "map": "/Game/Mini/Maps/L_MiniPractice",
-  "world_settings": "/Script/Engine.WorldSettings",
-  "mini_package_count": 50,
+  "world_settings": "/Script/FPS.MiniWorldSettings",
+  "mini_package_count": 53,
   "approved_assets_loaded": [
     "/Game/Mini/Characters/Mannequins/Anims/Unarmed/Jog/MF_Unarmed_Jog_Fwd",
     "/Game/Mini/Characters/Mannequins/Anims/Unarmed/MM_Idle",
