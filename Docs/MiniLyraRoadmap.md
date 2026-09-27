@@ -226,7 +226,7 @@ Mini 功能插件首版可采用内容插件，复用 `FPS` 中的通用原生�
 | [x] | 04 | AssetManager 与数据定义 | 03 | 原生实例资产、地图覆盖项和按 ID 加载已验证 |
 | [x] | 05 | Experience 异步加载状态机 | 04 | 两端独立加载、迟订阅与无效 ID 失败均经双进程探针验证 |
 | [x] | 06 | GameFeature 激活与可回收 Actions | 05 | 双端与连续三次 PIE、Cook 及打包单机烟测通过 |
-| [ ] | 07 | Modular 角色骨架与出生门控 | 06 | 资源就绪后才生成正确角色 |
+| [x] | 07 | Modular 角色骨架与出生门控 | 06 | 双端、第三人晚加入及失败时零出生探针通过 |
 | [ ] | 08 | PawnExtension／Hero 初始化协作 | 07 | 复制顺序改变仍能推进状态 |
 | [ ] | 09 | PlayerState ASC 与 AbilitySet | 08 | ASC 正确绑定与能力成组授予 |
 | [ ] | 10 | Enhanced Input 与 InputTag | 09 | 本地输入通过标签驱动能力 |
@@ -317,6 +317,7 @@ Mini 功能插件首版可采用内容插件，复用 `FPS` 中的通用原生�
 - **产物：** `BP_MiniCharacter`、真实 PawnData、角色生成与玩家加入日志。
 - **验收：** 双客户端和晚加入场景生成正确角色；Experience 未就绪时不提前生成默认 Pawn；插件能对正确 Actor 类型注入组件。
 - **边界：** 此时允许只有简单可见角色和调试摄像机；不以外观表现替代初始化验证。
+- **执行结果（2026-09-28）：** 已加入 `AMiniPlayerState`、`AMiniPlayerController`、`UMiniLocalPlayer`、`AMiniCharacter` 与最小 `AMiniHUD`；GameMode 将出生与重启限定在服务端 Experience `Loaded` 之后，使用 PawnData 选类，并在延迟生成的 `FinishSpawning` 前向 Pawn 注入数据。`BP_MiniCharacter` 使用 Manny Simple 网格，训练 PawnData 指向该蓝图；`MiniShooterCore` 为后生成的 Modular 角色注入专用 marker。`MiniPawnData::ValidatePawnData` 还要求 PawnClass 继承 `AMiniCharacter`，普通 `APawn` 负例会在资产校验时失败；任务 04 资产脚本仅给新资产设置原生 MiniCharacter 占位，不重置已有蓝图引用。补丁后 Editor／Game target 重编译、任务 04 运行／资产验证、任务 07 资产重复创建／全新进程复核和联机探针均通过：双玩家开局、第三人晚加入后三方的 PlayerState／角色／有效角色／marker 数量均为 3，本地 Pawn 各 1；服务端三次出生均晚于 Experience `Loaded`。无效 Experience 双端进入 `Failed` 且零角色出生。`VerifyTask06.ps1` 含任务 05 双进程、缺失插件负例与三轮 World 周期的回归也通过。这些联机探针运行于未 Cook、NullRHI 的编辑器游戏进程；详见 `Docs/Task07/SpawnGate.md`。
 
 #### 任务 08：实现 PawnExtension 与 Hero 的四阶段协作
 

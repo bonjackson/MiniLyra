@@ -37,7 +37,8 @@ $requiredMarkers = @(
     'MiniExperienceProbe negative cases PASS:',
     'Unknown Experience ID',
     'has no DefaultPawnData',
-    'has no PawnClass'
+    'has no PawnClass',
+    'must derive from MiniCharacter'
 )
 foreach ($marker in $requiredMarkers) {
     if (-not $logText.Contains($marker)) {

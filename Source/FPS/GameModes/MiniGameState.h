@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ModularGameState.h"
+#include "TimerManager.h"
 #include "MiniGameState.generated.h"
 
 class UMiniExperienceDefinition;
@@ -18,13 +19,16 @@ public:
 	UMiniExperienceManagerComponent* GetExperienceManagerComponent() const { return ExperienceManagerComponent; }
 
 	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 private:
 	void HandleFlowProbeLoaded(const UMiniExperienceDefinition* Experience);
 	void HandleFlowProbeFailed(const FString& Reason);
+	void LogPlayerSpawnProbeSnapshot();
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Mini|Experience", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UMiniExperienceManagerComponent> ExperienceManagerComponent;
 
 	bool bFlowProbeLateSubscriberCalled = false;
+	FTimerHandle PlayerSpawnProbeTimer;
 };

@@ -1,11 +1,17 @@
 #include "MiniGameState.h"
 
+#include "Character/MiniCharacter.h"
+#include "Character/MiniPawnData.h"
+#include "EngineUtils.h"
+#include "GameFeatures/MiniFeatureMarkerComponent.h"
 #include "GameModes/MiniExperienceDefinition.h"
 #include "GameModes/MiniExperienceManagerComponent.h"
 #include "Engine/World.h"
+#include "GameFramework/PlayerController.h"
 #include "Kismet/GameplayStatics.h"
 #include "Misc/CommandLine.h"
 #include "Misc/Parse.h"
+#include "Player/MiniPlayerState.h"
 #include "System/MiniLogChannels.h"
 #include "TimerManager.h"
 
@@ -35,6 +41,11 @@ AMiniGameState::AMiniGameState(const FObjectInitializer& ObjectInitializer)
 void AMiniGameState::BeginPlay()
 {
 	Super::BeginPlay();
+	if (FParse::Param(FCommandLine::Get(), TEXT("MiniProbePlayerSpawns")))
+	{
+		GetWorldTimerManager().SetTimer(PlayerSpawnProbeTimer, this, &ThisClass::LogPlayerSpawnProbeSnapshot, 0.5f, true);
+		LogPlayerSpawnProbeSnapshot();
+	}
 
 	if (!FParse::Param(FCommandLine::Get(), TEXT("MiniProbeExperienceFlow")))
 	{
@@ -50,6 +61,49 @@ void AMiniGameState::BeginPlay()
 		FOnMiniExperienceLoaded::FDelegate::CreateUObject(this, &ThisClass::HandleFlowProbeLoaded));
 	ExperienceManagerComponent->CallOrRegister_OnExperienceFailed(
 		FOnMiniExperienceFailed::FDelegate::CreateUObject(this, &ThisClass::HandleFlowProbeFailed));
+}
+
+void AMiniGameState::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	GetWorldTimerManager().ClearTimer(PlayerSpawnProbeTimer);
+	Super::EndPlay(EndPlayReason);
+}
+
+void AMiniGameState::LogPlayerSpawnProbeSnapshot()
+{
+	int32 PlayerStates = 0;
+	for (const APlayerState* State : PlayerArray)
+	{
+		PlayerStates += Cast<AMiniPlayerState>(State) ? 1 : 0;
+	}
+
+	int32 Characters = 0;
+	int32 ValidCharacters = 0;
+	int32 CharacterMarkers = 0;
+	for (TActorIterator<AMiniCharacter> It(GetWorld()); It; ++It)
+	{
+		const AMiniCharacter* Character = *It;
+		++Characters;
+		const AMiniPlayerState* State = Character->GetPlayerState<AMiniPlayerState>();
+		const UMiniPawnData* PawnData = Character->GetPawnData();
+		if (State && PawnData && State->GetPawnData() == PawnData && !State->IsOnlyASpectator() &&
+			PawnData->PawnClass && Character->IsA(PawnData->PawnClass.Get()))
+		{
+			++ValidCharacters;
+		}
+		const UMiniCharacterFeatureMarkerComponent* Marker = Character->FindComponentByClass<UMiniCharacterFeatureMarkerComponent>();
+		CharacterMarkers += Marker && Marker->IsFeatureActive() ? 1 : 0;
+	}
+
+	int32 LocalPawn = 0;
+	for (TActorIterator<APlayerController> It(GetWorld()); It; ++It)
+	{
+		const APlayerController* Controller = *It;
+		LocalPawn += Controller->IsLocalController() && Cast<AMiniCharacter>(Controller->GetPawn()) ? 1 : 0;
+	}
+	UE_LOG(LogMiniExperience, Display,
+		TEXT("MiniSpawnProbe SNAPSHOT: NetMode=%s PlayerStates=%d Characters=%d ValidCharacters=%d LocalPawn=%d CharacterMarkers=%d"),
+		GetMiniNetModeName(GetNetMode()), PlayerStates, Characters, ValidCharacters, LocalPawn, CharacterMarkers);
 }
 
 void AMiniGameState::HandleFlowProbeLoaded(const UMiniExperienceDefinition* Experience)

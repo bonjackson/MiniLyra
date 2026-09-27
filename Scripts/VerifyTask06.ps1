@@ -23,9 +23,12 @@ New-Item -ItemType Directory -Path $logDirectory, $cacheDirectory -Force | Out-N
 function Read-LogText {
     param([string]$Path)
     if (Test-Path -LiteralPath $Path -PathType Leaf) {
-        return Get-Content -LiteralPath $Path -Raw
+        $content = Get-Content -LiteralPath $Path -Raw
+        if ($null -ne $content) {
+            return ,([string]$content)
+        }
     }
-    return ''
+    return ,([string]::Empty)
 }
 
 function Assert-Running {

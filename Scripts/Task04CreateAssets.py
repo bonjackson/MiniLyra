@@ -73,12 +73,16 @@ if settings.get_class().get_path_name() != world_settings_class.get_path_name():
     )
 
 action_set = ensure_asset(ACTION_SET_FOLDER, ACTION_SET_NAME, action_set_class)
+pawn_data_was_new = not unreal.EditorAssetLibrary.does_asset_exist(
+    object_path(PAWN_DATA_FOLDER, PAWN_DATA_NAME)
+)
 pawn_data = ensure_asset(PAWN_DATA_FOLDER, PAWN_DATA_NAME, pawn_data_class)
 experience = ensure_asset(EXPERIENCE_FOLDER, EXPERIENCE_NAME, experience_class)
 
-# This is a temporary native Pawn placeholder. Task 07 replaces it with the
-# playable MiniCharacter class; the PawnData itself remains the stable link.
-pawn_data.set_editor_property("pawn_class", unreal.Pawn.static_class())
+# New assets use the native MiniCharacter until Task 07 assigns its Blueprint.
+# Existing PawnData may already point to a later character and must not reset.
+if pawn_data_was_new:
+    pawn_data.set_editor_property("pawn_class", native_class("MiniCharacter"))
 experience.set_editor_property("default_pawn_data", pawn_data)
 experience.set_editor_property("action_sets", [action_set])
 settings.set_editor_property("default_gameplay_experience", experience)

@@ -2,6 +2,7 @@
 
 #include "Components/GameFrameworkComponentManager.h"
 #include "Engine/World.h"
+#include "GameFramework/Pawn.h"
 #include "GameplayTagsManager.h"
 #include "HAL/PlatformMisc.h"
 #include "Misc/CommandLine.h"
@@ -232,18 +233,23 @@ bool UMiniGameInstance::RunExperienceProbe()
 	FString EmptyPawnError;
 	const bool bEmptyPawnClassRejected = !EmptyPawnData->ValidatePawnData(EmptyPawnError)
 		&& EmptyPawnError.Contains(TEXT("PawnClass"));
-	if (!bUnknownRejected || !bEmptyPawnDataRejected || !bEmptyPawnClassRejected)
+	UMiniPawnData* WrongClassPawnData = NewObject<UMiniPawnData>(this);
+	WrongClassPawnData->PawnClass = APawn::StaticClass();
+	FString WrongClassError;
+	const bool bWrongPawnClassRejected = !WrongClassPawnData->ValidatePawnData(WrongClassError)
+		&& WrongClassError.Contains(TEXT("must derive from MiniCharacter"));
+	if (!bUnknownRejected || !bEmptyPawnDataRejected || !bEmptyPawnClassRejected || !bWrongPawnClassRejected)
 	{
-		UE_LOG(LogMiniExperience, Error, TEXT("MiniExperienceProbe FAIL: negative validation: unknown='%s', empty experience='%s', empty pawn='%s'"),
-			*UnknownError, *EmptyError, *EmptyPawnError);
+		UE_LOG(LogMiniExperience, Error, TEXT("MiniExperienceProbe FAIL: negative validation: unknown='%s', empty experience='%s', empty pawn='%s', wrong class='%s'"),
+			*UnknownError, *EmptyError, *EmptyPawnError, *WrongClassError);
 		return false;
 	}
 
 	UE_LOG(LogMiniExperience, Display, TEXT("MiniExperienceProbe PASS: ID=%s Path=%s PawnData=%s MapOverride=%s"),
 		*DefaultId.ToString(), *Manager->GetPrimaryAssetPath(DefaultId).ToString(),
 		*GetPathNameSafe(Experience->DefaultPawnData.Get()), *MapId.ToString());
-	UE_LOG(LogMiniExperience, Display, TEXT("MiniExperienceProbe negative cases PASS: %s; %s; %s"),
-		*UnknownError, *EmptyError, *EmptyPawnError);
+	UE_LOG(LogMiniExperience, Display, TEXT("MiniExperienceProbe negative cases PASS: %s; %s; %s; %s"),
+		*UnknownError, *EmptyError, *EmptyPawnError, *WrongClassError);
 	return true;
 }
 

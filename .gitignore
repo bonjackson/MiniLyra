@@ -4,6 +4,7 @@
 /Saved/
 /DerivedDataCache/
 /Build/
+__pycache__/
 /.vs/
 /.idea/
 /.vscode/

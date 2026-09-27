@@ -27,21 +27,20 @@ experience = check_asset(EXPERIENCE_PACKAGE, "/Script/FPS.MiniExperienceDefiniti
 action_set = check_asset(ACTION_SET_PACKAGE, "/Script/FPS.MiniExperienceActionSet")
 pawn_data = check_asset(PAWN_DATA_PACKAGE, "/Script/FPS.MiniPawnData")
 
-if pawn_data.get_editor_property("pawn_class") != unreal.Pawn.static_class():
-    raise RuntimeError("Task 04 PawnData lost its temporary native PawnClass")
+pawn_class = pawn_data.get_editor_property("pawn_class")
+valid_pawn_classes = {
+    "/Script/FPS.MiniCharacter",  # Fresh assets before Task 07 Blueprint setup.
+    "/Game/Mini/Characters/BP_MiniCharacter.BP_MiniCharacter_C",
+}
+if pawn_class is None or pawn_class.get_path_name() not in valid_pawn_classes:
+    raise RuntimeError(f"Practice PawnData has an unexpected PawnClass: {pawn_class}")
 if experience.get_editor_property("default_pawn_data") != pawn_data:
     raise RuntimeError("Saved Experience does not reference the expected PawnData")
 action_sets = experience.get_editor_property("action_sets")
 if len(action_sets) != 1 or action_sets[0] != action_set:
     raise RuntimeError("Saved Experience must reference exactly the Task 04 ActionSet")
-if action_set.get_editor_property("actions"):
-    raise RuntimeError("Task 04 ActionSet must be empty")
-if action_set.get_editor_property("game_features_to_enable"):
-    raise RuntimeError("Task 04 ActionSet must not activate GameFeatures yet")
-if experience.get_editor_property("actions"):
-    raise RuntimeError("Task 04 Experience must not have Actions yet")
-if experience.get_editor_property("game_features_to_enable"):
-    raise RuntimeError("Task 04 Experience must not activate GameFeatures yet")
+# Later tasks populate Actions and GameFeatures. Preserve Task 04's stable
+# asset, class and map-link checks without rejecting the later configuration.
 
 registry = unreal.AssetRegistryHelpers.get_asset_registry()
 registry.scan_paths_synchronous(["/Game/Mini/System"], True)

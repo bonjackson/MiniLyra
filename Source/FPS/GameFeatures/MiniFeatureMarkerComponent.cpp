@@ -1,5 +1,6 @@
 #include "GameFeatures/MiniFeatureMarkerComponent.h"
 
+#include "Character/MiniCharacter.h"
 #include "Engine/World.h"
 #include "GameModes/MiniGameState.h"
 #include "System/MiniLogChannels.h"
@@ -57,8 +58,13 @@ void UMiniFeatureMarkerComponent::BeginPlay()
 		UE_LOG(LogMiniExperience, Error, TEXT("MiniFeatureMarker DUPLICATE: Type=%s Owner=%s Count=%d"),
 			*GetClass()->GetName(), *GetPathNameSafe(GetOwner()), ActiveCount);
 	}
-	ensureMsgf(GetOwner() && GetOwner()->IsA<AMiniGameState>(),
-		TEXT("MiniFeatureMarkerComponent should be added to MiniGameState by the GameFeature action"));
+	const bool bCharacterMarker = IsA<UMiniCharacterFeatureMarkerComponent>();
+	const bool bExpectedOwner = GetOwner() && (bCharacterMarker
+		? GetOwner()->IsA<AMiniCharacter>()
+		: GetOwner()->IsA<AMiniGameState>());
+	ensureMsgf(bExpectedOwner,
+		TEXT("MiniFeatureMarkerComponent %s has the wrong owner %s"),
+		*GetClass()->GetName(), *GetNameSafe(GetOwner()));
 }
 
 void UMiniFeatureMarkerComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)

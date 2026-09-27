@@ -3,6 +3,13 @@
 #include "ModularGameMode.h"
 #include "MiniGameMode.generated.h"
 
+class AController;
+class APlayerController;
+class APawn;
+class UMiniExperienceDefinition;
+class UMiniExperienceManagerComponent;
+class UMiniPawnData;
+
 // The server selects an Experience; the GameState component loads it on each peer.
 UCLASS()
 class FPS_API AMiniGameMode : public AModularGameModeBase
@@ -13,7 +20,15 @@ public:
 	AMiniGameMode(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
 	virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
+	virtual void InitGameState() override;
+	virtual void HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer) override;
+	virtual void RestartPlayer(AController* NewPlayer) override;
+	virtual UClass* GetDefaultPawnClassForController_Implementation(AController* InController) override;
+	virtual APawn* SpawnDefaultPawnAtTransform_Implementation(AController* NewPlayer, const FTransform& SpawnTransform) override;
 
 private:
 	void HandleMatchAssignmentIfNotExpectingOne();
+	void HandleExperienceLoaded(const UMiniExperienceDefinition* Experience);
+	UMiniExperienceManagerComponent* GetExperienceManager() const;
+	const UMiniPawnData* GetPawnDataForController(const AController* Controller) const;
 };

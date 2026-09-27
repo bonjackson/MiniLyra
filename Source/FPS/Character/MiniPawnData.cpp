@@ -1,5 +1,6 @@
 #include "MiniPawnData.h"
 
+#include "Character/MiniCharacter.h"
 #include "System/MiniAssetManager.h"
 
 #if WITH_EDITOR
@@ -19,6 +20,12 @@ bool UMiniPawnData::ValidatePawnData(FString& OutError) const
 	if (!PawnClass)
 	{
 		OutError = FString::Printf(TEXT("PawnData '%s' has no PawnClass"), *GetPathName());
+		return false;
+	}
+	if (!PawnClass->IsChildOf(AMiniCharacter::StaticClass()))
+	{
+		OutError = FString::Printf(TEXT("PawnData '%s' PawnClass '%s' must derive from MiniCharacter"),
+			*GetPathName(), *PawnClass->GetPathName());
 		return false;
 	}
 	return true;

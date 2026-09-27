@@ -1,6 +1,6 @@
 # Mini Lyra 实施进度
 
-更新：2026-09-27（Asia/Shanghai）
+更新：2026-09-28（Asia/Shanghai）
 
 ## 当前进度
 
@@ -10,7 +10,8 @@
 - [x] 任务 04：三类原生数据资产、AssetManager 与地图 Experience 入口完成；Editor／Game 构建及正反例探针通过。
 - [x] 任务 05：GameMode／GameState／Experience 异步状态机完成；Editor／Game 构建及双进程正反例探针通过。
 - [x] 任务 06：GameFeature 装配与回收、双端探针、连续三次 PIE、Cook 和独立打包单机烟测通过。
-- [ ] 任务 07–30：尚未实施。
+- [x] 任务 07：Modular 角色骨架、PawnData 预注入及 Experience 出生门控完成；双端、晚加入和失败时零出生探针通过。
+- [ ] 任务 08–30：尚未实施。
 
 用户已确认第三人称、2–4 人竞技场，并明确允许忽略旧实现、从空项目开始。任务 01 据此重置活动源码和配置，保留旧工程文件作为本地备份；任务 02 在该空基线上建立独立的 Mini 内容入口。之前的 MiniExperience 启动壳不计作已完成框架。
 
@@ -111,7 +112,7 @@ MINI_BASELINE_VERIFICATION_PASSED
 
 ## 任务 04：AssetManager 与数据定义（完成）
 
-`UMiniAssetManager` 取代引擎默认 AssetManager，注册 `MiniExperienceDefinition`、`MiniExperienceActionSet`、`MiniPawnData` 三类原生数据资产实例的扫描项；项目默认 ID 为 `MiniExperienceDefinition:DA_MiniPracticeExperience`。`DA_MiniPracticeExperience` 引用 `DA_MiniPracticePawnData` 和空的 `DA_MiniPracticeActionSet`。PawnData 暂用引擎 `Pawn` 类作为必填占位，任务 07 再换正式角色。训练图现使用 `AMiniWorldSettings`，并保存指向该 Experience 的软对象引用。详细路径、配置、验证方法与边界见 [任务 04 资产定义](Task04/AssetDefinitions.md)。
+`UMiniAssetManager` 取代引擎默认 AssetManager，注册 `MiniExperienceDefinition`、`MiniExperienceActionSet`、`MiniPawnData` 三类原生数据资产实例的扫描项；项目默认 ID 为 `MiniExperienceDefinition:DA_MiniPracticeExperience`。`DA_MiniPracticeExperience` 引用 `DA_MiniPracticePawnData` 和空的 `DA_MiniPracticeActionSet`。任务 04 当时的 PawnData 用引擎 `Pawn` 类作为必填占位；任务 07 已将该资产改指 `BP_MiniCharacter`，现行资产脚本新建时则用原生 `AMiniCharacter` 占位。训练图现使用 `AMiniWorldSettings`，并保存指向该 Experience 的软对象引用。详细路径、配置、验证方法与边界见 [任务 04 资产定义](Task04/AssetDefinitions.md)。
 
 Editor 与 Game target 再次构建成功。在新编辑器进程中，三个数据资产仍是预期原生实例，地图的 `MiniWorldSettings` 和 Experience 覆盖项持久存在；`Scripts/VerifyTask04.ps1` 的未 Cook 编辑器游戏探针按 ID 找到并加载目标资产，验证地图覆盖项相同。未知 ID、空 DefaultPawnData 和空 PawnClass 均按预期返回明确错误，探针退出码为 0。任务 01–03 的回归脚本也通过。三类资产已配置 `AlwaysCook`，但尚未执行 Cook、打包、独立 Game 运行或联机验证；正式 Experience 状态机和 GameFeature 装配分别属于任务 05、06。
 
@@ -128,6 +129,14 @@ Editor 与 Game target 再次构建成功。在新编辑器进程中，三个数
 Editor／Game target 构建通过；`Scripts/Task06CreateAssets.ps1` 重复运行没有 GameFeatureData 加载错误。`Scripts/VerifyTask06.ps1` 的真实双进程有效与缺失插件场景均通过，两端各只激活一次插件、各注入两种活动数量为 1 的组件；额外的三轮 World travel 均观察到撤销及释放。`Scripts/VerifyTask06PIE.ps1` 又在同一 `UnrealEditor.exe` 进程内完成**真实连续三次 PIE**，每轮 `UEDPIE` World 的两种 marker 各添加和撤销一次，Action 与插件 lease 均回收，无重复注入；证据在 `Saved/Logs/Task06-PIE.log`。最小 Windows 地图 Cook 进程退出码 0，报告 513 个已 Cook 包、0 error／0 warning；用 UE `DumpAssetRegistry` 确认 Cook 产物包含 `/MiniShooterCore/GameFeatureData.GameFeatureData`、训练 Experience 与地图。
 
 完整打包前两次未成功，分别因为 staging 所需 Cook 目录结构不符，以及 IoStore staging 的 Zen 服务连接未就绪。第三次 `RunUAT BuildCookRun` 使用 `-pak -skipiostore -AdditionalCookerOptions=-SkipZenStore`，从 C 盘新目录 Cook／Stage，`Saved/Logs/Task06-PackageLooseConsole.log` 报告 513 包、0 error／0 warning 和 `BUILD SUCCESSFUL`。从 stage 目录直接运行 `FPS.exe`，`Saved/Logs/Task06-PackagedSmoke.log` 确认训练图 Experience `Loaded`、两种 marker 注入和 `MiniFlowProbe PASS`。这验证了**打包程序单机启动**；打包后联机尚未测试，IoStore 的 Zen staging 问题也未解决。实现、日志与测试边界见 [任务 06 装配说明](Task06/FeatureAssembly.md)。
+
+## 任务 07：Modular 角色骨架与出生门控（完成）
+
+`AMiniGameMode` 的默认 PawnClass 为空，玩家出生和重启要等服务端 Experience 进入 `Loaded`。此前到达的 Controller 在加载完成回调中重启，晚加入者走相同的状态判断。GameMode 从 Experience 的 PawnData 选择 `AMiniCharacter` 子类，先给 `AMiniPlayerState` 指定并复制 PawnData，再延迟生成角色、在 `FinishSpawning` 前给 Pawn 注入 PawnData。`AMiniPlayerState`、`AMiniPlayerController`、`AMiniCharacter` 采用 ModularGameplayActors 基类；`UMiniLocalPlayer` 采用 CommonGame 基类并写入引擎配置；最小 `AMiniHUD` 接入扩展 receiver 生命周期。
+
+`BP_MiniCharacter` 继承原生角色，挂 Manny Simple 网格；训练 PawnData 的 PawnClass 已改指该蓝图。`MiniShooterCore` 的 GameFeatureData 新增 Character 目标的 AddComponents Action，用 `UMiniCharacterFeatureMarkerComponent` 观察晚生成角色在各 World 的组件注入。Editor／Game target 构建通过；`Scripts/Task07CreateAssets.ps1` 重复执行后，`Scripts/VerifyTask07Assets.ps1` 在全新进程中核实蓝图父类、最新编译状态、Manny Mesh、PawnData 蓝图类引用及任务 06／07 两个 Action 各一份。新增防护后 `Scripts/VerifyTask07.ps1` 再次通过：独立监听服务器和 ClientA 两人开局后再启动 ClientB，三个进程最终均记录 `PlayerStates=3 Characters=3 ValidCharacters=3 LocalPawn=1 CharacterMarkers=3`。服务端三次 `COMMITTED` 均晚于 Experience `Loaded`；无效 Experience 的服务器与客户端都进入 `Failed`，且没有角色或角色 marker。`VerifyTask06.ps1` 含任务 05 双进程、缺失插件负例和三轮 World 周期的回归也通过。详见 [任务 07 出生门控说明](Task07/SpawnGate.md)。本次尚未加入 PawnExtension／Hero、GAS、输入与相机。
+
+代码审查新增 PawnData 的类约束：`ValidatePawnData` 要求 PawnClass 继承 `AMiniCharacter`，防止误填普通 `APawn` 后 Experience 到达 `Loaded` 却无法生成角色。任务 04 资产脚本现在只为**新建**的 PawnData 使用原生 MiniCharacter 占位，不改动已有资产；`MiniGameInstance` 的负例探针新增普通 `APawn` 被拒绝的检查。补丁后的 Editor／Game 重编译及任务 04 运行／资产验证均通过；旧探针脚本已修复读取尚未写完的空日志时的竞争。本次任务 04／05／06／07 探针运行在未 Cook 的编辑器游戏进程并使用 NullRHI，不能据此认定打包后联机或图形呈现已经验收。
 
 ## 插件状态与后续安排
 
@@ -173,4 +182,4 @@ git status --short
 
 ## 下一次入口
 
-执行任务 07，建立 Modular 角色骨架与 Experience 就绪后的出生门控。任务 06 的连续三次 PIE 与 Pak 打包程序单机烟测已通过；打包后联机、IoStore staging 及同进程不同 Experience 的多个 World 并存仍需后续验收。UE 内置 GameFeatureData AddComponents 随插件在进程级激活，当前 lease 防止过早卸载，但不阻止它注入到未请求插件的并存 World；详见任务 06 文档。
+任务 07 已通过补充 PawnClass 防护后的构建、资产全新进程复核、双端与晚加入探针；任务 04 及任务 05／06 回归也通过。下一步是任务 08 的 PawnExtension／Hero 四态协作。任务 06 的连续三次 PIE 与 Pak 打包程序单机烟测已通过；打包后联机、IoStore staging 及同进程不同 Experience 的多个 World 并存仍需后续验收。UE 内置 GameFeatureData AddComponents 随插件在进程级激活，当前 lease 防止过早卸载，但不阻止它注入到未请求插件的并存 World；详见任务 06 文档。

@@ -1,17 +1,16 @@
 #pragma once
 
-#include "Components/GameStateComponent.h"
+#include "Components/ActorComponent.h"
 #include "MiniFeatureMarkerComponent.generated.h"
 
 /**
  * A visible, disposable contribution from MiniShooterCore.
  *
  * Add this to AMiniGameState with the engine's Add Components GameFeatureAction.
- * The component belongs to the local world's GameState; no gameplay state is
- * replicated by the marker itself.
+ * No gameplay state is replicated by the marker itself.
  */
 UCLASS(ClassGroup = (Mini), meta = (BlueprintSpawnableComponent))
-class FPS_API UMiniFeatureMarkerComponent : public UGameStateComponent
+class FPS_API UMiniFeatureMarkerComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
@@ -33,6 +32,13 @@ private:
 /** Separate observable contribution for an action embedded in an Experience. */
 UCLASS(ClassGroup = (Mini), meta = (BlueprintSpawnableComponent))
 class FPS_API UMiniExperienceActionMarkerComponent final : public UMiniFeatureMarkerComponent
+{
+	GENERATED_BODY()
+};
+
+/** Separate Action target for verifying late-spawned modular characters. */
+UCLASS(ClassGroup = (Mini), meta = (BlueprintSpawnableComponent))
+class FPS_API UMiniCharacterFeatureMarkerComponent final : public UMiniFeatureMarkerComponent
 {
 	GENERATED_BODY()
 };

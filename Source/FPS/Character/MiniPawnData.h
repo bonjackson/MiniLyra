@@ -13,7 +13,7 @@ class FPS_API UMiniPawnData : public UPrimaryDataAsset
 public:
 	virtual FPrimaryAssetId GetPrimaryAssetId() const override;
 
-	// Task 07 will add ability sets, input and camera data here.
+	// Ability sets, input and camera data are added in later tasks.
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Mini|Pawn")
 	TSubclassOf<APawn> PawnClass;
 
