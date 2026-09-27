@@ -1,0 +1,742 @@
+{
+  "source_project": "F:/LyraStarterGame",
+  "method": "Unreal AssetRegistry hard/soft package dependency graph (same package edges displayed by Reference Viewer)",
+  "scope": "Lyra source-project weapons plus copied UE 5.8 mannequin-template assets; engine/plugin module dependencies are recorded but not recursively scanned",
+  "seeds": [
+    "/Game/Characters/Mannequins/Meshes/SKM_Manny_Simple",
+    "/Game/Characters/Mannequins/Anims/Unarmed/MM_Idle",
+    "/Game/Characters/Mannequins/Anims/Unarmed/Walk/MF_Unarmed_Walk_Fwd",
+    "/Game/Characters/Mannequins/Anims/Unarmed/Jog/MF_Unarmed_Jog_Fwd",
+    "/Game/Weapons/Rifle/Mesh/SK_Rifle",
+    "/Game/Weapons/Pistol/Mesh/SK_Pistol",
+    "/Game/Weapons/Rifle/Mesh/SM_Rifle",
+    "/Game/Weapons/Pistol/Mesh/SM_Pistol",
+    "/Game/Weapons/Rifle/Animations/Weap_Rifle_Fire",
+    "/Game/Weapons/Pistol/Animations/Weap_Pistol_Fire"
+  ],
+  "nodes": [
+    {
+      "package": "/Game/Characters/Mannequins/Anims/Unarmed/Jog/MF_Unarmed_Jog_Fwd",
+      "classes": [
+        "/Script/Engine.AnimSequence"
+      ],
+      "hard": [
+        "/Engine/Animation/DefaultAnimBoneCompressionSettings",
+        "/Engine/Animation/DefaultAnimCurveCompressionSettings",
+        "/Engine/Animation/DefaultVariableFrameStrippingSettings",
+        "/Game/Characters/Mannequins/Meshes/SK_Mannequin",
+        "/Script/AnimationData",
+        "/Script/AnimationModifiers",
+        "/Script/ControlRig",
+        "/Script/MovieScene"
+      ],
+      "soft": [
+        "/Engine/Animation/DefaultAnimBoneCompressionSettings",
+        "/Engine/Animation/DefaultAnimCurveCompressionSettings",
+        "/Engine/Animation/DefaultVariableFrameStrippingSettings",
+        "/Game/Characters/Mannequins/Meshes/SKM_Quinn_Simple",
+        "/Game/Characters/Mannequins/Meshes/SK_Mannequin",
+        "/Script/AnimationData",
+        "/Script/AnimationModifiers",
+        "/Script/ControlRig",
+        "/Script/Engine",
+        "/Script/MovieScene",
+        "/Script/MovieSceneTracks",
+        "/Script/RigVM",
+        "/Script/UnrealEd"
+      ]
+    },
+    {
+      "package": "/Game/Characters/Mannequins/Anims/Unarmed/MM_Idle",
+      "classes": [
+        "/Script/Engine.AnimSequence"
+      ],
+      "hard": [
+        "/Engine/Animation/DefaultAnimBoneCompressionSettings",
+        "/Engine/Animation/DefaultAnimCurveCompressionSettings",
+        "/Engine/Animation/DefaultVariableFrameStrippingSettings",
+        "/Game/Characters/Mannequins/Meshes/SK_Mannequin",
+        "/Script/AnimationData",
+        "/Script/AnimationModifiers",
+        "/Script/ControlRig",
+        "/Script/MovieScene"
+      ],
+      "soft": [
+        "/Engine/Animation/DefaultAnimBoneCompressionSettings",
+        "/Engine/Animation/DefaultAnimCurveCompressionSettings",
+        "/Engine/Animation/DefaultVariableFrameStrippingSettings",
+        "/Game/Characters/Mannequins/Meshes/SK_Mannequin",
+        "/Script/AnimationData",
+        "/Script/AnimationModifiers",
+        "/Script/ControlRig",
+        "/Script/Engine",
+        "/Script/MovieScene",
+        "/Script/MovieSceneTracks",
+        "/Script/RigVM",
+        "/Script/UnrealEd"
+      ]
+    },
+    {
+      "package": "/Game/Characters/Mannequins/Anims/Unarmed/Walk/MF_Unarmed_Walk_Fwd",
+      "classes": [
+        "/Script/Engine.AnimSequence"
+      ],
+      "hard": [
+        "/Engine/Animation/DefaultAnimBoneCompressionSettings",
+        "/Engine/Animation/DefaultAnimCurveCompressionSettings",
+        "/Engine/Animation/DefaultVariableFrameStrippingSettings",
+        "/Game/Characters/Mannequins/Meshes/SK_Mannequin",
+        "/Script/AnimationData",
+        "/Script/AnimationModifiers",
+        "/Script/ControlRig",
+        "/Script/MovieScene"
+      ],
+      "soft": [
+        "/Engine/Animation/DefaultAnimBoneCompressionSettings",
+        "/Engine/Animation/DefaultAnimCurveCompressionSettings",
+        "/Engine/Animation/DefaultVariableFrameStrippingSettings",
+        "/Game/Characters/Mannequins/Meshes/SKM_Quinn_Simple",
+        "/Game/Characters/Mannequins/Meshes/SK_Mannequin",
+        "/Script/AnimationData",
+        "/Script/AnimationModifiers",
+        "/Script/ControlRig",
+        "/Script/Engine",
+        "/Script/MovieScene",
+        "/Script/MovieSceneTracks",
+        "/Script/RigVM",
+        "/Script/UnrealEd"
+      ]
+    },
+    {
+      "package": "/Game/Characters/Mannequins/Materials/M_Mannequin",
+      "classes": [
+        "/Script/Engine.Material"
+      ],
+      "hard": [
+        "/Engine/Functions/Engine_MaterialFunctions01/Opacity/CameraDepthFade",
+        "/Engine/Functions/Engine_MaterialFunctions01/Texturing/ScaleUVsByCenter",
+        "/Engine/Functions/Engine_MaterialFunctions02/Utility/BreakOutFloat2Components",
+        "/Game/Characters/Mannequins/Textures/Manny/T_Manny_01_BN",
+        "/Game/Characters/Mannequins/Textures/Manny/T_Manny_01_D",
+        "/Game/Characters/Mannequins/Textures/Manny/T_Manny_01_MRA",
+        "/Game/Characters/Mannequins/Textures/Shared/T_UE_Logo_M"
+      ],
+      "soft": []
+    },
+    {
+      "package": "/Game/Characters/Mannequins/Materials/Manny/MI_Manny_01_New",
+      "classes": [
+        "/Script/Engine.MaterialInstanceConstant"
+      ],
+      "hard": [
+        "/Game/Characters/Mannequins/Materials/M_Mannequin",
+        "/Game/Characters/Mannequins/Textures/Manny/T_Manny_01_BN",
+        "/Game/Characters/Mannequins/Textures/Manny/T_Manny_01_D",
+        "/Game/Characters/Mannequins/Textures/Manny/T_Manny_01_MRA"
+      ],
+      "soft": []
+    },
+    {
+      "package": "/Game/Characters/Mannequins/Materials/Manny/MI_Manny_02_New",
+      "classes": [
+        "/Script/Engine.MaterialInstanceConstant"
+      ],
+      "hard": [
+        "/Game/Characters/Mannequins/Materials/Manny/MI_Manny_01_New",
+        "/Game/Characters/Mannequins/Textures/Manny/T_Manny_02_BN",
+        "/Game/Characters/Mannequins/Textures/Manny/T_Manny_02_D",
+        "/Game/Characters/Mannequins/Textures/Manny/T_Manny_02_MRA"
+      ],
+      "soft": [
+        "/Game/Characters/Mannequins/Textures/Shared/T_UE_Logo_M"
+      ]
+    },
+    {
+      "package": "/Game/Characters/Mannequins/Materials/Quinn/MI_Quinn_01",
+      "classes": [
+        "/Script/Engine.MaterialInstanceConstant"
+      ],
+      "hard": [
+        "/Game/Characters/Mannequins/Materials/M_Mannequin",
+        "/Game/Characters/Mannequins/Textures/Quinn/T_Quinn_01_D",
+        "/Game/Characters/Mannequins/Textures/Quinn/T_Quinn_01_MRA",
+        "/Game/Characters/Mannequins/Textures/Quinn/T_Quinn_01_N"
+      ],
+      "soft": [
+        "/Game/Characters/Mannequins/Materials/M_Mannequin",
+        "/Game/Characters/Mannequins/Textures/Quinn/T_Quinn_01_D",
+        "/Game/Characters/Mannequins/Textures/Quinn/T_Quinn_01_MRA",
+        "/Game/Characters/Mannequins/Textures/Quinn/T_Quinn_01_N",
+        "/Script/Engine",
+        "/Script/UnrealEd"
+      ]
+    },
+    {
+      "package": "/Game/Characters/Mannequins/Materials/Quinn/MI_Quinn_02",
+      "classes": [
+        "/Script/Engine.MaterialInstanceConstant"
+      ],
+      "hard": [
+        "/Game/Characters/Mannequins/Materials/Quinn/MI_Quinn_01",
+        "/Game/Characters/Mannequins/Textures/Quinn/T_Quinn_02_D",
+        "/Game/Characters/Mannequins/Textures/Quinn/T_Quinn_02_MRA",
+        "/Game/Characters/Mannequins/Textures/Quinn/T_Quinn_02_N"
+      ],
+      "soft": [
+        "/Game/Characters/Mannequins/Materials/Quinn/MI_Quinn_01",
+        "/Game/Characters/Mannequins/Textures/Quinn/T_Quinn_02_D",
+        "/Game/Characters/Mannequins/Textures/Quinn/T_Quinn_02_MRA",
+        "/Game/Characters/Mannequins/Textures/Quinn/T_Quinn_02_N",
+        "/Script/Engine",
+        "/Script/UnrealEd"
+      ]
+    },
+    {
+      "package": "/Game/Characters/Mannequins/Meshes/SKM_Manny_Simple",
+      "classes": [
+        "/Script/Engine.SkeletalMesh"
+      ],
+      "hard": [
+        "/Game/Characters/Mannequins/Materials/Manny/MI_Manny_01_New",
+        "/Game/Characters/Mannequins/Materials/Manny/MI_Manny_02_New",
+        "/Game/Characters/Mannequins/Meshes/SK_Mannequin",
+        "/Game/Characters/Mannequins/Rigs/PA_Mannequin"
+      ],
+      "soft": [
+        "/Game/Characters/Mannequins/Rigs/CR_Mannequin_Body"
+      ]
+    },
+    {
+      "package": "/Game/Characters/Mannequins/Meshes/SKM_Quinn_Simple",
+      "classes": [
+        "/Script/Engine.SkeletalMesh"
+      ],
+      "hard": [
+        "/Game/Characters/Mannequins/Materials/Quinn/MI_Quinn_01",
+        "/Game/Characters/Mannequins/Materials/Quinn/MI_Quinn_02",
+        "/Game/Characters/Mannequins/Meshes/SK_Mannequin",
+        "/Game/Characters/Mannequins/Rigs/PA_Mannequin"
+      ],
+      "soft": [
+        "/Game/Characters/Mannequins/Materials/Quinn/MI_Quinn_01",
+        "/Game/Characters/Mannequins/Materials/Quinn/MI_Quinn_02",
+        "/Game/Characters/Mannequins/Meshes/SK_Mannequin",
+        "/Game/Characters/Mannequins/Rigs/CR_Mannequin_Body",
+        "/Game/Characters/Mannequins/Rigs/PA_Mannequin",
+        "/Script/Engine",
+        "/Script/MeshDescription",
+        "/Script/UnrealEd"
+      ]
+    },
+    {
+      "package": "/Game/Characters/Mannequins/Meshes/SK_Mannequin",
+      "classes": [
+        "/Script/Engine.Skeleton"
+      ],
+      "hard": [],
+      "soft": [
+        "/Game/Characters/Mannequins/Meshes/SKM_Manny_Simple",
+        "/Game/Characters/Mannequins/Meshes/SKM_Quinn_Simple",
+        "/Script/Engine"
+      ]
+    },
+    {
+      "package": "/Game/Characters/Mannequins/Rigs/CR_Mannequin_Body",
+      "classes": [
+        "/Script/ControlRigDeveloper.ControlRigBlueprint"
+      ],
+      "hard": [
+        "/ControlRig/Controls/DefaultGizmoLibraryNormalized",
+        "/Script/AnimationCore",
+        "/Script/ControlRig",
+        "/Script/ControlRigDeveloper",
+        "/Script/ControlRigSpline",
+        "/Script/RigVM",
+        "/Script/RigVMDeveloper"
+      ],
+      "soft": [
+        "/Game/Characters/Mannequins/Meshes/SKM_Manny_Simple",
+        "/Script/CoreUObject"
+      ]
+    },
+    {
+      "package": "/Game/Characters/Mannequins/Rigs/PA_Mannequin",
+      "classes": [
+        "/Script/Engine.PhysicsAsset"
+      ],
+      "hard": [],
+      "soft": [
+        "/Game/Characters/Mannequins/Meshes/SKM_Manny_Simple"
+      ]
+    },
+    {
+      "package": "/Game/Characters/Mannequins/Textures/Manny/T_Manny_01_BN",
+      "classes": [
+        "/Script/Engine.Texture2D"
+      ],
+      "hard": [],
+      "soft": [
+        "/Script/Engine"
+      ]
+    },
+    {
+      "package": "/Game/Characters/Mannequins/Textures/Manny/T_Manny_01_D",
+      "classes": [
+        "/Script/Engine.Texture2D"
+      ],
+      "hard": [],
+      "soft": [
+        "/Script/Engine"
+      ]
+    },
+    {
+      "package": "/Game/Characters/Mannequins/Textures/Manny/T_Manny_01_MRA",
+      "classes": [
+        "/Script/Engine.Texture2D"
+      ],
+      "hard": [],
+      "soft": [
+        "/Script/Engine"
+      ]
+    },
+    {
+      "package": "/Game/Characters/Mannequins/Textures/Manny/T_Manny_02_BN",
+      "classes": [
+        "/Script/Engine.Texture2D"
+      ],
+      "hard": [],
+      "soft": [
+        "/Script/Engine"
+      ]
+    },
+    {
+      "package": "/Game/Characters/Mannequins/Textures/Manny/T_Manny_02_D",
+      "classes": [
+        "/Script/Engine.Texture2D"
+      ],
+      "hard": [],
+      "soft": [
+        "/Script/Engine"
+      ]
+    },
+    {
+      "package": "/Game/Characters/Mannequins/Textures/Manny/T_Manny_02_MRA",
+      "classes": [
+        "/Script/Engine.Texture2D"
+      ],
+      "hard": [],
+      "soft": [
+        "/Script/Engine"
+      ]
+    },
+    {
+      "package": "/Game/Characters/Mannequins/Textures/Quinn/T_Quinn_01_D",
+      "classes": [
+        "/Script/Engine.Texture2D"
+      ],
+      "hard": [],
+      "soft": [
+        "/Script/Engine"
+      ]
+    },
+    {
+      "package": "/Game/Characters/Mannequins/Textures/Quinn/T_Quinn_01_MRA",
+      "classes": [
+        "/Script/Engine.Texture2D"
+      ],
+      "hard": [],
+      "soft": [
+        "/Script/Engine"
+      ]
+    },
+    {
+      "package": "/Game/Characters/Mannequins/Textures/Quinn/T_Quinn_01_N",
+      "classes": [
+        "/Script/Engine.Texture2D"
+      ],
+      "hard": [],
+      "soft": [
+        "/Script/Engine"
+      ]
+    },
+    {
+      "package": "/Game/Characters/Mannequins/Textures/Quinn/T_Quinn_02_D",
+      "classes": [
+        "/Script/Engine.Texture2D"
+      ],
+      "hard": [],
+      "soft": [
+        "/Script/Engine"
+      ]
+    },
+    {
+      "package": "/Game/Characters/Mannequins/Textures/Quinn/T_Quinn_02_MRA",
+      "classes": [
+        "/Script/Engine.Texture2D"
+      ],
+      "hard": [],
+      "soft": [
+        "/Script/Engine"
+      ]
+    },
+    {
+      "package": "/Game/Characters/Mannequins/Textures/Quinn/T_Quinn_02_N",
+      "classes": [
+        "/Script/Engine.Texture2D"
+      ],
+      "hard": [],
+      "soft": [
+        "/Script/Engine"
+      ]
+    },
+    {
+      "package": "/Game/Characters/Mannequins/Textures/Shared/T_UE_Logo_M",
+      "classes": [
+        "/Script/Engine.Texture2D"
+      ],
+      "hard": [],
+      "soft": []
+    },
+    {
+      "package": "/Game/Weapons/Generic/Materials/M_Weapon",
+      "classes": [
+        "/Script/Engine.Material"
+      ],
+      "hard": [
+        "/Game/Weapons/Generic/Textures/T_Weapon_AORM",
+        "/Game/Weapons/Generic/Textures/T_Weapon_D",
+        "/Game/Weapons/Generic/Textures/T_Weapon_Mask",
+        "/Game/Weapons/Generic/Textures/T_Weapon_N"
+      ],
+      "soft": []
+    },
+    {
+      "package": "/Game/Weapons/Generic/Textures/T_Weapon_AORM",
+      "classes": [
+        "/Script/Engine.Texture2D"
+      ],
+      "hard": [],
+      "soft": []
+    },
+    {
+      "package": "/Game/Weapons/Generic/Textures/T_Weapon_D",
+      "classes": [
+        "/Script/Engine.Texture2D"
+      ],
+      "hard": [],
+      "soft": []
+    },
+    {
+      "package": "/Game/Weapons/Generic/Textures/T_Weapon_Mask",
+      "classes": [
+        "/Script/Engine.Texture2D"
+      ],
+      "hard": [],
+      "soft": []
+    },
+    {
+      "package": "/Game/Weapons/Generic/Textures/T_Weapon_N",
+      "classes": [
+        "/Script/Engine.Texture2D"
+      ],
+      "hard": [],
+      "soft": []
+    },
+    {
+      "package": "/Game/Weapons/Pistol/Animations/Weap_Pistol_Fire",
+      "classes": [
+        "/Script/Engine.AnimSequence"
+      ],
+      "hard": [
+        "/Engine/Animation/DefaultAnimBoneCompressionSettings",
+        "/Engine/Animation/DefaultAnimCurveCompressionSettings",
+        "/Game/Weapons/Pistol/Mesh/SK_Pistol_Skeleton",
+        "/Script/AnimationModifiers"
+      ],
+      "soft": []
+    },
+    {
+      "package": "/Game/Weapons/Pistol/Materials/MI_Weapon_Pistol",
+      "classes": [
+        "/Script/Engine.MaterialInstanceConstant"
+      ],
+      "hard": [
+        "/Game/Weapons/Generic/Materials/M_Weapon",
+        "/Game/Weapons/Pistol/Textures/T_Pistol_AORM",
+        "/Game/Weapons/Pistol/Textures/T_Pistol_D",
+        "/Game/Weapons/Pistol/Textures/T_Pistol_Masks",
+        "/Game/Weapons/Pistol/Textures/T_Pistol_N"
+      ],
+      "soft": []
+    },
+    {
+      "package": "/Game/Weapons/Pistol/Mesh/SK_Pistol",
+      "classes": [
+        "/Script/Engine.SkeletalMesh"
+      ],
+      "hard": [
+        "/Game/Weapons/Pistol/Materials/MI_Weapon_Pistol",
+        "/Game/Weapons/Pistol/Mesh/SK_Pistol_PhysicsAsset",
+        "/Game/Weapons/Pistol/Mesh/SK_Pistol_Skeleton"
+      ],
+      "soft": []
+    },
+    {
+      "package": "/Game/Weapons/Pistol/Mesh/SK_Pistol_PhysicsAsset",
+      "classes": [
+        "/Script/Engine.PhysicsAsset"
+      ],
+      "hard": [],
+      "soft": [
+        "/Game/Weapons/Pistol/Mesh/SK_Pistol"
+      ]
+    },
+    {
+      "package": "/Game/Weapons/Pistol/Mesh/SK_Pistol_Skeleton",
+      "classes": [
+        "/Script/Engine.Skeleton"
+      ],
+      "hard": [],
+      "soft": [
+        "/Game/Weapons/Pistol/Mesh/SK_Pistol"
+      ]
+    },
+    {
+      "package": "/Game/Weapons/Pistol/Mesh/SM_Pistol",
+      "classes": [
+        "/Script/Engine.StaticMesh"
+      ],
+      "hard": [
+        "/Game/Weapons/Pistol/Materials/MI_Weapon_Pistol",
+        "/Script/NavigationSystem"
+      ],
+      "soft": []
+    },
+    {
+      "package": "/Game/Weapons/Pistol/Textures/T_Pistol_AORM",
+      "classes": [
+        "/Script/Engine.Texture2D"
+      ],
+      "hard": [],
+      "soft": []
+    },
+    {
+      "package": "/Game/Weapons/Pistol/Textures/T_Pistol_D",
+      "classes": [
+        "/Script/Engine.Texture2D"
+      ],
+      "hard": [],
+      "soft": []
+    },
+    {
+      "package": "/Game/Weapons/Pistol/Textures/T_Pistol_Masks",
+      "classes": [
+        "/Script/Engine.Texture2D"
+      ],
+      "hard": [],
+      "soft": []
+    },
+    {
+      "package": "/Game/Weapons/Pistol/Textures/T_Pistol_N",
+      "classes": [
+        "/Script/Engine.Texture2D"
+      ],
+      "hard": [],
+      "soft": []
+    },
+    {
+      "package": "/Game/Weapons/Rifle/Animations/Weap_Rifle_Fire",
+      "classes": [
+        "/Script/Engine.AnimSequence"
+      ],
+      "hard": [
+        "/Engine/Animation/DefaultAnimBoneCompressionSettings",
+        "/Engine/Animation/DefaultAnimCurveCompressionSettings",
+        "/Game/Weapons/Rifle/Mesh/SK_Rifle_Skeleton",
+        "/Script/AnimationModifiers"
+      ],
+      "soft": []
+    },
+    {
+      "package": "/Game/Weapons/Rifle/Materials/MI_Weapon_Rifle",
+      "classes": [
+        "/Script/Engine.MaterialInstanceConstant"
+      ],
+      "hard": [
+        "/Game/Weapons/Generic/Materials/M_Weapon",
+        "/Game/Weapons/Rifle/Textures/T_Rifle_AORM",
+        "/Game/Weapons/Rifle/Textures/T_Rifle_Combined_N",
+        "/Game/Weapons/Rifle/Textures/T_Rifle_D",
+        "/Game/Weapons/Rifle/Textures/T_Rifle_Masks"
+      ],
+      "soft": []
+    },
+    {
+      "package": "/Game/Weapons/Rifle/Mesh/SK_Rifle",
+      "classes": [
+        "/Script/Engine.SkeletalMesh"
+      ],
+      "hard": [
+        "/Game/Weapons/Rifle/Materials/MI_Weapon_Rifle",
+        "/Game/Weapons/Rifle/Mesh/SK_Rifle_PhysicsAsset",
+        "/Game/Weapons/Rifle/Mesh/SK_Rifle_Skeleton"
+      ],
+      "soft": []
+    },
+    {
+      "package": "/Game/Weapons/Rifle/Mesh/SK_Rifle_PhysicsAsset",
+      "classes": [
+        "/Script/Engine.PhysicsAsset"
+      ],
+      "hard": [],
+      "soft": [
+        "/Game/Weapons/Rifle/Mesh/SK_Rifle"
+      ]
+    },
+    {
+      "package": "/Game/Weapons/Rifle/Mesh/SK_Rifle_Skeleton",
+      "classes": [
+        "/Script/Engine.Skeleton"
+      ],
+      "hard": [],
+      "soft": [
+        "/Game/Weapons/Rifle/Mesh/SK_Rifle"
+      ]
+    },
+    {
+      "package": "/Game/Weapons/Rifle/Mesh/SM_Rifle",
+      "classes": [
+        "/Script/Engine.StaticMesh"
+      ],
+      "hard": [
+        "/Game/Weapons/Rifle/Materials/MI_Weapon_Rifle",
+        "/Script/NavigationSystem"
+      ],
+      "soft": []
+    },
+    {
+      "package": "/Game/Weapons/Rifle/Textures/T_Rifle_AORM",
+      "classes": [
+        "/Script/Engine.Texture2D"
+      ],
+      "hard": [],
+      "soft": []
+    },
+    {
+      "package": "/Game/Weapons/Rifle/Textures/T_Rifle_Combined_N",
+      "classes": [
+        "/Script/Engine.Texture2D"
+      ],
+      "hard": [],
+      "soft": []
+    },
+    {
+      "package": "/Game/Weapons/Rifle/Textures/T_Rifle_D",
+      "classes": [
+        "/Script/Engine.Texture2D"
+      ],
+      "hard": [],
+      "soft": []
+    },
+    {
+      "package": "/Game/Weapons/Rifle/Textures/T_Rifle_Masks",
+      "classes": [
+        "/Script/Engine.Texture2D"
+      ],
+      "hard": [],
+      "soft": []
+    }
+  ],
+  "excluded_examples": [
+    {
+      "package": "/Game/Characters/Heroes/B_Hero_Default",
+      "classes": [
+        "/Script/Engine.Blueprint"
+      ],
+      "hard": [
+        "/Engine/EditorBlueprintResources/StandardMacros",
+        "/Game/Characters/Character_Default",
+        "/Game/Characters/Heroes/Mannequin/Animations/Actions/AM_MM_Death_Back_01",
+        "/Game/Characters/Heroes/Mannequin/Animations/Actions/AM_MM_Death_Front_01",
+        "/Game/Characters/Heroes/Mannequin/Animations/Actions/AM_MM_Death_Front_02",
+        "/Game/Characters/Heroes/Mannequin/Animations/Actions/AM_MM_Death_Front_03",
+        "/Game/Characters/Heroes/Mannequin/Animations/Actions/AM_MM_Death_Left_01",
+        "/Game/Characters/Heroes/Mannequin/Animations/Actions/AM_MM_Death_Right_01",
+        "/Game/Effects/Blueprints/B_FootStep",
+        "/Script/AIModule",
+        "/Script/GameplayTags",
+        "/Script/LyraGame"
+      ],
+      "soft": [
+        "/Game/ContextEffects/CFX_DefaultSkin"
+      ]
+    },
+    {
+      "package": "/Game/System/Experiences/B_LyraDefaultExperience",
+      "classes": [
+        "/Script/Engine.Blueprint"
+      ],
+      "hard": [
+        "/Game/Characters/Heroes/SimplePawnData/SimplePawnData",
+        "/Script/GameplayTags",
+        "/Script/LyraGame"
+      ],
+      "soft": [
+        "/Game/UI/Hud/W_DefaultHUDLayout"
+      ]
+    },
+    {
+      "package": "/Game/Characters/Heroes/SimplePawnData/SimplePawnData",
+      "classes": [
+        "/Script/LyraGame.LyraPawnData"
+      ],
+      "hard": [
+        "/Game/Characters/Cameras/CM_ThirdPerson",
+        "/Game/Characters/Heroes/B_SimpleHeroPawn",
+        "/Game/Input/InputData_SimplePawn",
+        "/Script/LyraGame"
+      ],
+      "soft": []
+    },
+    {
+      "package": "/Game/Weapons/GA_Weapon_Fire",
+      "classes": [
+        "/Script/Engine.Blueprint"
+      ],
+      "hard": [
+        "/Engine/EditorBlueprintResources/StandardMacros",
+        "/Game/Characters/Heroes/Mannequin/Animations/Actions/AM_MM_HitReact_Back_Med_01",
+        "/Game/Characters/Heroes/Mannequin/Animations/Actions/AM_MM_HitReact_Front_Lgt_01",
+        "/Game/Characters/Heroes/Mannequin/Animations/Actions/AM_MM_HitReact_Front_Lgt_02",
+        "/Game/Characters/Heroes/Mannequin/Animations/Actions/AM_MM_HitReact_Front_Med_01",
+        "/Game/Characters/Heroes/Mannequin/Animations/Actions/AM_MM_HitReact_Front_Med_02",
+        "/Game/Characters/Heroes/Mannequin/Animations/Actions/AM_MM_HitReact_Left_Med_01",
+        "/Game/Characters/Heroes/Mannequin/Animations/Actions/AM_MM_HitReact_Right_Med_01",
+        "/Game/Weapons/Pistol/GE_Damage_Pistol",
+        "/Game/Weapons/Rifle/Animations/AM_MM_Rifle_DryFire",
+        "/Game/Weapons/Rifle/Animations/AM_MM_Rifle_Fire",
+        "/Script/GameplayAbilities",
+        "/Script/GameplayAbilitiesEditor",
+        "/Script/GameplayMessageNodes",
+        "/Script/GameplayMessageRuntime",
+        "/Script/GameplayTags",
+        "/Script/GameplayTasks",
+        "/Script/LyraGame",
+        "/Script/PhysicsCore"
+      ],
+      "soft": []
+    },
+    {
+      "package": "/Game/Weapons/Pistol/GA_Weapon_Reload_Pistol",
+      "classes": [
+        "/Script/Engine.Blueprint"
+      ],
+      "hard": [
+        "/Game/Weapons/GA_Weapon_ReloadMagazine",
+        "/Game/Weapons/Pistol/Animations/AM_MM_Pistol_Reload",
+        "/Script/GameplayAbilities"
+      ],
+      "soft": []
+    }
+  ]
+}

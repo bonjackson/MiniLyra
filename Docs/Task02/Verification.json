@@ -1,0 +1,23 @@
+{
+  "map": "/Game/Mini/Maps/L_MiniPractice",
+  "world_settings": "/Script/Engine.WorldSettings",
+  "mini_package_count": 50,
+  "approved_assets_loaded": [
+    "/Game/Mini/Characters/Mannequins/Anims/Unarmed/Jog/MF_Unarmed_Jog_Fwd",
+    "/Game/Mini/Characters/Mannequins/Anims/Unarmed/MM_Idle",
+    "/Game/Mini/Characters/Mannequins/Anims/Unarmed/Walk/MF_Unarmed_Walk_Fwd",
+    "/Game/Mini/Characters/Mannequins/Meshes/SKM_Manny_Simple",
+    "/Game/Mini/Weapons/Pistol/Animations/Weap_Pistol_Fire",
+    "/Game/Mini/Weapons/Pistol/Mesh/SK_Pistol",
+    "/Game/Mini/Weapons/Rifle/Animations/Weap_Rifle_Fire",
+    "/Game/Mini/Weapons/Rifle/Mesh/SK_Rifle"
+  ],
+  "player_starts": 4,
+  "cover_pieces": 6,
+  "visible_target_boards": 3,
+  "arena_size_cm": [
+    4000,
+    3000
+  ],
+  "unexpected_project_dependencies": []
+}

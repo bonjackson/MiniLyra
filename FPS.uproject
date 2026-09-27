@@ -2,7 +2,7 @@
 	"FileVersion": 3,
 	"EngineAssociation": "5.8",
 	"Category": "",
-	"Description": "Mini Lyra - clean C++ baseline (Task 01)",
+	"Description": "Mini Lyra - third-person arena prototype",
 	"Modules": [
 		{
 			"Name": "FPS",
@@ -11,10 +11,6 @@
 		}
 	],
 	"Plugins": [
-		{
-			"Name": "AndroidFileServer",
-			"Enabled": false
-		},
 		{
 			"Name": "AndroidFileServer",
 			"Enabled": false
