@@ -1,8 +1,11 @@
 #include "MiniCharacter.h"
 
+#include "Camera/MiniCameraComponent.h"
 #include "Character/MiniHeroComponent.h"
 #include "Character/MiniPawnData.h"
 #include "Character/MiniPawnExtensionComponent.h"
+#include "Components/SkeletalMeshComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Misc/CommandLine.h"
 #include "Misc/Parse.h"
 #include "Net/UnrealNetwork.h"
@@ -15,6 +18,13 @@ AMiniCharacter::AMiniCharacter(const FObjectInitializer& ObjectInitializer)
 	bReplicates = true;
 	PawnExtensionComponent = CreateDefaultSubobject<UMiniPawnExtensionComponent>(TEXT("PawnExtension"));
 	HeroComponent = CreateDefaultSubobject<UMiniHeroComponent>(TEXT("Hero"));
+	CameraComponent = CreateDefaultSubobject<UMiniCameraComponent>(TEXT("MiniCamera"));
+	CameraComponent->SetupAttachment(GetRootComponent());
+	PracticeRifleMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("PracticeRifle"));
+	PracticeRifleMesh->SetupAttachment(GetMesh(), TEXT("HandGrip_R"));
+	PracticeRifleMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	bUseControllerRotationYaw = true;
+	GetCharacterMovement()->bOrientRotationToMovement = false;
 #if !UE_BUILD_SHIPPING
 	FString ProbeOrder;
 	if (FParse::Value(FCommandLine::Get(), TEXT("MiniProbeInitOrder="), ProbeOrder) &&
@@ -77,6 +87,10 @@ void AMiniCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
 void AMiniCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
+	if (CameraComponent)
+	{
+		CameraComponent->ResetCamera();
+	}
 	if (PawnExtensionComponent)
 	{
 		PawnExtensionComponent->NotifyPawnPossessed();
@@ -87,6 +101,10 @@ void AMiniCharacter::PossessedBy(AController* NewController)
 void AMiniCharacter::UnPossessed()
 {
 	Super::UnPossessed();
+	if (CameraComponent)
+	{
+		CameraComponent->ResetCamera();
+	}
 	if (PawnExtensionComponent)
 	{
 		PawnExtensionComponent->UninitializeAbilitySystem(true);
@@ -101,6 +119,10 @@ void AMiniCharacter::UnPossessed()
 void AMiniCharacter::OnRep_Controller()
 {
 	Super::OnRep_Controller();
+	if (CameraComponent)
+	{
+		CameraComponent->ResetCamera();
+	}
 	if (HeroComponent && HeroComponent->IsInputActive() && !IsLocallyControlled())
 	{
 		HeroComponent->NotifyPawnUnpossessed();

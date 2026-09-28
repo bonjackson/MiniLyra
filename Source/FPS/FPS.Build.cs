@@ -16,5 +16,12 @@ public class FPS : ModuleRules
 		{
 			"ModularGameplay"
 		});
+		if (Target.bBuildEditor)
+		{
+			PrivateDependencyModuleNames.AddRange(new string[]
+			{
+				"AnimGraph", "BlueprintGraph", "UnrealEd"
+			});
+		}
 	}
 }

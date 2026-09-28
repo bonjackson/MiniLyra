@@ -12,9 +12,14 @@ UMiniAbilitySystemComponent::UMiniAbilitySystemComponent(const FObjectInitialize
 	SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
 }
 
+bool UMiniAbilitySystemComponent::IsAbilityInputBlocked() const
+{
+	return HasMatchingGameplayTag(TAG_Mini_AbilityInputBlocked);
+}
+
 void UMiniAbilitySystemComponent::AbilityInputTagPressed(const FGameplayTag& InputTag)
 {
-	if (!InputTag.IsValid() || HasMatchingGameplayTag(TAG_Mini_AbilityInputBlocked))
+	if (!InputTag.IsValid() || IsAbilityInputBlocked())
 	{
 		return;
 	}
@@ -49,7 +54,7 @@ void UMiniAbilitySystemComponent::AbilityInputTagReleased(const FGameplayTag& In
 
 void UMiniAbilitySystemComponent::ProcessAbilityInput(float /*DeltaTime*/, bool bGamePaused)
 {
-	if (bGamePaused || HasMatchingGameplayTag(TAG_Mini_AbilityInputBlocked))
+	if (bGamePaused || IsAbilityInputBlocked())
 	{
 		ClearAbilityInput();
 		return;

@@ -13,4 +13,5 @@ namespace MiniGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(InputTag_Reload, "InputTag.Ability.Reload", "Reload input routed to GAS.");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(InputTag_SwitchWeapon, "InputTag.Ability.SwitchWeapon", "Switch weapon input routed to GAS.");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(InputTag_Aim, "InputTag.Ability.Aim", "Aim input routed to GAS.");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(State_Aiming, "State.Aiming", "Local aiming state used by the camera until the aim ability is added.");
 }

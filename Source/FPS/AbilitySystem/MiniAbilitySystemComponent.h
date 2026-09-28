@@ -16,6 +16,7 @@ public:
 	void AbilityInputTagPressed(const FGameplayTag& InputTag);
 	void AbilityInputTagReleased(const FGameplayTag& InputTag);
 	void ProcessAbilityInput(float DeltaTime, bool bGamePaused);
+	bool IsAbilityInputBlocked() const;
 	/** Releases and cancels abilities started by held input, then forgets all pending input. */
 	void ClearAbilityInput();
 	int32 GetHeldInputCount() const { return InputHeldSpecHandles.Num(); }

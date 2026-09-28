@@ -6,6 +6,7 @@
 class APawn;
 class UMiniAbilitySet;
 class UMiniInputConfig;
+class UMiniCameraMode;
 
 UCLASS(BlueprintType, NotBlueprintable, Const)
 class FPS_API UMiniPawnData : public UPrimaryDataAsset
@@ -24,6 +25,12 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Mini|Input")
 	TObjectPtr<UMiniInputConfig> InputConfig;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Mini|Camera")
+	TSubclassOf<UMiniCameraMode> DefaultCameraMode;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Mini|Camera")
+	TSubclassOf<UMiniCameraMode> AimCameraMode;
 
 	bool ValidatePawnData(FString& OutError) const;
 

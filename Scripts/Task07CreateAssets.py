@@ -103,7 +103,9 @@ blueprint.modify()
 mesh_component.modify()
 mesh_component.set_editor_property("skeletal_mesh_asset", mesh_asset)
 mesh_component.set_editor_property("relative_location", unreal.Vector(0.0, 0.0, -90.0))
-mesh_component.set_editor_property("relative_rotation", unreal.Rotator(0.0, -90.0, 0.0))
+mesh_component.set_editor_property(
+    "relative_rotation", unreal.Rotator(pitch=0.0, yaw=-90.0, roll=0.0)
+)
 
 pawn_data.set_editor_property("pawn_class", blueprint_class)
 

@@ -62,6 +62,11 @@ if mesh_component is None:
 mesh = mesh_component.get_editor_property("skeletal_mesh_asset")
 if mesh is None or mesh.get_path_name() != MESH_PATH:
     raise RuntimeError(f"Saved Blueprint lost Manny Simple mesh: {mesh}")
+mesh_rotation = mesh_component.get_editor_property("relative_rotation")
+if (abs(mesh_rotation.pitch) > 0.01 or
+        abs(mesh_rotation.yaw + 90.0) > 0.01 or
+        abs(mesh_rotation.roll) > 0.01):
+    raise RuntimeError(f"Saved Blueprint mesh is not upright: {mesh_rotation}")
 
 pawn_data = require_asset(PAWN_DATA_PATH, "/Script/FPS.MiniPawnData")
 selected_pawn_class = pawn_data.get_editor_property("pawn_class")
