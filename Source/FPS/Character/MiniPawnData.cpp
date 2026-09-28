@@ -1,5 +1,6 @@
 #include "MiniPawnData.h"
 
+#include "AbilitySystem/MiniAbilitySet.h"
 #include "Character/MiniCharacter.h"
 #include "System/MiniAssetManager.h"
 
@@ -27,6 +28,16 @@ bool UMiniPawnData::ValidatePawnData(FString& OutError) const
 		OutError = FString::Printf(TEXT("PawnData '%s' PawnClass '%s' must derive from MiniCharacter"),
 			*GetPathName(), *PawnClass->GetPathName());
 		return false;
+	}
+	TSet<const UMiniAbilitySet*> SeenSets;
+	for (const UMiniAbilitySet* Set : AbilitySets)
+	{
+		if (!Set || SeenSets.Contains(Set))
+		{
+			OutError = FString::Printf(TEXT("PawnData '%s' has a missing or duplicate AbilitySet"), *GetPathName());
+			return false;
+		}
+		SeenSets.Add(Set);
 	}
 	return true;
 }

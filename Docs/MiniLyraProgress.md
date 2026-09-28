@@ -12,7 +12,8 @@
 - [x] 任务 06：GameFeature 装配与回收、双端探针、连续三次 PIE、Cook 和独立打包单机烟测通过。
 - [x] 任务 07：Modular 角色骨架、PawnData 预注入及 Experience 出生门控完成；双端、晚加入和失败时零出生探针通过。
 - [x] 任务 08：PawnExtension／Hero 四态协作骨架完成；三进程两人／晚加入、两种条件可见性顺序和重复通知探针通过。
-- [ ] 任务 09–30：尚未实施。
+- [x] 任务 09：PlayerState ASC、AbilitySet 来源与 Avatar 生命周期完成；两人／晚加入、撤销／恢复和重生探针通过。
+- [ ] 任务 10–30：尚未实施。
 
 用户已确认第三人称、2–4 人竞技场，并明确允许忽略旧实现、从空项目开始。任务 01 据此重置活动源码和配置，保留旧工程文件作为本地备份；任务 02 在该空基线上建立独立的 Mini 内容入口。之前的 MiniExperience 启动壳不计作已完成框架。
 
@@ -145,6 +146,12 @@ Editor／Game target 构建通过；`Scripts/Task06CreateAssets.ps1` 重复运�
 
 Editor／Game target 均构建成功；配对条件补丁后两个 target 与 `Scripts/VerifyTask08.ps1` 又重跑通过。三进程验收中，两人就绪后晚加入第三人，三端最终各有 3 个角色且两个组件均到 `DataInitialized`；两个客户端各有 2 个**没有 Controller／InputComponent**的模拟代理达到此状态，三端重复通知后每个角色／Feature／状态仍只转换一次。ClientA／ClientB 分别以 PawnData 优先和 PlayerState 优先的**测试可见性顺序**验证等待与继续；脚本核对真实释放日志及状态转换发生顺序，但不控制真实网络包到达顺序。`GameplayReady` 仍为 0，等待任务 09 ASC 与任务 10 本地输入。任务 07 出生／失败路径回归，以及 `VerifyTask06.ps1` 所含任务 05 正反例、任务 06 插件负例和三轮 World 周期回归均通过。实现、条件表和验证边界见 [任务 08 初始化协作](Task08/InitStateCoordination.md)。
 
+## 任务 09：PlayerState ASC 与 AbilitySet 生命周期（完成）
+
+`AMiniPlayerState` 持有复制 ASC 和基础 HealthSet，PawnExtension 把当前角色绑定为 Avatar，旧角色只在仍是当前 Avatar 时解绑。PawnData 首次指定时授予一份 AbilitySet；训练 Experience 的 World 作用域 AddAbilities Action 单独授予另一份 AbilitySet，按来源句柄撤销。资产包含两种测试能力、一种无限时长效果和复制的测试属性。晚创建的 PlayerState 在 BeginPlay 后补发就绪事件，避免框架过早的 `GameActorReady` 导致漏授。
+
+Editor／Game target、资产新进程重载、三进程两人／晚加入、功能授予暂停与恢复（含客户端撤销快照）、旧角色到新角色的 ASC 复用和安全解绑均通过。任务 06 三轮真实 World 停用各记录一对功能授予／撤销；任务 08／07 回归通过。服务器第三人加入后的稳定计数是 3 份 PawnData 能力、3 份功能能力／效果／测试属性和 3 个正确 Avatar；每个客户端仅持有自己的一份能力／完整效果，同时看到三人的测试属性和 Avatar。详见 [任务 09 能力生命周期](Task09/AbilityLifecycle.md)。`GameplayReady` 留待任务 10 的输入绑定。
+
 ## 插件状态与后续安排
 
 | 插件 | 来源 | 当前状态 | 后续安排 |
@@ -153,7 +160,7 @@ Editor／Game target 均构建成功；配对条件补丁后两个 target 与 `S
 | PythonScriptPlugin | 引擎自带 | 仅在任务 02 验证命令中临时启用 | 没写入项目长期插件列表，不需要下载 |
 | ControlRig | 引擎自带 | 任务 02 迁入资源的软引用涉及 ControlRig；命令行资源加载已通过 | 实际使用角色动画图时核查启用与运行时配置 |
 | AndroidFileServer | 引擎自带 | 显式禁用 | 首版只做 Windows，避免启动时写入无关 Android 文件服务配置 |
-| GameplayAbilities（GAS） | 引擎自带 | 任务 03 已启用 | 任务 09 开始实现能力宿主 |
+| GameplayAbilities（GAS） | 引擎自带 | 任务 09 已接入 PlayerState ASC、AbilitySet 与效果／属性复制 | 任务 10 接 InputTag 与本地输入 |
 | GameFeatures、ModularGameplay | 引擎自带 | 任务 06 已用于 `MiniShooterCore` 激活与 AddComponents 注入 | 后续 Action 类型沿用本次的 World 作用域和回收路径 |
 | EnhancedInput | 引擎自带 | 任务 03 已启用 | 任务 10 接入 InputTag 输入 |
 | CommonUI／CommonInput | 引擎自带 | 任务 03 已核清并启用 CommonUI | 任务 19 实现 UI；CommonInput 是模块，不是独立插件 |
@@ -189,4 +196,4 @@ git status --short
 
 ## 下一次入口
 
-任务 08 的 Editor／Game 构建、三进程初始化探针及任务 07／06 回归已通过。下一步是任务 09 的 PlayerState ASC 与 AbilitySet 生命周期，再由任务 10 接入本地输入并验收完整 `GameplayReady`。任务 06 的连续三次 PIE 与 Pak 打包程序单机烟测已通过；打包后联机、IoStore staging 及同进程不同 Experience 的多个 World 并存仍需后续验收。UE 内置 GameFeatureData AddComponents 随插件在进程级激活，当前 lease 防止过早卸载，但不阻止它注入到未请求插件的并存 World；详见任务 06 文档。
+任务 09 的 Editor／Game 构建、资产重载、三进程能力生命周期探针及任务 08／07／06 回归已通过。下一步是任务 10 的 InputTag 与本地输入绑定，并验收完整 `GameplayReady`。任务 06 的连续三次 PIE 与 Pak 打包程序单机烟测已通过；打包后联机、IoStore staging 及同进程不同 Experience 的多个 World 并存仍需后续验收。UE 内置 GameFeatureData AddComponents 随插件在进程级激活，当前 lease 防止过早卸载，但不阻止它注入到未请求插件的并存 World；详见任务 06 文档。

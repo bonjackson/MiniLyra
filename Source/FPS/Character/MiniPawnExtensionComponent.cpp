@@ -1,5 +1,6 @@
 #include "MiniPawnExtensionComponent.h"
 
+#include "AbilitySystem/MiniAbilitySystemComponent.h"
 #include "Character/MiniCharacter.h"
 #include "Character/MiniHeroComponent.h"
 #include "Character/MiniPawnData.h"
@@ -52,8 +53,96 @@ void UMiniPawnExtensionComponent::BeginPlay()
 
 void UMiniPawnExtensionComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
+	UninitializeAbilitySystem(true);
 	UnregisterInitStateFeature();
 	Super::EndPlay(EndPlayReason);
+}
+
+void UMiniPawnExtensionComponent::InitializeAbilitySystem(UMiniAbilitySystemComponent* ASC)
+{
+	AMiniCharacter* Pawn = GetPawn<AMiniCharacter>();
+	AMiniPlayerState* PlayerState = Pawn ? Pawn->GetPlayerState<AMiniPlayerState>() : nullptr;
+	if (!Pawn || !PlayerState || !ASC || bAvatarSuperseded)
+	{
+		return;
+	}
+	if (AbilitySystemComponent == ASC && ASC->GetAvatarActor() == Pawn)
+	{
+		return;
+	}
+	if (AbilitySystemComponent && AbilitySystemComponent != ASC)
+	{
+		UninitializeAbilitySystem();
+	}
+	if (AActor* PreviousAvatar = ASC->GetAvatarActor())
+	{
+		if (PreviousAvatar != Pawn)
+		{
+			if (UMiniPawnExtensionComponent* OldExtension = FindPawnExtensionComponent(PreviousAvatar))
+			{
+				OldExtension->UninitializeAbilitySystem(true);
+			}
+		}
+	}
+	ASC->InitAbilityActorInfo(PlayerState, Pawn);
+	AbilitySystemComponent = ASC;
+	bWasBoundWithController = Pawn->GetController() != nullptr;
+	UE_LOG(LogMiniInit, Display, TEXT("MiniASC AVATAR_BOUND: PlayerState=%s ASC=%s Avatar=%s Role=%d"),
+		*GetPathNameSafe(PlayerState), *GetPathNameSafe(ASC), *Pawn->GetPathName(),
+		static_cast<int32>(Pawn->GetLocalRole()));
+}
+
+void UMiniPawnExtensionComponent::UninitializeAbilitySystem(bool bSuperseded)
+{
+	if (bSuperseded)
+	{
+		bAvatarSuperseded = true;
+	}
+	UMiniAbilitySystemComponent* ASC = AbilitySystemComponent;
+	AMiniCharacter* Pawn = GetPawn<AMiniCharacter>();
+	AbilitySystemComponent = nullptr;
+	if (ASC && Pawn && ASC->GetAvatarActor() == Pawn)
+	{
+		ASC->CancelAbilities();
+		ASC->SetAvatarActor(nullptr);
+		UE_LOG(LogMiniInit, Display, TEXT("MiniASC AVATAR_UNBOUND: ASC=%s OldAvatar=%s Superseded=%d"),
+			*GetPathNameSafe(ASC), *Pawn->GetPathName(), bSuperseded);
+	}
+}
+
+void UMiniPawnExtensionComponent::NotifyPawnPossessed()
+{
+	const AMiniCharacter* Pawn = GetPawn<AMiniCharacter>();
+	const AController* Controller = Pawn ? Pawn->GetController() : nullptr;
+	if (Controller && Controller->GetPawn() == Pawn)
+	{
+		// A previously unpossessed Pawn may be reused by the same PlayerState.
+		// Only a new, confirmed possession makes it eligible to own the Avatar again.
+		bAvatarSuperseded = false;
+		bWasBoundWithController = false;
+	}
+}
+
+void UMiniPawnExtensionComponent::RefreshAbilitySystem()
+{
+	AMiniCharacter* Pawn = GetPawn<AMiniCharacter>();
+	if (!Pawn || bAvatarSuperseded || !HasReachedInitState(MiniGameplayTags::InitState_DataInitialized))
+	{
+		return;
+	}
+	AMiniPlayerState* PlayerState = Pawn->GetPlayerState<AMiniPlayerState>();
+	UMiniAbilitySystemComponent* ASC = PlayerState ? PlayerState->GetMiniAbilitySystemComponent() : nullptr;
+	const bool bDataMatches = PlayerState && Pawn->GetPawnData() &&
+		PlayerState->GetPawnData() == Pawn->GetPawnData();
+	const AController* Controller = Pawn->GetController();
+	const bool bPossessionMatches = Pawn->GetLocalRole() == ROLE_SimulatedProxy ||
+		(Controller && Controller->GetPlayerState<AMiniPlayerState>() == PlayerState);
+	if (!ASC || !bDataMatches || !bPossessionMatches)
+	{
+		UninitializeAbilitySystem(bWasBoundWithController && !Controller);
+		return;
+	}
+	InitializeAbilitySystem(ASC);
 }
 
 bool UMiniPawnExtensionComponent::CanChangeInitState(
@@ -91,7 +180,7 @@ bool UMiniPawnExtensionComponent::CanChangeInitState(
 			MiniGameplayTags::InitState_DataAvailable) &&
 			Manager->HaveAllFeaturesReachedInitState(Pawn, MiniGameplayTags::InitState_DataAvailable, NAME_ActorFeatureName);
 	}
-	// ASC and local input have not been wired yet. Task 09/10 will open GameplayReady.
+	// Task 10 will open GameplayReady after local input is wired.
 	return false;
 }
 
@@ -103,7 +192,14 @@ void UMiniPawnExtensionComponent::HandleChangeInitState(
 		*CurrentState.ToString(), *DesiredState.ToString());
 	if (DesiredState == MiniGameplayTags::InitState_DataInitialized)
 	{
-		UE_LOG(LogMiniInit, Display, TEXT("MiniInitState DEFERRED: Feature=PawnExtension Pawn=%s Target=InitState.GameplayReady WaitingFor=ASC"),
+		if (AMiniCharacter* Pawn = GetPawn<AMiniCharacter>())
+		{
+			if (AMiniPlayerState* PlayerState = Pawn->GetPlayerState<AMiniPlayerState>())
+			{
+				InitializeAbilitySystem(PlayerState->GetMiniAbilitySystemComponent());
+			}
+		}
+		UE_LOG(LogMiniInit, Display, TEXT("MiniInitState DEFERRED: Feature=PawnExtension Pawn=%s Target=InitState.GameplayReady WaitingFor=Input"),
 			*GetPathNameSafe(GetOwner()));
 	}
 }

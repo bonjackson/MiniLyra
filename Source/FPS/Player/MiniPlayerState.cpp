@@ -1,16 +1,59 @@
 #include "MiniPlayerState.h"
 
+#include "AbilitySystem/MiniAbilitySystemComponent.h"
+#include "AbilitySystem/MiniHealthSet.h"
 #include "Character/MiniCharacter.h"
 #include "Character/MiniPawnData.h"
+#include "Components/GameFrameworkComponentManager.h"
 #include "EngineUtils.h"
 #include "Engine/World.h"
 #include "Net/UnrealNetwork.h"
 #include "System/MiniLogChannels.h"
 
+const FName AMiniPlayerState::NAME_AbilityActorReady(TEXT("MiniAbilityActorReady"));
+
 AMiniPlayerState::AMiniPlayerState(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
 	bReplicates = true;
+	SetNetUpdateFrequency(100.0f);
+	AbilitySystemComponent = CreateDefaultSubobject<UMiniAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
+	HealthSet = CreateDefaultSubobject<UMiniHealthSet>(TEXT("HealthSet"));
+}
+
+void AMiniPlayerState::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+	if (AbilitySystemComponent)
+	{
+		AbilitySystemComponent->InitAbilityActorInfo(this, nullptr);
+	}
+}
+
+void AMiniPlayerState::BeginPlay()
+{
+	Super::BeginPlay();
+	// ModularPlayerState sends GameActorReady before Super::BeginPlay, when
+	// HasActorBegunPlay is still false. Feature grants wait for this later event.
+	UGameFrameworkComponentManager::SendGameFrameworkComponentExtensionEvent(this, NAME_AbilityActorReady);
+}
+
+void AMiniPlayerState::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	if (HasAuthority() && AbilitySystemComponent)
+	{
+		for (FMiniAbilitySetGrantedHandles& Handles : PawnDataGrantedHandles)
+		{
+			Handles.TakeFromAbilitySystem(AbilitySystemComponent);
+		}
+		PawnDataGrantedHandles.Reset();
+	}
+	Super::EndPlay(EndPlayReason);
+}
+
+UAbilitySystemComponent* AMiniPlayerState::GetAbilitySystemComponent() const
+{
+	return AbilitySystemComponent;
 }
 
 void AMiniPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -44,6 +87,18 @@ bool AMiniPlayerState::SetPawnData(const UMiniPawnData* InPawnData)
 	}
 
 	PawnData = InPawnData;
+	for (UMiniAbilitySet* Set : PawnData->AbilitySets)
+	{
+		if (!Set)
+		{
+			continue;
+		}
+		FMiniAbilitySetGrantedHandles& Handles = PawnDataGrantedHandles.AddDefaulted_GetRef();
+		if (!Set->GiveToAbilitySystem(AbilitySystemComponent, Handles, const_cast<UMiniPawnData*>(PawnData.Get())))
+		{
+			PawnDataGrantedHandles.Pop();
+		}
+	}
 	ForceNetUpdate();
 	NotifyPawnDataChanged();
 	UE_LOG(LogMiniInit, Display, TEXT("MiniPlayerState PawnDataAssigned Role=%d PlayerState=%s PawnData=%s"),

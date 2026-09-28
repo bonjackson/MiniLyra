@@ -65,21 +65,42 @@ void AMiniCharacter::BeginPlay()
 	NotifyInitDependenciesChanged();
 }
 
+void AMiniCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	if (PawnExtensionComponent)
+	{
+		PawnExtensionComponent->UninitializeAbilitySystem(true);
+	}
+	Super::EndPlay(EndPlayReason);
+}
+
 void AMiniCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
+	if (PawnExtensionComponent)
+	{
+		PawnExtensionComponent->NotifyPawnPossessed();
+	}
 	NotifyInitDependenciesChanged();
 }
 
 void AMiniCharacter::UnPossessed()
 {
 	Super::UnPossessed();
+	if (PawnExtensionComponent)
+	{
+		PawnExtensionComponent->UninitializeAbilitySystem(true);
+	}
 	NotifyInitDependenciesChanged();
 }
 
 void AMiniCharacter::OnRep_Controller()
 {
 	Super::OnRep_Controller();
+	if (PawnExtensionComponent)
+	{
+		PawnExtensionComponent->NotifyPawnPossessed();
+	}
 	NotifyInitDependenciesChanged();
 }
 
@@ -100,6 +121,7 @@ void AMiniCharacter::NotifyInitDependenciesChanged()
 	if (PawnExtensionComponent)
 	{
 		PawnExtensionComponent->CheckDefaultInitialization();
+		PawnExtensionComponent->RefreshAbilitySystem();
 	}
 	if (HeroComponent)
 	{

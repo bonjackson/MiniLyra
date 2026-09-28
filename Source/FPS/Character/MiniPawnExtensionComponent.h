@@ -5,6 +5,7 @@
 #include "MiniPawnExtensionComponent.generated.h"
 
 class UGameFrameworkComponentManager;
+class UMiniAbilitySystemComponent;
 struct FActorInitStateChangedParams;
 
 /** Coordinates the PawnData and other init-state features on a Mini pawn. */
@@ -25,9 +26,21 @@ public:
 	virtual void HandleChangeInitState(UGameFrameworkComponentManager* Manager, FGameplayTag CurrentState, FGameplayTag DesiredState) override;
 	virtual void OnActorInitStateChanged(const FActorInitStateChangedParams& Params) override;
 	virtual void CheckDefaultInitialization() override;
+	void RefreshAbilitySystem();
+	void NotifyPawnPossessed();
+	void UninitializeAbilitySystem(bool bSuperseded = false);
+	UMiniAbilitySystemComponent* GetMiniAbilitySystemComponent() const { return AbilitySystemComponent; }
 
 protected:
 	virtual void OnRegister() override;
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
+private:
+	void InitializeAbilitySystem(UMiniAbilitySystemComponent* ASC);
+
+	UPROPERTY(Transient)
+	TObjectPtr<UMiniAbilitySystemComponent> AbilitySystemComponent;
+	bool bWasBoundWithController = false;
+	bool bAvatarSuperseded = false;
 };

@@ -1,13 +1,19 @@
 #include "MiniGameState.h"
 
+#include "AbilitySystem/MiniAbilitySystemComponent.h"
+#include "AbilitySystem/MiniHealthSet.h"
+#include "AbilitySystem/MiniProbeAbility.h"
+#include "AbilitySystem/MiniProbeAttributeSet.h"
 #include "Character/MiniCharacter.h"
 #include "Character/MiniHeroComponent.h"
 #include "Character/MiniPawnData.h"
 #include "Character/MiniPawnExtensionComponent.h"
 #include "EngineUtils.h"
 #include "GameFeatures/MiniFeatureMarkerComponent.h"
+#include "GameFeatures/MiniGameFeatureAction_AddAbilities.h"
 #include "GameModes/MiniExperienceDefinition.h"
 #include "GameModes/MiniExperienceManagerComponent.h"
+#include "GameModes/MiniGameMode.h"
 #include "Engine/World.h"
 #include "GameFramework/PlayerController.h"
 #include "Kismet/GameplayStatics.h"
@@ -21,6 +27,17 @@
 namespace
 {
 int32 GFeatureProbeCyclesCompleted = 0;
+
+struct FMiniAbilityProbeTotals
+{
+	int32 PlayerStates = 0;
+	int32 PawnAbilities = 0;
+	int32 FeatureAbilities = 0;
+	int32 ActiveEffects = 0;
+	int32 ProbeAttributes = 0;
+	int32 HealthSets = 0;
+	int32 BoundAvatars = 0;
+};
 
 const TCHAR* GetMiniNetModeName(const ENetMode NetMode)
 {
@@ -46,9 +63,10 @@ void AMiniGameState::BeginPlay()
 	Super::BeginPlay();
 #if !UE_BUILD_SHIPPING
 	bProbeInitStates = FParse::Param(FCommandLine::Get(), TEXT("MiniProbeInitStates"));
+	bProbeAbilities = FParse::Param(FCommandLine::Get(), TEXT("MiniProbeAbilities"));
 	FParse::Value(FCommandLine::Get(), TEXT("MiniProbeInitOrder="), InitProbeOrder);
 #endif
-	if (FParse::Param(FCommandLine::Get(), TEXT("MiniProbePlayerSpawns")) || bProbeInitStates)
+	if (FParse::Param(FCommandLine::Get(), TEXT("MiniProbePlayerSpawns")) || bProbeInitStates || bProbeAbilities)
 	{
 		GetWorldTimerManager().SetTimer(PlayerSpawnProbeTimer, this, &ThisClass::LogPlayerSpawnProbeSnapshot, 0.5f, true);
 		LogPlayerSpawnProbeSnapshot();
@@ -114,6 +132,152 @@ void AMiniGameState::LogPlayerSpawnProbeSnapshot()
 	if (bProbeInitStates)
 	{
 		LogInitStateProbeSnapshot();
+	}
+	if (bProbeAbilities)
+	{
+		LogAbilityProbeSnapshot();
+	}
+}
+
+void AMiniGameState::LogAbilityProbeSnapshot()
+{
+	FMiniAbilityProbeTotals Totals;
+	for (APlayerState* State : PlayerArray)
+	{
+		AMiniPlayerState* PlayerState = Cast<AMiniPlayerState>(State);
+		if (!PlayerState)
+		{
+			continue;
+		}
+		++Totals.PlayerStates;
+		UMiniAbilitySystemComponent* ASC = PlayerState->GetMiniAbilitySystemComponent();
+		if (!ASC)
+		{
+			continue;
+		}
+		for (const FGameplayAbilitySpec& Spec : ASC->GetActivatableAbilities())
+		{
+			Totals.PawnAbilities += Spec.Ability && Spec.Ability->IsA<UMiniPawnProbeAbility>() ? 1 : 0;
+			Totals.FeatureAbilities += Spec.Ability && Spec.Ability->IsA<UMiniFeatureProbeAbility>() ? 1 : 0;
+		}
+		Totals.ActiveEffects += ASC->GetNumActiveGameplayEffects();
+		for (const UAttributeSet* Set : ASC->GetSpawnedAttributes())
+		{
+			Totals.ProbeAttributes += Set && Set->IsA<UMiniProbeAttributeSet>() ? 1 : 0;
+		}
+		Totals.HealthSets += PlayerState->GetHealthSet() &&
+			ASC->GetAttributeSet(UMiniHealthSet::StaticClass()) == PlayerState->GetHealthSet() ? 1 : 0;
+		AActor* Avatar = ASC->GetAvatarActor();
+		const AMiniCharacter* Character = Cast<AMiniCharacter>(Avatar);
+		Totals.BoundAvatars += Character && Character->GetPlayerState<AMiniPlayerState>() == PlayerState ? 1 : 0;
+	}
+	UE_LOG(LogMiniInit, Display,
+		TEXT("MiniAbilityProbe SNAPSHOT: NetMode=%s Stage=%d PlayerStates=%d PawnAbilities=%d FeatureAbilities=%d Effects=%d ProbeAttributes=%d HealthSets=%d BoundAvatars=%d"),
+		GetMiniNetModeName(GetNetMode()), AbilityProbeStage, Totals.PlayerStates,
+		Totals.PawnAbilities, Totals.FeatureAbilities, Totals.ActiveEffects,
+		Totals.ProbeAttributes, Totals.HealthSets, Totals.BoundAvatars);
+
+	if (!HasAuthority() || Totals.PlayerStates < 2 || AbilityProbeStage >= 4)
+	{
+		return;
+	}
+	const UMiniExperienceDefinition* Experience = ExperienceManagerComponent
+		? ExperienceManagerComponent->GetCurrentExperience() : nullptr;
+	UMiniGameFeatureAction_AddAbilities* Action = nullptr;
+	if (Experience)
+	{
+		for (UGameFeatureAction* Candidate : Experience->Actions)
+		{
+			if (Candidate && Candidate->GetFName() == TEXT("MiniTask09_AddAbilities"))
+			{
+				Action = Cast<UMiniGameFeatureAction_AddAbilities>(Candidate);
+				break;
+			}
+		}
+	}
+	if (!Action)
+	{
+		return;
+	}
+	const bool bBaseReady = Totals.PawnAbilities == Totals.PlayerStates &&
+		Totals.FeatureAbilities == Totals.PlayerStates && Totals.ActiveEffects == Totals.PlayerStates &&
+		Totals.ProbeAttributes == Totals.PlayerStates && Totals.HealthSets == Totals.PlayerStates &&
+		Totals.BoundAvatars == Totals.PlayerStates;
+	if (AbilityProbeStage == 0 && bBaseReady)
+	{
+		UE_LOG(LogMiniInit, Display, TEXT("MiniAbilityProbe BASELINE_PASS: Players=%d"), Totals.PlayerStates);
+		Action->SetProbeSuspended(GetWorld(), true);
+		AbilityProbeStage = 1;
+	}
+	else if (AbilityProbeStage == 1 && Totals.PawnAbilities == Totals.PlayerStates &&
+		Totals.FeatureAbilities == 0 && Totals.ActiveEffects == 0 && Totals.ProbeAttributes == 0)
+	{
+		if (++AbilityProbeSuspendedTicks == 1)
+		{
+			UE_LOG(LogMiniInit, Display, TEXT("MiniAbilityProbe REVOKE_PASS: PawnAbilities=%d FeatureAbilities=0"),
+				Totals.PawnAbilities);
+		}
+		if (AbilityProbeSuspendedTicks >= 5)
+		{
+			Action->SetProbeSuspended(GetWorld(), false);
+			AbilityProbeStage = 2;
+		}
+	}
+	else if (AbilityProbeStage == 2 && bBaseReady)
+	{
+		UE_LOG(LogMiniInit, Display, TEXT("MiniAbilityProbe RESTORE_PASS: Players=%d"), Totals.PlayerStates);
+		APlayerController* RemoteController = nullptr;
+		for (TActorIterator<APlayerController> It(GetWorld()); It; ++It)
+		{
+			if (!It->IsLocalController() && Cast<AMiniCharacter>(It->GetPawn()))
+			{
+				RemoteController = *It;
+				break;
+			}
+		}
+		AMiniGameMode* GameMode = GetWorld()->GetAuthGameMode<AMiniGameMode>();
+		AMiniCharacter* OldPawn = RemoteController ? Cast<AMiniCharacter>(RemoteController->GetPawn()) : nullptr;
+		AbilityProbeRespawnState = RemoteController ? RemoteController->GetPlayerState<AMiniPlayerState>() : nullptr;
+		AbilityProbeRespawnASC = AbilityProbeRespawnState.IsValid()
+			? AbilityProbeRespawnState->GetMiniAbilitySystemComponent() : nullptr;
+		if (!GameMode || !OldPawn || !AbilityProbeRespawnASC.IsValid())
+		{
+			UE_LOG(LogMiniInit, Error, TEXT("MiniAbilityProbe RESPAWN_FAIL: no remote controller or ASC"));
+			AbilityProbeStage = 255;
+			return;
+		}
+		RemoteController->UnPossess();
+		GameMode->RestartPlayer(RemoteController);
+		AMiniCharacter* NewPawn = Cast<AMiniCharacter>(RemoteController->GetPawn());
+		if (!NewPawn || NewPawn == OldPawn || AbilityProbeRespawnASC->GetAvatarActor() != NewPawn ||
+			RemoteController->GetPlayerState<AMiniPlayerState>() != AbilityProbeRespawnState.Get())
+		{
+			UE_LOG(LogMiniInit, Error, TEXT("MiniAbilityProbe RESPAWN_FAIL: new Pawn did not reuse PlayerState ASC"));
+			AbilityProbeStage = 255;
+			return;
+		}
+		if (UMiniPawnExtensionComponent* OldExtension = OldPawn->GetPawnExtensionComponent())
+		{
+			OldExtension->UninitializeAbilitySystem(true);
+		}
+		if (AbilityProbeRespawnASC->GetAvatarActor() != NewPawn)
+		{
+			UE_LOG(LogMiniInit, Error, TEXT("MiniAbilityProbe RESPAWN_FAIL: old Pawn cleared new Avatar"));
+			AbilityProbeStage = 255;
+			return;
+		}
+		UE_LOG(LogMiniInit, Display, TEXT("MiniAbilityProbe RESPAWN_BOUND: PlayerState=%s ASC=%s OldPawn=%s NewPawn=%s"),
+			*GetPathNameSafe(AbilityProbeRespawnState.Get()), *GetPathNameSafe(AbilityProbeRespawnASC.Get()),
+			*GetPathNameSafe(OldPawn), *GetPathNameSafe(NewPawn));
+		OldPawn->Destroy();
+		AbilityProbeStage = 3;
+	}
+	else if (AbilityProbeStage == 3 && bBaseReady && AbilityProbeRespawnState.IsValid() &&
+		AbilityProbeRespawnASC.IsValid() &&
+		AbilityProbeRespawnASC->GetOwnerActor() == AbilityProbeRespawnState.Get())
+	{
+		UE_LOG(LogMiniInit, Display, TEXT("MiniAbilityProbe PASS: PlayerStateASCReused=1 OldPawnCleanupSafe=1"));
+		AbilityProbeStage = 4;
 	}
 }
 

@@ -335,6 +335,7 @@ Mini 功能插件首版可采用内容插件，复用 `FPS` 中的通用原生�
 - **产物：** 测试 AbilitySet、测试能力、ASC 绑定日志与句柄清单。
 - **验收：** 服务器只授予一次；拥有者与模拟代理获得正确可见状态；重新生成 Pawn 后复用同一 PlayerState ASC 且 Avatar 正确；撤销测试 Action 后能力数量恢复。
 - **边界：** 不把 ASC 简单移到 Character 来回避生命周期。旧 Pawn 清理时必须检查自己仍是当前 Avatar。
+- **执行结果（2026-09-28）：** PlayerState 已持有复制 ASC 与基础 HealthSet；PawnExtension 绑定可替换 Avatar，并在旧 Pawn 清理时检查当前 Avatar。PawnData 与 World 作用域 AddAbilities Action 各用 AbilitySet／句柄单独授予和撤销，训练资产已在新编辑器进程重新加载验证。Editor／Game target 构建通过；三进程探针验证两人授予、功能来源撤销／恢复、复用同一 PlayerState ASC 重生以及第三人晚加入后的拥有者／模拟代理状态。任务 06 的三个真实 World 停用周期均出现相应 Action 撤销日志；任务 08／07 回归通过。`GameplayReady` 继续等待任务 10 的本地输入。详见 `Docs/Task09/AbilityLifecycle.md`。
 
 #### 任务 10：接通 Enhanced Input → InputTag → GAS
 

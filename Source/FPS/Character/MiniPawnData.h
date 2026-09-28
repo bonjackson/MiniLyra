@@ -4,6 +4,7 @@
 #include "MiniPawnData.generated.h"
 
 class APawn;
+class UMiniAbilitySet;
 
 UCLASS(BlueprintType, NotBlueprintable, Const)
 class FPS_API UMiniPawnData : public UPrimaryDataAsset
@@ -13,9 +14,12 @@ class FPS_API UMiniPawnData : public UPrimaryDataAsset
 public:
 	virtual FPrimaryAssetId GetPrimaryAssetId() const override;
 
-	// Ability sets, input and camera data are added in later tasks.
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Mini|Pawn")
 	TSubclassOf<APawn> PawnClass;
+
+	/** Server grants these once to the PlayerState ASC; input and camera data arrive later. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Mini|Abilities")
+	TArray<TObjectPtr<UMiniAbilitySet>> AbilitySets;
 
 	bool ValidatePawnData(FString& OutError) const;
 
