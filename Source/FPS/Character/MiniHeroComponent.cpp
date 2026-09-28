@@ -75,11 +75,6 @@ bool UMiniHeroComponent::OwnsInputMapping() const
 		Subsystem->HasMappingContext(RequestedMappingContext.Get());
 }
 
-bool UMiniHeroComponent::OwnsTemporaryAimTag(const UMiniAbilitySystemComponent* ASC) const
-{
-	return ASC && AimTagAbilitySystem.Get() == ASC;
-}
-
 void UMiniHeroComponent::NotifyInputDependenciesChanged()
 {
 	AMiniCharacter* Pawn = GetPawn<AMiniCharacter>();
@@ -178,7 +173,6 @@ bool UMiniHeroComponent::ActivateInput(UInputMappingContext* MappingContext)
 
 void UMiniHeroComponent::DeactivateInput()
 {
-	SetAimInputHeld(false);
 	if (AMiniCharacter* Pawn = GetPawn<AMiniCharacter>())
 	{
 		Pawn->StopJumping();
@@ -245,18 +239,18 @@ void UMiniHeroComponent::Input_JumpPressed(const FInputActionValue& /*Value*/)
 {
 	if (bInputActive)
 	{
-		if (AMiniCharacter* Pawn = GetPawn<AMiniCharacter>())
+		if (UMiniAbilitySystemComponent* ASC = BoundAbilitySystem.Get())
 		{
-			Pawn->Jump();
+			ASC->AbilityInputTagPressed(MiniGameplayTags::InputTag_Jump);
 		}
 	}
 }
 
 void UMiniHeroComponent::Input_JumpReleased(const FInputActionValue& /*Value*/)
 {
-	if (AMiniCharacter* Pawn = GetPawn<AMiniCharacter>())
+	if (UMiniAbilitySystemComponent* ASC = BoundAbilitySystem.Get())
 	{
-		Pawn->StopJumping();
+		ASC->AbilityInputTagReleased(MiniGameplayTags::InputTag_Jump);
 	}
 }
 
@@ -266,10 +260,6 @@ void UMiniHeroComponent::Input_AbilityPressed(FGameplayTag InputTag)
 	{
 		if (UMiniAbilitySystemComponent* ASC = BoundAbilitySystem.Get())
 		{
-			if (InputTag == MiniGameplayTags::InputTag_Aim && !ASC->IsAbilityInputBlocked())
-			{
-				SetAimInputHeld(true);
-			}
 			ASC->AbilityInputTagPressed(InputTag);
 			UE_LOG(LogMiniInit, Display, TEXT("MiniInput TAG_PRESSED: Pawn=%s Tag=%s"),
 				*GetPathNameSafe(GetPawn<AMiniCharacter>()), *InputTag.ToString());
@@ -279,38 +269,12 @@ void UMiniHeroComponent::Input_AbilityPressed(FGameplayTag InputTag)
 
 void UMiniHeroComponent::Input_AbilityReleased(FGameplayTag InputTag)
 {
-	if (InputTag == MiniGameplayTags::InputTag_Aim)
-	{
-		SetAimInputHeld(false);
-	}
 	if (UMiniAbilitySystemComponent* ASC = BoundAbilitySystem.Get())
 	{
 		ASC->AbilityInputTagReleased(InputTag);
 		UE_LOG(LogMiniInit, Display, TEXT("MiniInput TAG_RELEASED: Pawn=%s Tag=%s"),
 			*GetPathNameSafe(GetPawn<AMiniCharacter>()), *InputTag.ToString());
 	}
-}
-
-void UMiniHeroComponent::SetAimInputHeld(bool bHeld)
-{
-	UMiniAbilitySystemComponent* PreviousASC = AimTagAbilitySystem.Get();
-	UMiniAbilitySystemComponent* NewASC = bHeld ? BoundAbilitySystem.Get() : nullptr;
-	if (PreviousASC == NewASC)
-	{
-		return;
-	}
-	if (PreviousASC)
-	{
-		PreviousASC->RemoveLooseGameplayTag(MiniGameplayTags::State_Aiming);
-	}
-	AimTagAbilitySystem.Reset();
-	if (NewASC)
-	{
-		NewASC->AddLooseGameplayTag(MiniGameplayTags::State_Aiming);
-		AimTagAbilitySystem = NewASC;
-	}
-	UE_LOG(LogMiniInit, Display, TEXT("MiniCamera AIM_STATE: Pawn=%s Active=%d"),
-		*GetPathNameSafe(GetPawn<AMiniCharacter>()), NewASC != nullptr);
 }
 
 bool UMiniHeroComponent::CanChangeInitState(

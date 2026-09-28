@@ -1,6 +1,6 @@
 # 任务 10：Enhanced Input、InputTag 与 GAS
 
-本任务把角色输入定义放在资产中：`UMiniPawnData` 引用 `UMiniInputConfig`，训练 Experience 的 `MiniTask10_AddInput` Action 持有 `IMC_MiniDefault`。本地角色由 `UMiniHeroComponent` 将 InputAction 绑定到 `UMiniInputComponent`；移动、视角、跳跃直接操作角色，战斗输入以 InputTag 交给 PlayerState 上的 ASC。映射和绑定随占有关系、输入接管及 Action 生命周期撤销。
+本任务把角色输入定义放在资产中：`UMiniPawnData` 引用 `UMiniInputConfig`，训练 Experience 的 `MiniTask10_AddInput` Action 持有 `IMC_MiniDefault`。本地角色由 `UMiniHeroComponent` 将 InputAction 绑定到 `UMiniInputComponent`；移动、视角直接操作角色，能力输入以 InputTag 交给 PlayerState 上的 ASC。任务 12 起，跳跃原生 Action 的回调也将 `InputTag.Jump` 转发给 ASC。映射和绑定随占有关系、输入接管及 Action 生命周期撤销。
 
 ## 资产与按键
 
@@ -10,13 +10,13 @@
 | --- | --- | --- | --- |
 | 移动 | Axis2D | W／A／S／D | 原生；依据控制器 Yaw 方向移动 |
 | 视角 | Axis2D | 鼠标移动 | 原生；控制器 Yaw／Pitch |
-| 跳跃 | Boolean | 空格 | 原生；按下跳跃、释放停止 |
+| 跳跃 | Boolean | 空格 | 原生 Action → `InputTag.Jump` → ASC 的跳跃能力 |
 | 开火 | Boolean | 鼠标左键 | `InputTag.Ability.Fire` → ASC |
 | 装填 | Boolean | R | `InputTag.Ability.Reload` → ASC |
 | 切枪 | Boolean | Q | `InputTag.Ability.SwitchWeapon` → ASC |
 | 瞄准 | Boolean | 鼠标右键 | `InputTag.Ability.Aim` → ASC |
 
-W／S 映射用 Swizzle 将按键值送到前后轴，A／S 使用 Negate，D 保持正向。`IMC_MiniDefault` 启用 `CountRegistrations`，便于发现重生后重复添加映射。装填、切枪和瞄准目前只完成输入路由；相应装备、武器与瞄准能力分别由后续任务实现。当前 Fire 对应 `UMiniPawnProbeAbility`，用于验证按下激活和释放结束，尚无弹药、命中或伤害逻辑。
+W／S 映射用 Swizzle 将按键值送到前后轴，A／S 使用 Negate，D 保持正向。`IMC_MiniDefault` 启用 `CountRegistrations`，便于发现重生后重复添加映射。装填、切枪目前只完成输入路由；瞄准能力已在任务 12 实现。当前 Fire 对应 `UMiniPawnProbeAbility`，用于验证按下激活和释放结束，尚无弹药、命中或伤害逻辑。
 
 ## 输入流与状态门控
 

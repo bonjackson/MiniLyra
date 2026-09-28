@@ -1,16 +1,17 @@
-#include "MiniProbeAbility.h"
+#include "MiniGameplayAbility_Aim.h"
 
 #include "System/MiniGameplayTags.h"
 #include "System/MiniLogChannels.h"
 
-UMiniPawnProbeAbility::UMiniPawnProbeAbility()
+UMiniGameplayAbility_Aim::UMiniGameplayAbility_Aim()
 {
 	FGameplayTagContainer AssetTags;
-	AssetTags.AddTag(MiniGameplayTags::Ability_Fire);
+	AssetTags.AddTag(MiniGameplayTags::Ability_Aim);
 	SetAssetTags(AssetTags);
+	ActivationOwnedTags.AddTag(MiniGameplayTags::State_Aiming);
 }
 
-void UMiniPawnProbeAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
+void UMiniGameplayAbility_Aim::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
 	const FGameplayEventData* TriggerEventData)
 {
@@ -19,23 +20,21 @@ void UMiniPawnProbeAbility::ActivateAbility(const FGameplayAbilitySpecHandle Han
 		EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
 		return;
 	}
-	UE_LOG(LogMiniInit, Display, TEXT("MiniInputProbe FIRE_ACTIVE: Avatar=%s Handle=%s"),
+	UE_LOG(LogMiniInit, Display, TEXT("MiniAbility AIM_ACTIVE: Avatar=%s Handle=%s"),
 		*GetPathNameSafe(ActorInfo ? ActorInfo->AvatarActor.Get() : nullptr), *Handle.ToString());
 }
 
-void UMiniPawnProbeAbility::InputReleased(const FGameplayAbilitySpecHandle Handle,
+void UMiniGameplayAbility_Aim::InputReleased(const FGameplayAbilitySpecHandle Handle,
 	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo)
 {
-	UE_LOG(LogMiniInit, Display, TEXT("MiniInputProbe FIRE_RELEASED: Avatar=%s Handle=%s"),
-		*GetPathNameSafe(ActorInfo ? ActorInfo->AvatarActor.Get() : nullptr), *Handle.ToString());
 	EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
 }
 
-void UMiniPawnProbeAbility::EndAbility(const FGameplayAbilitySpecHandle Handle,
+void UMiniGameplayAbility_Aim::EndAbility(const FGameplayAbilitySpecHandle Handle,
 	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
 	bool bReplicateEndAbility, bool bWasCancelled)
 {
-	UE_LOG(LogMiniInit, Display, TEXT("MiniInputProbe FIRE_ENDED: Avatar=%s Handle=%s Cancelled=%d"),
-		*GetPathNameSafe(ActorInfo ? ActorInfo->AvatarActor.Get() : nullptr), *Handle.ToString(), bWasCancelled);
+	UE_LOG(LogMiniInit, Display, TEXT("MiniAbility AIM_ENDED: Avatar=%s Cancelled=%d"),
+		*GetPathNameSafe(ActorInfo ? ActorInfo->AvatarActor.Get() : nullptr), bWasCancelled);
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }

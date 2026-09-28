@@ -87,6 +87,7 @@ bool AMiniPlayerState::SetPawnData(const UMiniPawnData* InPawnData)
 	}
 
 	PawnData = InPawnData;
+	AbilitySystemComponent->SetTagRelationshipMapping(PawnData->TagRelationshipMapping);
 	for (UMiniAbilitySet* Set : PawnData->AbilitySets)
 	{
 		if (!Set)
@@ -108,6 +109,10 @@ bool AMiniPlayerState::SetPawnData(const UMiniPawnData* InPawnData)
 
 void AMiniPlayerState::OnRep_PawnData()
 {
+	if (AbilitySystemComponent && PawnData)
+	{
+		AbilitySystemComponent->SetTagRelationshipMapping(PawnData->TagRelationshipMapping);
+	}
 	UE_LOG(LogMiniInit, Display, TEXT("MiniPlayerState PawnDataReplicated Role=%d PlayerState=%s PawnData=%s"),
 		static_cast<int32>(GetLocalRole()), *GetPathName(), *GetPathNameSafe(PawnData.Get()));
 	NotifyPawnDataChanged();

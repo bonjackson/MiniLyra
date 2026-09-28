@@ -7,6 +7,7 @@ class APawn;
 class UMiniAbilitySet;
 class UMiniInputConfig;
 class UMiniCameraMode;
+class UMiniAbilityTagRelationshipMapping;
 
 UCLASS(BlueprintType, NotBlueprintable, Const)
 class FPS_API UMiniPawnData : public UPrimaryDataAsset
@@ -22,6 +23,9 @@ public:
 	/** Server grants these once to the PlayerState ASC. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Mini|Abilities")
 	TArray<TObjectPtr<UMiniAbilitySet>> AbilitySets;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Mini|Abilities")
+	TObjectPtr<UMiniAbilityTagRelationshipMapping> TagRelationshipMapping;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Mini|Input")
 	TObjectPtr<UMiniInputConfig> InputConfig;

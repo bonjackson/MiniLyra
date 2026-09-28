@@ -39,8 +39,6 @@ public:
 	void RemoveInputFeature();
 	void SetInputSuppressed(bool bSuppressed);
 	bool IsInputActive() const { return bInputActive; }
-	/** Task 11's local aim preview is owned by this pawn until the aim ability takes over. */
-	bool OwnsTemporaryAimTag(const UMiniAbilitySystemComponent* ASC) const;
 	int32 GetInputBindingCount() const { return BindingHandles.Num(); }
 	bool OwnsInputMapping() const;
 
@@ -57,13 +55,11 @@ private:
 	void Input_JumpReleased(const FInputActionValue& Value);
 	void Input_AbilityPressed(FGameplayTag InputTag);
 	void Input_AbilityReleased(FGameplayTag InputTag);
-	void SetAimInputHeld(bool bHeld);
 
 	TWeakObjectPtr<UInputMappingContext> RequestedMappingContext;
 	TWeakObjectPtr<UEnhancedInputLocalPlayerSubsystem> MappingSubsystem;
 	TWeakObjectPtr<UMiniInputComponent> BoundInputComponent;
 	TWeakObjectPtr<UMiniAbilitySystemComponent> BoundAbilitySystem;
-	TWeakObjectPtr<UMiniAbilitySystemComponent> AimTagAbilitySystem;
 	TArray<uint32> BindingHandles;
 	bool bInputActive = false;
 	bool bInputSuppressed = false;

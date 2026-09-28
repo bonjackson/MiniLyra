@@ -13,5 +13,11 @@ namespace MiniGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(InputTag_Reload, "InputTag.Ability.Reload", "Reload input routed to GAS.");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(InputTag_SwitchWeapon, "InputTag.Ability.SwitchWeapon", "Switch weapon input routed to GAS.");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(InputTag_Aim, "InputTag.Ability.Aim", "Aim input routed to GAS.");
-	UE_DEFINE_GAMEPLAY_TAG_COMMENT(State_Aiming, "State.Aiming", "Local aiming state used by the camera until the aim ability is added.");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(State_Aiming, "State.Aiming", "An active aim ability owns this state.");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(State_Dead, "State.Dead", "The player cannot use regular abilities while dead.");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(State_Reloading, "State.Reloading", "Reload interrupts firing and aiming.");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Gameplay_AbilityInputBlocked, "Gameplay.AbilityInputBlocked", "Gameplay ability input is blocked.");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Ability_Fire, "Ability.Fire", "Firing ability family.");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Ability_Jump, "Ability.Jump", "Jumping ability family.");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Ability_Aim, "Ability.Aim", "Aiming ability family.");
 }

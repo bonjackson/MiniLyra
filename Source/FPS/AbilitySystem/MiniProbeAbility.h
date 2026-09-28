@@ -1,11 +1,11 @@
 #pragma once
 
-#include "Abilities/GameplayAbility.h"
+#include "AbilitySystem/MiniGameplayAbility.h"
 #include "MiniProbeAbility.generated.h"
 
 /** Grants can be inspected without binding combat input yet. */
 UCLASS()
-class FPS_API UMiniPawnProbeAbility : public UGameplayAbility
+class FPS_API UMiniPawnProbeAbility : public UMiniGameplayAbility
 {
 	GENERATED_BODY()
 

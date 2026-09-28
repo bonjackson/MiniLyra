@@ -99,7 +99,7 @@ bool UMiniTask10AssetSetupLibrary::ConfigurePracticeInput(
 	if (!InputConfig || !MappingContext || !PawnAbilitySet || !Move || !Look || !Jump || !Fire || !Reload || !SwitchWeapon || !Aim ||
 		!PawnData || !Experience || Experience->DefaultPawnData.Get() != PawnData ||
 		PawnData->AbilitySets.Num() != 1 || PawnData->AbilitySets[0] != PawnAbilitySet ||
-		PawnAbilitySet->Abilities.Num() != 1 ||
+		PawnAbilitySet->Abilities.IsEmpty() ||
 		PawnAbilitySet->Abilities[0].Ability != UMiniPawnProbeAbility::StaticClass())
 	{
 		return false;
@@ -213,7 +213,7 @@ bool UMiniTask10AssetSetupLibrary::VerifyPracticeInput(
 		!PawnData || !Experience || Experience->DefaultPawnData.Get() != PawnData ||
 		PawnData->InputConfig != InputConfig ||
 		PawnData->AbilitySets.Num() != 1 || PawnData->AbilitySets[0] != PawnAbilitySet ||
-		PawnAbilitySet->Abilities.Num() != 1 ||
+		PawnAbilitySet->Abilities.IsEmpty() ||
 		PawnAbilitySet->Abilities[0].Ability != UMiniPawnProbeAbility::StaticClass() ||
 		PawnAbilitySet->Abilities[0].InputTag != MiniGameplayTags::InputTag_Fire ||
 		Move->ValueType != EInputActionValueType::Axis2D ||

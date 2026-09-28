@@ -3,7 +3,6 @@
 #include "AbilitySystem/MiniAbilitySystemComponent.h"
 #include "Camera/MiniCameraMode.h"
 #include "Character/MiniCharacter.h"
-#include "Character/MiniHeroComponent.h"
 #include "Character/MiniPawnData.h"
 #include "CollisionQueryParams.h"
 #include "Engine/World.h"
@@ -37,9 +36,8 @@ void UMiniCameraComponent::GetCameraView(float DeltaTime, FMinimalViewInfo& Desi
 	const UMiniPawnData* PawnData = MiniPawn->GetPawnData();
 	const AMiniPlayerState* MiniState = MiniPawn->GetPlayerState<AMiniPlayerState>();
 	const UMiniAbilitySystemComponent* ASC = MiniState ? MiniState->GetMiniAbilitySystemComponent() : nullptr;
-	const UMiniHeroComponent* Hero = MiniPawn->GetHeroComponent();
 	const bool bAiming = ASC && ASC->GetAvatarActor() == MiniPawn && !ASC->IsAbilityInputBlocked() &&
-		Hero && Hero->OwnsTemporaryAimTag(ASC) && ASC->HasMatchingGameplayTag(MiniGameplayTags::State_Aiming);
+		ASC->HasMatchingGameplayTag(MiniGameplayTags::State_Aiming);
 	TSubclassOf<UMiniCameraMode> ModeClass = bAiming && PawnData ? PawnData->AimCameraMode : nullptr;
 	if (!ModeClass && PawnData)
 	{

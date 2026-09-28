@@ -16,7 +16,9 @@ bool UMiniTask09AssetSetupLibrary::ConfigurePracticeAbilities(
 {
 #if WITH_EDITOR
 	if (!PawnSet || !FeatureSet || PawnSet == FeatureSet || !PawnData || !Experience ||
-		Experience->DefaultPawnData.Get() != PawnData)
+		Experience->DefaultPawnData.Get() != PawnData ||
+		(!PawnSet->Abilities.IsEmpty() &&
+			PawnSet->Abilities[0].Ability != UMiniPawnProbeAbility::StaticClass()))
 	{
 		return false;
 	}
@@ -44,17 +46,16 @@ bool UMiniTask09AssetSetupLibrary::ConfigurePracticeAbilities(
 	}
 	Action->Modify();
 
-	// Preserve the later input configuration when this Task 09 setup is re-run.
-	const FGameplayTag ExistingPawnInputTag =
-		PawnSet->Abilities.Num() == 1 && PawnSet->Abilities[0].Ability == UMiniPawnProbeAbility::StaticClass()
-			? PawnSet->Abilities[0].InputTag : FGameplayTag();
-	PawnSet->Abilities.Reset();
+	// Later tasks add input and more pawn abilities; keep those entries on re-runs.
+	if (PawnSet->Abilities.IsEmpty())
+	{
+		PawnSet->Abilities.AddDefaulted();
+	}
 	PawnSet->Effects.Reset();
 	PawnSet->Attributes.Reset();
-	FMiniAbilitySetAbility& PawnAbility = PawnSet->Abilities.AddDefaulted_GetRef();
+	FMiniAbilitySetAbility& PawnAbility = PawnSet->Abilities[0];
 	PawnAbility.Ability = UMiniPawnProbeAbility::StaticClass();
 	PawnAbility.Level = 1;
-	PawnAbility.InputTag = ExistingPawnInputTag;
 
 	FeatureSet->Abilities.Reset();
 	FeatureSet->Effects.Reset();
@@ -88,7 +89,7 @@ bool UMiniTask09AssetSetupLibrary::VerifyPracticeAbilities(
 #if WITH_EDITOR
 	if (!PawnSet || !FeatureSet || !PawnData || !Experience ||
 		PawnData->AbilitySets.Num() != 1 || PawnData->AbilitySets[0] != PawnSet ||
-		PawnSet->Abilities.Num() != 1 || PawnSet->Abilities[0].Ability != UMiniPawnProbeAbility::StaticClass() ||
+		PawnSet->Abilities.IsEmpty() || PawnSet->Abilities[0].Ability != UMiniPawnProbeAbility::StaticClass() ||
 		!PawnSet->Effects.IsEmpty() || !PawnSet->Attributes.IsEmpty() ||
 		FeatureSet->Abilities.Num() != 1 || FeatureSet->Abilities[0].Ability != UMiniFeatureProbeAbility::StaticClass() ||
 		FeatureSet->Effects.Num() != 1 || FeatureSet->Effects[0].Effect != UMiniProbeEffect::StaticClass() ||

@@ -2,7 +2,7 @@
 
 练习角色现在有普通跟随和右键瞄准两种相机模式。`DA_MiniPracticePawnData` 指向原生 `UMiniCameraMode_ThirdPerson` 与 `UMiniCameraMode_Aim`；本地 `UMiniCameraComponent` 每帧读取当前 PawnData 和瞄准状态，在控制旋转、视野角与相机位置之间插值。相机从角色胶囊体中心到目标位置做球形扫掠，遇到遮挡立即收近，解除遮挡后平滑退回；恢复路径再扫一次，避免插值途中穿过新障碍。控制权变化时重置相机缓存，让重生后的新 Pawn 建立自己的视角。练习地图四个 PlayerStart 的初始俯仰角统一为 −10°。
 
-任务 11 的右键瞄准只切换相机预览：Hero 在本地按下期间临时添加 `State.Aiming`，释放、输入停用或 ASC 重新绑定时清除。镜头还会检查该状态由当前 Pawn 持有、且能力输入没有被阻断。正式瞄准能力、状态复制和能力阻断关系属于任务 12。
+任务 11 最初由 Hero 临时添加 `State.Aiming` 来预览右键镜头。任务 12 已将该状态交给瞄准 GameplayAbility 的 `ActivationOwnedTags` 管理；镜头只读取当前 Pawn 的 ASC 状态。释放、取消及切换 Pawn 时，能力结束并撤销状态。能力阻断规则见 `Docs/Task12/AbilitiesAndTags.md`。
 
 `ABP_MiniPractice` 继承 `UMiniAnimInstance`，使用 Manny 原骨架与五段最小动画：持枪待机、持枪慢跑、跳跃、下落、落地。AnimInstance 从 Pawn 的速度与移动组件更新状态；这些值来自复制后的角色运动，因此模拟代理也能切换相同的动画状态。角色的 `PracticeRifle` 是纯外观骨骼网格，附着到身体骨架的 `HandGrip_R` socket（父骨骼 `hand_r`），关闭碰撞。它不参与开火或装备复制；任务 15 的装备流程可替换这件演示步枪。角色网格的相对旋转明确写为 Pitch=0、Yaw=−90、Roll=0，避免 Unreal Python 位置参数把它误写为横躺的 Pitch=−90。
 

@@ -1,9 +1,9 @@
 #include "MiniAbilitySystemComponent.h"
 
 #include "Abilities/GameplayAbility.h"
-#include "NativeGameplayTags.h"
-
-UE_DEFINE_GAMEPLAY_TAG_STATIC(TAG_Mini_AbilityInputBlocked, "Gameplay.AbilityInputBlocked");
+#include "AbilitySystem/MiniAbilityTagRelationshipMapping.h"
+#include "AbilitySystem/MiniGameplayAbility.h"
+#include "System/MiniGameplayTags.h"
 
 UMiniAbilitySystemComponent::UMiniAbilitySystemComponent(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -14,7 +14,60 @@ UMiniAbilitySystemComponent::UMiniAbilitySystemComponent(const FObjectInitialize
 
 bool UMiniAbilitySystemComponent::IsAbilityInputBlocked() const
 {
-	return HasMatchingGameplayTag(TAG_Mini_AbilityInputBlocked);
+	return HasMatchingGameplayTag(MiniGameplayTags::Gameplay_AbilityInputBlocked);
+}
+
+void UMiniAbilitySystemComponent::SetTagRelationshipMapping(const UMiniAbilityTagRelationshipMapping* Mapping)
+{
+	TagRelationshipMapping = Mapping;
+}
+
+bool UMiniAbilitySystemComponent::AreAbilityTagRequirementsMet(
+	const FGameplayTagContainer& AbilityTags, FGameplayTagContainer* OutFailureTags) const
+{
+	if (!TagRelationshipMapping)
+	{
+		return true;
+	}
+	FGameplayTagContainer Required;
+	FGameplayTagContainer Blocked;
+	TagRelationshipMapping->GetActivationTagRequirements(AbilityTags, Required, Blocked);
+	const bool bHasRequired = HasAllMatchingGameplayTags(Required);
+	const bool bHasBlocked = HasAnyMatchingGameplayTags(Blocked);
+	if (OutFailureTags)
+	{
+		if (!bHasRequired)
+		{
+			OutFailureTags->AppendTags(Required);
+		}
+		if (bHasBlocked)
+		{
+			OutFailureTags->AppendTags(Blocked);
+		}
+	}
+	return bHasRequired && !bHasBlocked;
+}
+
+void UMiniAbilitySystemComponent::OnTagUpdated(const FGameplayTag& Tag, bool TagExists)
+{
+	Super::OnTagUpdated(Tag, TagExists);
+	if (!TagExists)
+	{
+		return;
+	}
+	if (TagRelationshipMapping)
+	{
+		FGameplayTagContainer CancelTags;
+		TagRelationshipMapping->GetCancelAbilityTags(Tag, CancelTags);
+		if (!CancelTags.IsEmpty())
+		{
+			CancelAbilities(&CancelTags);
+		}
+	}
+	if (Tag == MiniGameplayTags::Gameplay_AbilityInputBlocked)
+	{
+		ClearAbilityInput();
+	}
 }
 
 void UMiniAbilitySystemComponent::AbilityInputTagPressed(const FGameplayTag& InputTag)
@@ -70,7 +123,9 @@ void UMiniAbilitySystemComponent::ProcessAbilityInput(float /*DeltaTime*/, bool 
 			{
 				AbilitySpecInputPressed(*Spec);
 			}
-			else
+			else if (!Spec->Ability || !Spec->Ability->IsA<UMiniGameplayAbility>() ||
+				CastChecked<UMiniGameplayAbility>(Spec->Ability)->GetActivationPolicy() ==
+					EMiniAbilityActivationPolicy::OnInputTriggered)
 			{
 				ToActivate.AddUnique(Handle);
 			}
@@ -83,6 +138,12 @@ void UMiniAbilitySystemComponent::ProcessAbilityInput(float /*DeltaTime*/, bool 
 		if (FGameplayAbilitySpec* Spec = FindAbilitySpecFromHandle(Handle))
 		{
 			Spec->InputPressed = true;
+			if (!Spec->IsActive() && Spec->Ability && Spec->Ability->IsA<UMiniGameplayAbility>() &&
+				CastChecked<UMiniGameplayAbility>(Spec->Ability)->GetActivationPolicy() ==
+					EMiniAbilityActivationPolicy::WhileInputActive)
+			{
+				ToActivate.AddUnique(Handle);
+			}
 		}
 	}
 
