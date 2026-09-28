@@ -227,7 +227,7 @@ Mini 功能插件首版可采用内容插件，复用 `FPS` 中的通用原生�
 | [x] | 05 | Experience 异步加载状态机 | 04 | 两端独立加载、迟订阅与无效 ID 失败均经双进程探针验证 |
 | [x] | 06 | GameFeature 激活与可回收 Actions | 05 | 双端与连续三次 PIE、Cook 及打包单机烟测通过 |
 | [x] | 07 | Modular 角色骨架与出生门控 | 06 | 双端、第三人晚加入及失败时零出生探针通过 |
-| [ ] | 08 | PawnExtension／Hero 初始化协作 | 07 | 复制顺序改变仍能推进状态 |
+| [x] | 08 | PawnExtension／Hero 初始化协作 | 07 | 三进程两人／晚加入、两种条件可见性顺序与重复通知验证通过 |
 | [ ] | 09 | PlayerState ASC 与 AbilitySet | 08 | ASC 正确绑定与能力成组授予 |
 | [ ] | 10 | Enhanced Input 与 InputTag | 09 | 本地输入通过标签驱动能力 |
 | [ ] | 11 | 第三人称相机与基础移动表现 | 10 | 能正常移动、瞄准、观察远端角色 |
@@ -326,6 +326,7 @@ Mini 功能插件首版可采用内容插件，复用 `FPS` 中的通用原生�
 - **产物：** 四状态推进日志与角色条件表，明确每个状态等待哪些数据。
 - **验收：** 延迟 PawnData／PlayerState 时可以等待并继续；模拟代理不等待本地 LocalPlayer 或 InputComponent；重复通知不重复初始化。
 - **阶段限制：** 08 验收状态协作骨架；09 接入 ASC、10 接入本地输入后，才验收完整 GameplayReady。未实现的条件明确标注，不能用 Delay 假装完成。
+- **执行结果（2026-09-28）：** 已给 `AMiniCharacter` 加入原生 PawnExtension／Hero 组件，以 `IGameFrameworkInitStateInterface` 推进到 `DataInitialized`；Pawn 与 PlayerState 的 PawnData 一致性、Authority／AutonomousProxy 的 Controller／PlayerState 配对、其他 Feature 的状态均纳入条件。Editor／Game target 构建与 `Scripts/VerifyTask08.ps1` 三进程两人／晚加入探针通过；最终配对补丁后 Editor／Game 与三进程探针又重跑通过。ClientA／ClientB 分别验证 PawnData 优先和 PlayerState 优先的合成条件可见性顺序，实际释放日志先于 `DataAvailable`；两名无 Controller／InputComponent 的模拟代理仍完成初始化，重复通知没有重复转换。该探针不操纵真实网络包；任务 07 回归及 `VerifyTask06.ps1` 所含任务 05／06 回归通过。`GameplayReady` 保持关闭，ASC 与输入分别留给任务 09／10。详见 `Docs/Task08/InitStateCoordination.md`。
 
 #### 任务 09：把 ASC 放到 PlayerState，建立 AbilitySet 生命周期
 

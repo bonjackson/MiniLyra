@@ -6,6 +6,7 @@
 
 class UMiniExperienceDefinition;
 class UMiniExperienceManagerComponent;
+class AMiniCharacter;
 
 // Replicated home for the Experience manager; match state and player data come later.
 UCLASS()
@@ -25,10 +26,15 @@ private:
 	void HandleFlowProbeLoaded(const UMiniExperienceDefinition* Experience);
 	void HandleFlowProbeFailed(const FString& Reason);
 	void LogPlayerSpawnProbeSnapshot();
+	void LogInitStateProbeSnapshot();
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Mini|Experience", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UMiniExperienceManagerComponent> ExperienceManagerComponent;
 
 	bool bFlowProbeLateSubscriberCalled = false;
+	bool bProbeInitStates = false;
+	FString InitProbeOrder;
+	TMap<TWeakObjectPtr<AMiniCharacter>, uint8> InitProbeStages;
+	TSet<TWeakObjectPtr<AMiniCharacter>> RepeatedNotificationPawns;
 	FTimerHandle PlayerSpawnProbeTimer;
 };

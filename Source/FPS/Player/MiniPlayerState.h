@@ -23,6 +23,7 @@ public:
 private:
 	UFUNCTION()
 	void OnRep_PawnData();
+	void NotifyPawnDataChanged();
 
 	UPROPERTY(ReplicatedUsing = OnRep_PawnData, VisibleInstanceOnly, Category = "Mini|Pawn")
 	TObjectPtr<const UMiniPawnData> PawnData;

@@ -1,6 +1,9 @@
 #include "MiniPlayerState.h"
 
+#include "Character/MiniCharacter.h"
 #include "Character/MiniPawnData.h"
+#include "EngineUtils.h"
+#include "Engine/World.h"
 #include "Net/UnrealNetwork.h"
 #include "System/MiniLogChannels.h"
 
@@ -42,6 +45,7 @@ bool AMiniPlayerState::SetPawnData(const UMiniPawnData* InPawnData)
 
 	PawnData = InPawnData;
 	ForceNetUpdate();
+	NotifyPawnDataChanged();
 	UE_LOG(LogMiniInit, Display, TEXT("MiniPlayerState PawnDataAssigned Role=%d PlayerState=%s PawnData=%s"),
 		static_cast<int32>(GetLocalRole()), *GetPathName(), *GetPathNameSafe(PawnData.Get()));
 	return true;
@@ -51,4 +55,22 @@ void AMiniPlayerState::OnRep_PawnData()
 {
 	UE_LOG(LogMiniInit, Display, TEXT("MiniPlayerState PawnDataReplicated Role=%d PlayerState=%s PawnData=%s"),
 		static_cast<int32>(GetLocalRole()), *GetPathName(), *GetPathNameSafe(PawnData.Get()));
+	NotifyPawnDataChanged();
+}
+
+void AMiniPlayerState::NotifyPawnDataChanged()
+{
+	UWorld* World = GetWorld();
+	if (!World)
+	{
+		return;
+	}
+	for (TActorIterator<AMiniCharacter> It(World); It; ++It)
+	{
+		AMiniCharacter* Character = *It;
+		if (Character && Character->GetPlayerState<AMiniPlayerState>() == this)
+		{
+			Character->NotifyInitDependenciesChanged();
+		}
+	}
 }

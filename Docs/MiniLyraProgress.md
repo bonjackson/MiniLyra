@@ -11,7 +11,8 @@
 - [x] 任务 05：GameMode／GameState／Experience 异步状态机完成；Editor／Game 构建及双进程正反例探针通过。
 - [x] 任务 06：GameFeature 装配与回收、双端探针、连续三次 PIE、Cook 和独立打包单机烟测通过。
 - [x] 任务 07：Modular 角色骨架、PawnData 预注入及 Experience 出生门控完成；双端、晚加入和失败时零出生探针通过。
-- [ ] 任务 08–30：尚未实施。
+- [x] 任务 08：PawnExtension／Hero 四态协作骨架完成；三进程两人／晚加入、两种条件可见性顺序和重复通知探针通过。
+- [ ] 任务 09–30：尚未实施。
 
 用户已确认第三人称、2–4 人竞技场，并明确允许忽略旧实现、从空项目开始。任务 01 据此重置活动源码和配置，保留旧工程文件作为本地备份；任务 02 在该空基线上建立独立的 Mini 内容入口。之前的 MiniExperience 启动壳不计作已完成框架。
 
@@ -134,9 +135,15 @@ Editor／Game target 构建通过；`Scripts/Task06CreateAssets.ps1` 重复运�
 
 `AMiniGameMode` 的默认 PawnClass 为空，玩家出生和重启要等服务端 Experience 进入 `Loaded`。此前到达的 Controller 在加载完成回调中重启，晚加入者走相同的状态判断。GameMode 从 Experience 的 PawnData 选择 `AMiniCharacter` 子类，先给 `AMiniPlayerState` 指定并复制 PawnData，再延迟生成角色、在 `FinishSpawning` 前给 Pawn 注入 PawnData。`AMiniPlayerState`、`AMiniPlayerController`、`AMiniCharacter` 采用 ModularGameplayActors 基类；`UMiniLocalPlayer` 采用 CommonGame 基类并写入引擎配置；最小 `AMiniHUD` 接入扩展 receiver 生命周期。
 
-`BP_MiniCharacter` 继承原生角色，挂 Manny Simple 网格；训练 PawnData 的 PawnClass 已改指该蓝图。`MiniShooterCore` 的 GameFeatureData 新增 Character 目标的 AddComponents Action，用 `UMiniCharacterFeatureMarkerComponent` 观察晚生成角色在各 World 的组件注入。Editor／Game target 构建通过；`Scripts/Task07CreateAssets.ps1` 重复执行后，`Scripts/VerifyTask07Assets.ps1` 在全新进程中核实蓝图父类、最新编译状态、Manny Mesh、PawnData 蓝图类引用及任务 06／07 两个 Action 各一份。新增防护后 `Scripts/VerifyTask07.ps1` 再次通过：独立监听服务器和 ClientA 两人开局后再启动 ClientB，三个进程最终均记录 `PlayerStates=3 Characters=3 ValidCharacters=3 LocalPawn=1 CharacterMarkers=3`。服务端三次 `COMMITTED` 均晚于 Experience `Loaded`；无效 Experience 的服务器与客户端都进入 `Failed`，且没有角色或角色 marker。`VerifyTask06.ps1` 含任务 05 双进程、缺失插件负例和三轮 World 周期的回归也通过。详见 [任务 07 出生门控说明](Task07/SpawnGate.md)。本次尚未加入 PawnExtension／Hero、GAS、输入与相机。
+`BP_MiniCharacter` 继承原生角色，挂 Manny Simple 网格；训练 PawnData 的 PawnClass 已改指该蓝图。`MiniShooterCore` 的 GameFeatureData 新增 Character 目标的 AddComponents Action，用 `UMiniCharacterFeatureMarkerComponent` 观察晚生成角色在各 World 的组件注入。Editor／Game target 构建通过；`Scripts/Task07CreateAssets.ps1` 重复执行后，`Scripts/VerifyTask07Assets.ps1` 在全新进程中核实蓝图父类、最新编译状态、Manny Mesh、PawnData 蓝图类引用及任务 06／07 两个 Action 各一份。新增防护后 `Scripts/VerifyTask07.ps1` 再次通过：独立监听服务器和 ClientA 两人开局后再启动 ClientB，三个进程最终均记录 `PlayerStates=3 Characters=3 ValidCharacters=3 LocalPawn=1 CharacterMarkers=3`。服务端三次 `COMMITTED` 均晚于 Experience `Loaded`；无效 Experience 的服务器与客户端都进入 `Failed`，且没有角色或角色 marker。`VerifyTask06.ps1` 含任务 05 双进程、缺失插件负例和三轮 World 周期的回归也通过。详见 [任务 07 出生门控说明](Task07/SpawnGate.md)。任务 07 完成时尚未加入 PawnExtension／Hero、GAS、输入与相机。
 
 代码审查新增 PawnData 的类约束：`ValidatePawnData` 要求 PawnClass 继承 `AMiniCharacter`，防止误填普通 `APawn` 后 Experience 到达 `Loaded` 却无法生成角色。任务 04 资产脚本现在只为**新建**的 PawnData 使用原生 MiniCharacter 占位，不改动已有资产；`MiniGameInstance` 的负例探针新增普通 `APawn` 被拒绝的检查。补丁后的 Editor／Game 重编译及任务 04 运行／资产验证均通过；旧探针脚本已修复读取尚未写完的空日志时的竞争。本次任务 04／05／06／07 探针运行在未 Cook 的编辑器游戏进程并使用 NullRHI，不能据此认定打包后联机或图形呈现已经验收。
+
+## 任务 08：PawnExtension／Hero 初始化协作（完成）
+
+`AMiniCharacter` 现在持有原生 PawnExtension 和 Hero 默认子组件。两个组件通过 `IGameFrameworkInitStateInterface` 注册独立 Feature，并按 `Spawned → DataAvailable → DataInitialized` 推进；Pawn 与 PlayerState 的 PawnData 必须一致，Authority／AutonomousProxy 还等待 Controller 与 Pawn PlayerState 配对，模拟代理不等待本地 Controller、LocalPlayer 或 InputComponent。PawnData 复制、PlayerState 数据变化、Possess／UnPossess、Pawn 和 PlayerController 上相关的 OnRep，以及输入组件建立均会重新检查。PawnExtension 等 Hero 与其他 Feature 数据就绪，Hero 等 PawnExtension 完成初始化；重复通知不会重复转换。
+
+Editor／Game target 均构建成功；配对条件补丁后两个 target 与 `Scripts/VerifyTask08.ps1` 又重跑通过。三进程验收中，两人就绪后晚加入第三人，三端最终各有 3 个角色且两个组件均到 `DataInitialized`；两个客户端各有 2 个**没有 Controller／InputComponent**的模拟代理达到此状态，三端重复通知后每个角色／Feature／状态仍只转换一次。ClientA／ClientB 分别以 PawnData 优先和 PlayerState 优先的**测试可见性顺序**验证等待与继续；脚本核对真实释放日志及状态转换发生顺序，但不控制真实网络包到达顺序。`GameplayReady` 仍为 0，等待任务 09 ASC 与任务 10 本地输入。任务 07 出生／失败路径回归，以及 `VerifyTask06.ps1` 所含任务 05 正反例、任务 06 插件负例和三轮 World 周期回归均通过。实现、条件表和验证边界见 [任务 08 初始化协作](Task08/InitStateCoordination.md)。
 
 ## 插件状态与后续安排
 
@@ -182,4 +189,4 @@ git status --short
 
 ## 下一次入口
 
-任务 07 已通过补充 PawnClass 防护后的构建、资产全新进程复核、双端与晚加入探针；任务 04 及任务 05／06 回归也通过。下一步是任务 08 的 PawnExtension／Hero 四态协作。任务 06 的连续三次 PIE 与 Pak 打包程序单机烟测已通过；打包后联机、IoStore staging 及同进程不同 Experience 的多个 World 并存仍需后续验收。UE 内置 GameFeatureData AddComponents 随插件在进程级激活，当前 lease 防止过早卸载，但不阻止它注入到未请求插件的并存 World；详见任务 06 文档。
+任务 08 的 Editor／Game 构建、三进程初始化探针及任务 07／06 回归已通过。下一步是任务 09 的 PlayerState ASC 与 AbilitySet 生命周期，再由任务 10 接入本地输入并验收完整 `GameplayReady`。任务 06 的连续三次 PIE 与 Pak 打包程序单机烟测已通过；打包后联机、IoStore staging 及同进程不同 Experience 的多个 World 并存仍需后续验收。UE 内置 GameFeatureData AddComponents 随插件在进程级激活，当前 lease 防止过早卸载，但不阻止它注入到未请求插件的并存 World；详见任务 06 文档。

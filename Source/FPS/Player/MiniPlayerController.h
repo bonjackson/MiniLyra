@@ -8,4 +8,7 @@ UCLASS()
 class FPS_API AMiniPlayerController : public AModularPlayerController
 {
 	GENERATED_BODY()
+
+public:
+	virtual void OnRep_PlayerState() override;
 };

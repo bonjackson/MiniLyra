@@ -1,13 +1,60 @@
 #include "MiniCharacter.h"
 
+#include "Character/MiniHeroComponent.h"
 #include "Character/MiniPawnData.h"
+#include "Character/MiniPawnExtensionComponent.h"
+#include "Misc/CommandLine.h"
+#include "Misc/Parse.h"
 #include "Net/UnrealNetwork.h"
+#include "Player/MiniPlayerState.h"
 #include "System/MiniLogChannels.h"
 
 AMiniCharacter::AMiniCharacter(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
 	bReplicates = true;
+	PawnExtensionComponent = CreateDefaultSubobject<UMiniPawnExtensionComponent>(TEXT("PawnExtension"));
+	HeroComponent = CreateDefaultSubobject<UMiniHeroComponent>(TEXT("Hero"));
+#if !UE_BUILD_SHIPPING
+	FString ProbeOrder;
+	if (FParse::Value(FCommandLine::Get(), TEXT("MiniProbeInitOrder="), ProbeOrder) &&
+		(ProbeOrder == TEXT("DataFirst") || ProbeOrder == TEXT("PlayerStateFirst")))
+	{
+		bInitOrderProbeEnabled = true;
+		bInitProbePawnDataVisible = false;
+		bInitProbePlayerStateVisible = false;
+	}
+#endif
+}
+
+const UMiniPawnData* AMiniCharacter::GetPawnDataForInitialization() const
+{
+	return bInitProbePawnDataVisible ? PawnData.Get() : nullptr;
+}
+
+AMiniPlayerState* AMiniCharacter::GetPlayerStateForInitialization() const
+{
+	return bInitProbePlayerStateVisible ? GetPlayerState<AMiniPlayerState>() : nullptr;
+}
+
+void AMiniCharacter::ReleaseInitProbePawnData()
+{
+	if (bInitOrderProbeEnabled && !bInitProbePawnDataVisible)
+	{
+		bInitProbePawnDataVisible = true;
+		UE_LOG(LogMiniInit, Display, TEXT("MiniInitProbe RELEASE: Dependency=PawnData Pawn=%s"), *GetPathName());
+		NotifyInitDependenciesChanged();
+	}
+}
+
+void AMiniCharacter::ReleaseInitProbePlayerState()
+{
+	if (bInitOrderProbeEnabled && !bInitProbePlayerStateVisible)
+	{
+		bInitProbePlayerStateVisible = true;
+		UE_LOG(LogMiniInit, Display, TEXT("MiniInitProbe RELEASE: Dependency=PlayerState Pawn=%s"), *GetPathName());
+		NotifyInitDependenciesChanged();
+	}
 }
 
 void AMiniCharacter::BeginPlay()
@@ -15,6 +62,49 @@ void AMiniCharacter::BeginPlay()
 	Super::BeginPlay();
 	UE_LOG(LogMiniInit, Display, TEXT("MiniCharacter BeginPlay Role=%d Pawn=%s PawnData=%s"),
 		static_cast<int32>(GetLocalRole()), *GetPathName(), *GetPathNameSafe(PawnData.Get()));
+	NotifyInitDependenciesChanged();
+}
+
+void AMiniCharacter::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+	NotifyInitDependenciesChanged();
+}
+
+void AMiniCharacter::UnPossessed()
+{
+	Super::UnPossessed();
+	NotifyInitDependenciesChanged();
+}
+
+void AMiniCharacter::OnRep_Controller()
+{
+	Super::OnRep_Controller();
+	NotifyInitDependenciesChanged();
+}
+
+void AMiniCharacter::OnRep_PlayerState()
+{
+	Super::OnRep_PlayerState();
+	NotifyInitDependenciesChanged();
+}
+
+void AMiniCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+{
+	Super::SetupPlayerInputComponent(PlayerInputComponent);
+	NotifyInitDependenciesChanged();
+}
+
+void AMiniCharacter::NotifyInitDependenciesChanged()
+{
+	if (PawnExtensionComponent)
+	{
+		PawnExtensionComponent->CheckDefaultInitialization();
+	}
+	if (HeroComponent)
+	{
+		HeroComponent->CheckDefaultInitialization();
+	}
 }
 
 void AMiniCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -54,6 +144,7 @@ bool AMiniCharacter::SetPawnData(const UMiniPawnData* InPawnData)
 
 	PawnData = InPawnData;
 	ForceNetUpdate();
+	NotifyInitDependenciesChanged();
 	UE_LOG(LogMiniInit, Display, TEXT("MiniCharacter PawnDataAssigned Role=%d Pawn=%s PawnData=%s BeforeBeginPlay=1"),
 		static_cast<int32>(GetLocalRole()), *GetPathName(), *GetPathNameSafe(PawnData.Get()));
 	return true;
@@ -63,4 +154,5 @@ void AMiniCharacter::OnRep_PawnData()
 {
 	UE_LOG(LogMiniInit, Display, TEXT("MiniCharacter PawnDataReplicated Role=%d Pawn=%s PawnData=%s"),
 		static_cast<int32>(GetLocalRole()), *GetPathName(), *GetPathNameSafe(PawnData.Get()));
+	NotifyInitDependenciesChanged();
 }
