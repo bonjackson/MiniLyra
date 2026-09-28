@@ -180,7 +180,13 @@ bool UMiniPawnExtensionComponent::CanChangeInitState(
 			MiniGameplayTags::InitState_DataAvailable) &&
 			Manager->HaveAllFeaturesReachedInitState(Pawn, MiniGameplayTags::InitState_DataAvailable, NAME_ActorFeatureName);
 	}
-	// Task 10 will open GameplayReady after local input is wired.
+	if (CurrentState == MiniGameplayTags::InitState_DataInitialized &&
+		DesiredState == MiniGameplayTags::InitState_GameplayReady)
+	{
+		return AbilitySystemComponent && AbilitySystemComponent->GetAvatarActor() == Pawn &&
+			Manager->HasFeatureReachedInitState(Pawn, UMiniHeroComponent::NAME_ActorFeatureName,
+				MiniGameplayTags::InitState_DataInitialized);
+	}
 	return false;
 }
 

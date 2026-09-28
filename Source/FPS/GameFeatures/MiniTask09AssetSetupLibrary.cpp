@@ -44,12 +44,17 @@ bool UMiniTask09AssetSetupLibrary::ConfigurePracticeAbilities(
 	}
 	Action->Modify();
 
+	// Preserve the later input configuration when this Task 09 setup is re-run.
+	const FGameplayTag ExistingPawnInputTag =
+		PawnSet->Abilities.Num() == 1 && PawnSet->Abilities[0].Ability == UMiniPawnProbeAbility::StaticClass()
+			? PawnSet->Abilities[0].InputTag : FGameplayTag();
 	PawnSet->Abilities.Reset();
 	PawnSet->Effects.Reset();
 	PawnSet->Attributes.Reset();
 	FMiniAbilitySetAbility& PawnAbility = PawnSet->Abilities.AddDefaulted_GetRef();
 	PawnAbility.Ability = UMiniPawnProbeAbility::StaticClass();
 	PawnAbility.Level = 1;
+	PawnAbility.InputTag = ExistingPawnInputTag;
 
 	FeatureSet->Abilities.Reset();
 	FeatureSet->Effects.Reset();

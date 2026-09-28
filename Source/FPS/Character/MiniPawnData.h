@@ -5,6 +5,7 @@
 
 class APawn;
 class UMiniAbilitySet;
+class UMiniInputConfig;
 
 UCLASS(BlueprintType, NotBlueprintable, Const)
 class FPS_API UMiniPawnData : public UPrimaryDataAsset
@@ -17,9 +18,12 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Mini|Pawn")
 	TSubclassOf<APawn> PawnClass;
 
-	/** Server grants these once to the PlayerState ASC; input and camera data arrive later. */
+	/** Server grants these once to the PlayerState ASC. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Mini|Abilities")
 	TArray<TObjectPtr<UMiniAbilitySet>> AbilitySets;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Mini|Input")
+	TObjectPtr<UMiniInputConfig> InputConfig;
 
 	bool ValidatePawnData(FString& OutError) const;
 

@@ -103,9 +103,6 @@ function Assert-NoProbeFailure {
         $LogText -match '(?im)^.*Mini[^\r\n]*DUPLICATE[^\r\n]*$') {
         throw "An initialization order or duplicate-component probe failed. See $LogPath"
     }
-    if ($LogText.Contains('To=InitState.GameplayReady')) {
-        throw "A component entered GameplayReady before Tasks 09 and 10. See $LogPath"
-    }
 }
 
 function Test-SpawnSnapshot {
@@ -126,7 +123,7 @@ function Test-InitSnapshot {
     $expected = "MiniInitProbe SNAPSHOT: NetMode=$NetMode PlayerStates=$Players Characters=$Players " +
         "ExtensionDataInitialized=$Players HeroDataInitialized=$Players " +
         "SimulatedDataInitialized=$Simulated SimulatedWithoutLocalInputInitialized=$Simulated " +
-        "GameplayReady=0 ProbeReleased=$ProbeReleased RepeatNotified=$Players"
+        "GameplayReady=$Players ProbeReleased=$ProbeReleased RepeatNotified=$Players"
     return $LogText.Contains($expected)
 }
 
@@ -134,8 +131,10 @@ function Assert-Transitions {
     param([string]$LogText, [string]$LogPath, [int]$Players)
     $pattern = 'MiniInitState TRANSITION: Feature=(PawnExtension|Hero) Role=\S+ Pawn=(\S+) From=\S* To=(InitState\.\w+)'
     $transitions = [regex]::Matches($LogText, $pattern)
-    $expectedStates = @('InitState.Spawned', 'InitState.DataAvailable', 'InitState.DataInitialized')
+    $expectedStates = @('InitState.Spawned', 'InitState.DataAvailable',
+        'InitState.DataInitialized', 'InitState.GameplayReady')
     $counts = @{}
+    $indices = @{}
     $pawns = [System.Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
 
     foreach ($transition in $transitions) {
@@ -149,6 +148,7 @@ function Assert-Transitions {
         $key = "$feature|$pawn|$state"
         if (-not $counts.ContainsKey($key)) { $counts[$key] = 0 }
         $counts[$key]++
+        $indices[$key] = $transition.Index
     }
 
     if ($pawns.Count -ne $Players) {
@@ -156,17 +156,27 @@ function Assert-Transitions {
     }
     foreach ($pawn in $pawns) {
         foreach ($feature in @('PawnExtension', 'Hero')) {
+            $previousIndex = -1
             foreach ($state in $expectedStates) {
                 $key = "$feature|$pawn|$state"
                 if (-not $counts.ContainsKey($key) -or $counts[$key] -ne 1) {
                     $found = if ($counts.ContainsKey($key)) { $counts[$key] } else { 0 }
                     throw "Expected exactly one $feature $state transition for $pawn, found $found. See $LogPath"
                 }
+                if ($indices[$key] -le $previousIndex) {
+                    throw "$feature transitions are out of order for $pawn at $state. See $LogPath"
+                }
+                $previousIndex = $indices[$key]
             }
-		$deferredPattern = "MiniInitState DEFERRED: Feature=$feature Pawn=$([regex]::Escape($pawn)) Target=InitState\.GameplayReady WaitingFor=\S+"
-		if ([regex]::Matches($LogText, $deferredPattern).Count -ne 1) {
-			throw "Expected exactly one deferred GameplayReady record for $feature on $pawn. See $LogPath"
-		}
+            $deferredPattern = "MiniInitState DEFERRED: Feature=$feature Pawn=$([regex]::Escape($pawn)) Target=InitState\.GameplayReady WaitingFor=\S+"
+            if ([regex]::Matches($LogText, $deferredPattern).Count -ne 1) {
+                throw "Expected exactly one deferred GameplayReady record for $feature on $pawn. See $LogPath"
+            }
+        }
+        $extensionReady = $indices["PawnExtension|$pawn|InitState.GameplayReady"]
+        $heroReady = $indices["Hero|$pawn|InitState.GameplayReady"]
+        if ($extensionReady -ge $heroReady) {
+            throw "Hero entered GameplayReady before PawnExtension for $pawn. See $LogPath"
         }
     }
 }

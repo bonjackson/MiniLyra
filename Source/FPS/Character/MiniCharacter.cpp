@@ -91,12 +91,20 @@ void AMiniCharacter::UnPossessed()
 	{
 		PawnExtensionComponent->UninitializeAbilitySystem(true);
 	}
+	if (HeroComponent)
+	{
+		HeroComponent->NotifyPawnUnpossessed();
+	}
 	NotifyInitDependenciesChanged();
 }
 
 void AMiniCharacter::OnRep_Controller()
 {
 	Super::OnRep_Controller();
+	if (HeroComponent && HeroComponent->IsInputActive() && !IsLocallyControlled())
+	{
+		HeroComponent->NotifyPawnUnpossessed();
+	}
 	if (PawnExtensionComponent)
 	{
 		PawnExtensionComponent->NotifyPawnPossessed();
@@ -122,10 +130,12 @@ void AMiniCharacter::NotifyInitDependenciesChanged()
 	{
 		PawnExtensionComponent->CheckDefaultInitialization();
 		PawnExtensionComponent->RefreshAbilitySystem();
+		PawnExtensionComponent->CheckDefaultInitialization();
 	}
 	if (HeroComponent)
 	{
 		HeroComponent->CheckDefaultInitialization();
+		HeroComponent->NotifyInputDependenciesChanged();
 	}
 }
 

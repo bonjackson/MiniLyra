@@ -35,6 +35,7 @@ public:
 	AMiniPlayerState* GetPlayerStateForInitialization() const;
 	UMiniPawnExtensionComponent* GetPawnExtensionComponent() const { return PawnExtensionComponent; }
 	UMiniHeroComponent* GetHeroComponent() const { return HeroComponent; }
+	UInputComponent* GetPlayerInputComponent() const { return InputComponent; }
 	void NotifyInitDependenciesChanged();
 
 	/** Editor game-process probe only: expose dependencies in a controlled order. */

@@ -228,8 +228,8 @@ Mini 功能插件首版可采用内容插件，复用 `FPS` 中的通用原生�
 | [x] | 06 | GameFeature 激活与可回收 Actions | 05 | 双端与连续三次 PIE、Cook 及打包单机烟测通过 |
 | [x] | 07 | Modular 角色骨架与出生门控 | 06 | 双端、第三人晚加入及失败时零出生探针通过 |
 | [x] | 08 | PawnExtension／Hero 初始化协作 | 07 | 三进程两人／晚加入、两种条件可见性顺序与重复通知验证通过 |
-| [ ] | 09 | PlayerState ASC 与 AbilitySet | 08 | ASC 正确绑定与能力成组授予 |
-| [ ] | 10 | Enhanced Input 与 InputTag | 09 | 本地输入通过标签驱动能力 |
+| [x] | 09 | PlayerState ASC 与 AbilitySet | 08 | ASC／Avatar 复用、能力按来源授予撤销及三进程探针通过 |
+| [x] | 10 | Enhanced Input 与 InputTag | 09 | 本地输入驱动测试能力；三次重生及菜单／Action 门控探针通过 |
 | [ ] | 11 | 第三人称相机与基础移动表现 | 10 | 能正常移动、瞄准、观察远端角色 |
 | [ ] | 12 | 基础能力与阻断规则 | 09–11 | 跳跃、瞄准等按规则激活和结束 |
 | [ ] | 13 | 血量、伤害、死亡与重生 | 12 | 双端看到一致的死亡与新 Pawn |
@@ -344,6 +344,7 @@ Mini 功能插件首版可采用内容插件，复用 `FPS` 中的通用原生�
 - **产物：** 移动、视角、跳跃、开火、装填、切枪、瞄准的输入配置；完整 GameplayReady 门控。
 - **验收：** 本地玩家控制自己的 Pawn；重生三次不产生多重绑定；菜单接管或插件撤销时不继续开火；模拟代理不创建输入映射。
 - **参考注意：** 本机 Lyra 的 `RemoveAdditionalInputConfig` 仍有 TODO，Mini 必须补齐自身实际使用的解绑，不直接把 TODO 当成已完成功能。
+- **执行结果（2026-09-28）：** 已实现数据化 InputConfig／InputComponent、七个输入资产和 InputTag，接通本地 Hero 绑定、Controller 输入处理与 PlayerState ASC；Experience 的 World 作用域 AddInput Action 管理映射和解绑，`GameplayReady` 按 ASC／本地映射条件推进。Editor／Game target 构建、资产新进程重载和双进程专项探针通过：客户端移动、四轮开火／释放、服务端三次重生、单份映射、模拟代理隔离、菜单与 Action 测试暂停／恢复均已验证。任务 08／09／07／06 回归通过；任务 08 三端第三人晚加入后各有 3 个角色到达 `GameplayReady`，任务 06 三次真实 World 停用各有输入解绑。Fire 仍是测试能力，菜单仅有输入门控接口；详见 `Docs/Task10/InputPipeline.md`。
 
 ### 阶段 C：可玩角色与装备模型（11–15）
 
