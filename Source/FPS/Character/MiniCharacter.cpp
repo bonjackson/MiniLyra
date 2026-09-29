@@ -7,11 +7,15 @@
 #include "Character/MiniPawnData.h"
 #include "Character/MiniPawnExtensionComponent.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "Equipment/MiniEquipmentDefinition.h"
+#include "Equipment/MiniEquipmentManagerComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Misc/CommandLine.h"
 #include "Misc/Parse.h"
 #include "Net/UnrealNetwork.h"
 #include "Player/MiniPlayerState.h"
+#include "Player/MiniPlayerController.h"
+#include "Equipment/MiniQuickBarComponent.h"
 #include "System/MiniLogChannels.h"
 
 AMiniCharacter::AMiniCharacter(const FObjectInitializer& ObjectInitializer)
@@ -23,6 +27,7 @@ AMiniCharacter::AMiniCharacter(const FObjectInitializer& ObjectInitializer)
 	CameraComponent = CreateDefaultSubobject<UMiniCameraComponent>(TEXT("MiniCamera"));
 	CameraComponent->SetupAttachment(GetRootComponent());
 	HealthComponent = CreateDefaultSubobject<UMiniHealthComponent>(TEXT("Health"));
+	EquipmentManager = CreateDefaultSubobject<UMiniEquipmentManagerComponent>(TEXT("EquipmentManager"));
 	PracticeRifleMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("PracticeRifle"));
 	PracticeRifleMesh->SetupAttachment(GetMesh(), TEXT("HandGrip_R"));
 	PracticeRifleMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -73,6 +78,7 @@ void AMiniCharacter::ReleaseInitProbePlayerState()
 void AMiniCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+	RefreshEquipmentAppearance();
 	UE_LOG(LogMiniInit, Display, TEXT("MiniCharacter BeginPlay Role=%d Pawn=%s PawnData=%s"),
 		static_cast<int32>(GetLocalRole()), *GetPathName(), *GetPathNameSafe(PawnData.Get()));
 	NotifyInitDependenciesChanged();
@@ -80,6 +86,10 @@ void AMiniCharacter::BeginPlay()
 
 void AMiniCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
+	if (HasAuthority() && EquipmentManager)
+	{
+		EquipmentManager->UnequipItem();
+	}
 	if (HealthComponent)
 	{
 		HealthComponent->UninitializeAbilitySystem();
@@ -107,6 +117,20 @@ void AMiniCharacter::PossessedBy(AController* NewController)
 
 void AMiniCharacter::UnPossessed()
 {
+	if (HasAuthority())
+	{
+		if (AMiniPlayerController* MiniController = Cast<AMiniPlayerController>(GetController()))
+		{
+			if (UMiniQuickBarComponent* QuickBar = MiniController->GetQuickBar())
+			{
+				QuickBar->HandlePawnLost(this);
+			}
+		}
+		if (EquipmentManager)
+		{
+			EquipmentManager->UnequipItem();
+		}
+	}
 	Super::UnPossessed();
 	if (HealthComponent)
 	{
@@ -183,6 +207,33 @@ void AMiniCharacter::NotifyInitDependenciesChanged()
 		HeroComponent->CheckDefaultInitialization();
 		HeroComponent->NotifyInputDependenciesChanged();
 	}
+	if (HasAuthority())
+	{
+		if (AMiniPlayerController* MiniController = Cast<AMiniPlayerController>(GetController()))
+		{
+			if (UMiniQuickBarComponent* QuickBar = MiniController->GetQuickBar())
+			{
+				QuickBar->InitializeForPawn(this);
+			}
+		}
+	}
+}
+
+void AMiniCharacter::RefreshEquipmentAppearance()
+{
+	if (!PracticeRifleMesh || !EquipmentManager)
+	{
+		return;
+	}
+	const TSubclassOf<UMiniEquipmentDefinition> DefinitionClass = EquipmentManager->GetCurrentDefinitionClass();
+	const UMiniEquipmentDefinition* Definition = DefinitionClass
+		? GetDefault<UMiniEquipmentDefinition>(DefinitionClass) : nullptr;
+	USkeletalMesh* WeaponMesh = Definition ? Definition->GetWeaponMesh() : nullptr;
+	if (WeaponMesh)
+	{
+		PracticeRifleMesh->SetSkeletalMesh(WeaponMesh);
+	}
+	PracticeRifleMesh->SetVisibility(WeaponMesh != nullptr);
 }
 
 void AMiniCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

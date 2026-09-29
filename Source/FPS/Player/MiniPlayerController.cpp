@@ -17,6 +17,7 @@
 #include "InputMappingContext.h"
 #include "Input/MiniPlayerInput.h"
 #include "Inventory/MiniInventoryManagerComponent.h"
+#include "Equipment/MiniQuickBarComponent.h"
 #include "Misc/CommandLine.h"
 #include "Misc/Parse.h"
 #include "Player/MiniPlayerState.h"
@@ -74,12 +75,19 @@ AMiniPlayerController::AMiniPlayerController(const FObjectInitializer& ObjectIni
 	: Super(ObjectInitializer)
 {
 	InventoryManager = CreateDefaultSubobject<UMiniInventoryManagerComponent>(TEXT("InventoryManager"));
+	QuickBar = CreateDefaultSubobject<UMiniQuickBarComponent>(TEXT("QuickBar"));
 }
 
 void AMiniPlayerController::MiniDumpInventory() const
 {
 	UE_LOG(LogMiniInit, Display, TEXT("MiniInventory OWNER_VIEW: Controller=%s %s"),
 		*GetPathName(), InventoryManager ? *InventoryManager->GetDebugSnapshot() : TEXT("NoManager"));
+}
+
+void AMiniPlayerController::MiniDumpQuickBar() const
+{
+	UE_LOG(LogMiniEquipment, Display, TEXT("MiniQuickBar OWNER_VIEW: Controller=%s %s"),
+		*GetPathName(), QuickBar ? *QuickBar->GetDebugSnapshot() : TEXT("NoQuickBar"));
 }
 
 void AMiniPlayerController::BeginPlay()
@@ -108,6 +116,18 @@ void AMiniPlayerController::OnRep_PlayerState()
 	{
 		MiniPawn->NotifyInitDependenciesChanged();
 	}
+}
+
+void AMiniPlayerController::OnUnPossess()
+{
+	if (HasAuthority() && QuickBar)
+	{
+		if (AMiniCharacter* PawnBeingReleased = Cast<AMiniCharacter>(GetPawn()))
+		{
+			QuickBar->HandlePawnLost(PawnBeingReleased);
+		}
+	}
+	Super::OnUnPossess();
 }
 
 void AMiniPlayerController::PostProcessInput(const float DeltaTime, const bool bGamePaused)

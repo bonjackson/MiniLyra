@@ -7,6 +7,7 @@
 #include "Components/GameFrameworkComponentDelegates.h"
 #include "Components/GameFrameworkComponentManager.h"
 #include "EnhancedInputSubsystems.h"
+#include "Equipment/MiniQuickBarComponent.h"
 #include "GameFramework/Controller.h"
 #include "GameFramework/PlayerController.h"
 #include "Input/MiniInputComponent.h"
@@ -258,6 +259,16 @@ void UMiniHeroComponent::Input_AbilityPressed(FGameplayTag InputTag)
 {
 	if (bInputActive)
 	{
+		if (InputTag == MiniGameplayTags::InputTag_SwitchWeapon)
+		{
+			AMiniCharacter* Pawn = GetPawn<AMiniCharacter>();
+			AMiniPlayerController* Controller = Pawn ? Cast<AMiniPlayerController>(Pawn->GetController()) : nullptr;
+			if (Controller && Controller->GetQuickBar())
+			{
+				Controller->GetQuickBar()->RequestNextSlot();
+			}
+			return;
+		}
 		if (UMiniAbilitySystemComponent* ASC = BoundAbilitySystem.Get())
 		{
 			ASC->AbilityInputTagPressed(InputTag);
@@ -269,6 +280,10 @@ void UMiniHeroComponent::Input_AbilityPressed(FGameplayTag InputTag)
 
 void UMiniHeroComponent::Input_AbilityReleased(FGameplayTag InputTag)
 {
+	if (InputTag == MiniGameplayTags::InputTag_SwitchWeapon)
+	{
+		return;
+	}
 	if (UMiniAbilitySystemComponent* ASC = BoundAbilitySystem.Get())
 	{
 		ASC->AbilityInputTagReleased(InputTag);

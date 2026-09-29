@@ -6,6 +6,7 @@
 
 class AMiniCharacter;
 class UMiniInventoryManagerComponent;
+class UMiniQuickBarComponent;
 
 /** Extension receiver for a local or remote Mini player. */
 UCLASS()
@@ -18,18 +19,25 @@ public:
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	virtual void OnRep_PlayerState() override;
+	virtual void OnUnPossess() override;
 	virtual void PostProcessInput(const float DeltaTime, const bool bGamePaused) override;
 	void SetMiniInputBlocked(bool bBlocked);
 	bool IsMiniInputBlocked() const { return bMiniInputBlocked; }
 	UMiniInventoryManagerComponent* GetInventoryManager() const { return InventoryManager; }
+	UMiniQuickBarComponent* GetQuickBar() const { return QuickBar; }
 
 	/** Local console view of this controller's private inventory. */
 	UFUNCTION(Exec)
 	void MiniDumpInventory() const;
+	UFUNCTION(Exec)
+	void MiniDumpQuickBar() const;
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = "Mini|Inventory")
 	TObjectPtr<UMiniInventoryManagerComponent> InventoryManager;
+
+	UPROPERTY(VisibleAnywhere, Category = "Mini|Equipment")
+	TObjectPtr<UMiniQuickBarComponent> QuickBar;
 
 	UFUNCTION(Server, Reliable)
 	void ServerAdvanceTask10Probe(int32 CompletedCycle);

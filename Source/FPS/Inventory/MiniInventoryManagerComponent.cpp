@@ -1,10 +1,14 @@
 #include "MiniInventoryManagerComponent.h"
 
 #include "Engine/ActorChannel.h"
+#include "Equipment/MiniQuickBarComponent.h"
+#include "Equipment/MiniEquipmentManagerComponent.h"
+#include "Character/MiniCharacter.h"
 #include "Inventory/MiniInventoryItemDefinition.h"
 #include "Inventory/MiniInventoryItemInstance.h"
 #include "Net/UnrealNetwork.h"
 #include "System/MiniLogChannels.h"
+#include "Player/MiniPlayerController.h"
 
 void FMiniInventoryList::PreReplicatedRemove(const TArrayView<int32> RemovedIndices, int32 FinalSize)
 {
@@ -91,6 +95,23 @@ bool UMiniInventoryManagerComponent::RemoveItem(UMiniInventoryItemInstance* Inst
 	if (Index == INDEX_NONE)
 	{
 		return false;
+	}
+	if (AMiniPlayerController* Controller = Cast<AMiniPlayerController>(Owner))
+	{
+		if (UMiniQuickBarComponent* QuickBar = Controller->GetQuickBar())
+		{
+			QuickBar->HandleItemRemoved(Instance);
+		}
+		if (AMiniCharacter* Pawn = Cast<AMiniCharacter>(Controller->GetPawn()))
+		{
+			if (UMiniEquipmentManagerComponent* Equipment = Pawn->GetEquipmentManager())
+			{
+				if (Equipment->GetCurrentItemId() == Instance->GetInstanceId())
+				{
+					Equipment->UnequipItem();
+				}
+			}
+		}
 	}
 	const FGuid RemovedId = Instance->GetInstanceId();
 	InventoryList.Entries.RemoveAt(Index);

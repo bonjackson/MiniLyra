@@ -1,6 +1,7 @@
 #include "MiniInventoryItemDefinition.h"
 
 #include "Inventory/MiniInventoryItemInstance.h"
+#include "Equipment/MiniEquipmentDefinition.h"
 namespace MiniInventoryTags
 {
 	UE_DEFINE_GAMEPLAY_TAG(AmmoInMagazine, "Inventory.Stat.AmmoInMagazine");
@@ -42,7 +43,9 @@ UMiniRifleItemDefinition::UMiniRifleItemDefinition()
 	Stats->InitialStats.Add(FMiniInventoryStat(MiniInventoryTags::AmmoInMagazine, 30));
 	Stats->InitialStats.Add(FMiniInventoryStat(MiniInventoryTags::ReserveAmmo, 90));
 	Fragments.Add(Stats);
-	Fragments.Add(CreateDefaultSubobject<UMiniInventoryFragment_Equippable>(TEXT("Equippable")));
+	UMiniInventoryFragment_Equippable* Equippable = CreateDefaultSubobject<UMiniInventoryFragment_Equippable>(TEXT("Equippable"));
+	Equippable->EquipmentDefinition = UMiniRifleEquipmentDefinition::StaticClass();
+	Fragments.Add(Equippable);
 	Fragments.Add(CreateDefaultSubobject<UMiniInventoryFragment_Icon>(TEXT("Icon")));
 }
 
@@ -53,6 +56,8 @@ UMiniPistolItemDefinition::UMiniPistolItemDefinition()
 	Stats->InitialStats.Add(FMiniInventoryStat(MiniInventoryTags::AmmoInMagazine, 12));
 	Stats->InitialStats.Add(FMiniInventoryStat(MiniInventoryTags::ReserveAmmo, 36));
 	Fragments.Add(Stats);
-	Fragments.Add(CreateDefaultSubobject<UMiniInventoryFragment_Equippable>(TEXT("Equippable")));
+	UMiniInventoryFragment_Equippable* Equippable = CreateDefaultSubobject<UMiniInventoryFragment_Equippable>(TEXT("Equippable"));
+	Equippable->EquipmentDefinition = UMiniPistolEquipmentDefinition::StaticClass();
+	Fragments.Add(Equippable);
 	Fragments.Add(CreateDefaultSubobject<UMiniInventoryFragment_Icon>(TEXT("Icon")));
 }

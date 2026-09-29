@@ -8,6 +8,7 @@
 #include "MiniInventoryItemDefinition.generated.h"
 
 class UMiniInventoryItemInstance;
+class UMiniEquipmentDefinition;
 class UTexture2D;
 
 namespace MiniInventoryTags
@@ -86,7 +87,7 @@ class FPS_API UMiniInventoryFragment_Equippable : public UMiniInventoryItemFragm
 
 public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Mini|Inventory")
-	TSoftClassPtr<UObject> EquipmentDefinition;
+	TSoftClassPtr<UMiniEquipmentDefinition> EquipmentDefinition;
 };
 
 UCLASS(BlueprintType)

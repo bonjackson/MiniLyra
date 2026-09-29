@@ -5,10 +5,13 @@
 #include "AbilitySystem/MiniHealthSet.h"
 #include "Character/MiniCharacter.h"
 #include "Character/MiniHeroComponent.h"
+#include "Equipment/MiniEquipmentManagerComponent.h"
+#include "Equipment/MiniQuickBarComponent.h"
 #include "Engine/World.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameModes/MiniGameMode.h"
 #include "Net/UnrealNetwork.h"
+#include "Player/MiniPlayerController.h"
 #include "System/MiniGameplayTags.h"
 #include "System/MiniLogChannels.h"
 
@@ -100,6 +103,18 @@ void UMiniHealthComponent::StartDeath()
 		return;
 	}
 	bDeathStarted = true;
+	// Revoke this life's weapon grants while the PlayerState ASC still has this Pawn as Avatar.
+	if (AMiniPlayerController* Controller = Cast<AMiniPlayerController>(Pawn->GetController()))
+	{
+		if (UMiniQuickBarComponent* QuickBar = Controller->GetQuickBar())
+		{
+			QuickBar->HandlePawnLost(Pawn);
+		}
+	}
+	if (UMiniEquipmentManagerComponent* Equipment = Pawn->GetEquipmentManager())
+	{
+		Equipment->UnequipItem();
+	}
 	Pawn->ForceNetUpdate();
 	ApplyDeathPresentation();
 	UE_LOG(LogMiniInit, Display, TEXT("MiniHealth DEATH_STARTED: Pawn=%s"), *Pawn->GetPathName());

@@ -150,6 +150,10 @@ void AMiniGameMode::RestartPlayer(AController* NewPlayer)
 	Super::RestartPlayer(NewPlayer);
 	if (const APawn* Pawn = NewPlayer->GetPawn())
 	{
+		if (AMiniCharacter* MiniPawn = Cast<AMiniCharacter>(NewPlayer->GetPawn()))
+		{
+			MiniPawn->NotifyInitDependenciesChanged();
+		}
 		UE_LOG(LogMiniExperience, Display, TEXT("MiniSpawn COMMITTED: Controller=%s Pawn=%s Class=%s ExperienceId=%s"),
 			*GetNameSafe(NewPlayer), *Pawn->GetPathName(), *Pawn->GetClass()->GetPathName(),
 			*Manager->GetCurrentExperienceId().ToString());
