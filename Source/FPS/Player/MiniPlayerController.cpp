@@ -16,6 +16,7 @@
 #include "InputKeyEventArgs.h"
 #include "InputMappingContext.h"
 #include "Input/MiniPlayerInput.h"
+#include "Inventory/MiniInventoryManagerComponent.h"
 #include "Misc/CommandLine.h"
 #include "Misc/Parse.h"
 #include "Player/MiniPlayerState.h"
@@ -67,6 +68,18 @@ void SendProbeKey(AMiniPlayerController* Controller, const FKey& Key, EInputEven
 {
 	Controller->InputKey(FInputKeyEventArgs::CreateSimulated(Key, Event, Event == IE_Released ? 0.0f : 1.0f));
 }
+}
+
+AMiniPlayerController::AMiniPlayerController(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer)
+{
+	InventoryManager = CreateDefaultSubobject<UMiniInventoryManagerComponent>(TEXT("InventoryManager"));
+}
+
+void AMiniPlayerController::MiniDumpInventory() const
+{
+	UE_LOG(LogMiniInit, Display, TEXT("MiniInventory OWNER_VIEW: Controller=%s %s"),
+		*GetPathName(), InventoryManager ? *InventoryManager->GetDebugSnapshot() : TEXT("NoManager"));
 }
 
 void AMiniPlayerController::BeginPlay()

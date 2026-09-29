@@ -101,11 +101,13 @@ void UMiniTask11ProbeSubsystem::TickServer(float DeltaTime)
 		Fail(TEXT("server host Pawn changed during remote movement"));
 		return;
 	}
-	if (ServerDriveSeconds < 2.5f)
+	if (ServerDriveSeconds < 5.0f)
 	{
 		Host->SetControlRotation(FRotator(0.0f, 75.0f, 0.0f));
 		Pawn->SetActorRotation(FRotator(0.0f, 75.0f, 0.0f));
-		Pawn->AddMovementInput(FVector::ForwardVector, 1.0f);
+		// A second movement interval gives headless simulated proxies time to
+		// initialize their AnimInstance before we sample its moving state.
+		Pawn->AddMovementInput(FVector::ForwardVector, ServerDriveSeconds < 2.5f ? 1.0f : -1.0f);
 		ServerDriveSeconds += DeltaTime;
 		return;
 	}
