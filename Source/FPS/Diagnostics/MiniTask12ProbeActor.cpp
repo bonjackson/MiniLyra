@@ -12,7 +12,7 @@
 
 namespace
 {
-const FGameplayAbilitySpec* FindInputSpec(const UMiniAbilitySystemComponent* ASC, FGameplayTag InputTag)
+const FGameplayAbilitySpec* FindTask12ActorInputSpec(const UMiniAbilitySystemComponent* ASC, FGameplayTag InputTag)
 {
 	if (ASC)
 	{
@@ -80,7 +80,7 @@ void AMiniTask12ProbeActor::Tick(float DeltaSeconds)
 	if (PendingCancelTag.IsValid())
 	{
 		PendingSeconds += DeltaSeconds;
-		const FGameplayAbilitySpec* Spec = FindInputSpec(ASC, PendingActiveInputTag);
+		const FGameplayAbilitySpec* Spec = FindTask12ActorInputSpec(ASC, PendingActiveInputTag);
 		if (Spec && Spec->IsActive())
 		{
 			CancelCheckTag = PendingCancelTag;
@@ -98,7 +98,7 @@ void AMiniTask12ProbeActor::Tick(float DeltaSeconds)
 	else if (CancelCheckTag.IsValid())
 	{
 		PendingSeconds += DeltaSeconds;
-		const FGameplayAbilitySpec* Spec = FindInputSpec(ASC, CancelCheckInputTag);
+		const FGameplayAbilitySpec* Spec = FindTask12ActorInputSpec(ASC, CancelCheckInputTag);
 		if (ASC && ASC->HasMatchingGameplayTag(CancelCheckTag) && Spec && !Spec->IsActive())
 		{
 			UE_LOG(LogMiniInit, Display,
@@ -117,7 +117,7 @@ void AMiniTask12ProbeActor::Tick(float DeltaSeconds)
 	if (bPendingRespawn)
 	{
 		PendingSeconds += DeltaSeconds;
-		const FGameplayAbilitySpec* Aim = FindInputSpec(ASC, MiniGameplayTags::InputTag_Aim);
+		const FGameplayAbilitySpec* Aim = FindTask12ActorInputSpec(ASC, MiniGameplayTags::InputTag_Aim);
 		if (Aim && Aim->IsActive())
 		{
 			AMiniPlayerController* Controller = GetProbeController();
@@ -130,7 +130,7 @@ void AMiniTask12ProbeActor::Tick(float DeltaSeconds)
 			bPendingRespawn = false;
 			OldPawn = Pawn;
 			Controller->UnPossess();
-			const FGameplayAbilitySpec* AfterUnpossess = FindInputSpec(ASC, MiniGameplayTags::InputTag_Aim);
+			const FGameplayAbilitySpec* AfterUnpossess = FindTask12ActorInputSpec(ASC, MiniGameplayTags::InputTag_Aim);
 			if (ASC->GetAvatarActor() == Pawn ||
 				(AfterUnpossess && AfterUnpossess->IsActive()) ||
 				ASC->HasMatchingGameplayTag(MiniGameplayTags::State_Aiming))
@@ -197,7 +197,7 @@ void AMiniTask12ProbeActor::ServerCheckRejected_Implementation(
 		return;
 	}
 	UMiniAbilitySystemComponent* ASC = GetProbeASC();
-	const FGameplayAbilitySpec* Spec = FindInputSpec(ASC, AbilityInputTag);
+	const FGameplayAbilitySpec* Spec = FindTask12ActorInputSpec(ASC, AbilityInputTag);
 	if (!ASC || !ASC->HasMatchingGameplayTag(BlockingTag) || !Spec || Spec->IsActive())
 	{
 		Fail(TEXT("server rejection preconditions were not met"));

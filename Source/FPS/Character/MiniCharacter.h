@@ -7,6 +7,7 @@ class UMiniPawnData;
 class UMiniPawnExtensionComponent;
 class UMiniHeroComponent;
 class UMiniCameraComponent;
+class UMiniHealthComponent;
 class USkeletalMeshComponent;
 class AMiniPlayerState;
 class AController;
@@ -38,6 +39,7 @@ public:
 	UMiniPawnExtensionComponent* GetPawnExtensionComponent() const { return PawnExtensionComponent; }
 	UMiniHeroComponent* GetHeroComponent() const { return HeroComponent; }
 	UMiniCameraComponent* GetMiniCameraComponent() const { return CameraComponent; }
+	UMiniHealthComponent* GetHealthComponent() const { return HealthComponent; }
 	USkeletalMeshComponent* GetPracticeRifleMesh() const { return PracticeRifleMesh; }
 	UInputComponent* GetPlayerInputComponent() const { return InputComponent; }
 	void NotifyInitDependenciesChanged();
@@ -63,6 +65,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = "Mini|Camera")
 	TObjectPtr<UMiniCameraComponent> CameraComponent;
+
+	UPROPERTY(VisibleAnywhere, Category = "Mini|Health")
+	TObjectPtr<UMiniHealthComponent> HealthComponent;
 
 	/** Task 11's visual-only rifle; equipment in task 15 owns the gameplay weapon. */
 	UPROPERTY(VisibleAnywhere, Category = "Mini|Cosmetic")

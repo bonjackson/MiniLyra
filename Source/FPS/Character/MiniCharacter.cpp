@@ -1,7 +1,9 @@
 #include "MiniCharacter.h"
 
+#include "AbilitySystem/MiniAbilitySystemComponent.h"
 #include "Camera/MiniCameraComponent.h"
 #include "Character/MiniHeroComponent.h"
+#include "Character/MiniHealthComponent.h"
 #include "Character/MiniPawnData.h"
 #include "Character/MiniPawnExtensionComponent.h"
 #include "Components/SkeletalMeshComponent.h"
@@ -20,6 +22,7 @@ AMiniCharacter::AMiniCharacter(const FObjectInitializer& ObjectInitializer)
 	HeroComponent = CreateDefaultSubobject<UMiniHeroComponent>(TEXT("Hero"));
 	CameraComponent = CreateDefaultSubobject<UMiniCameraComponent>(TEXT("MiniCamera"));
 	CameraComponent->SetupAttachment(GetRootComponent());
+	HealthComponent = CreateDefaultSubobject<UMiniHealthComponent>(TEXT("Health"));
 	PracticeRifleMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("PracticeRifle"));
 	PracticeRifleMesh->SetupAttachment(GetMesh(), TEXT("HandGrip_R"));
 	PracticeRifleMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -77,6 +80,10 @@ void AMiniCharacter::BeginPlay()
 
 void AMiniCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
+	if (HealthComponent)
+	{
+		HealthComponent->UninitializeAbilitySystem();
+	}
 	if (PawnExtensionComponent)
 	{
 		PawnExtensionComponent->UninitializeAbilitySystem(true);
@@ -101,6 +108,10 @@ void AMiniCharacter::PossessedBy(AController* NewController)
 void AMiniCharacter::UnPossessed()
 {
 	Super::UnPossessed();
+	if (HealthComponent)
+	{
+		HealthComponent->UninitializeAbilitySystem();
+	}
 	if (CameraComponent)
 	{
 		CameraComponent->ResetCamera();
@@ -153,6 +164,19 @@ void AMiniCharacter::NotifyInitDependenciesChanged()
 		PawnExtensionComponent->CheckDefaultInitialization();
 		PawnExtensionComponent->RefreshAbilitySystem();
 		PawnExtensionComponent->CheckDefaultInitialization();
+	}
+	if (HealthComponent)
+	{
+		AMiniPlayerState* MiniState = GetPlayerState<AMiniPlayerState>();
+		UMiniAbilitySystemComponent* ASC = MiniState ? MiniState->GetMiniAbilitySystemComponent() : nullptr;
+		if (ASC && ASC->GetAvatarActor() == this)
+		{
+			HealthComponent->InitializeWithAbilitySystem(ASC);
+		}
+		else
+		{
+			HealthComponent->UninitializeAbilitySystem();
+		}
 	}
 	if (HeroComponent)
 	{

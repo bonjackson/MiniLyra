@@ -9,6 +9,7 @@ class APawn;
 class UMiniExperienceDefinition;
 class UMiniExperienceManagerComponent;
 class UMiniPawnData;
+class AMiniCharacter;
 
 // The server selects an Experience; the GameState component loads it on each peer.
 UCLASS()
@@ -25,10 +26,19 @@ public:
 	virtual void RestartPlayer(AController* NewPlayer) override;
 	virtual UClass* GetDefaultPawnClassForController_Implementation(AController* InController) override;
 	virtual APawn* SpawnDefaultPawnAtTransform_Implementation(AController* NewPlayer, const FTransform& SpawnTransform) override;
+	/** Server-only training damage entry; callers never modify Health directly. */
+	bool TryApplyTestDamage(AController* InstigatorController, AMiniCharacter* Target, float Amount);
+	/** Called once by a dead Pawn's HealthComponent. */
+	void ScheduleRespawn(AMiniCharacter* DeadPawn);
 
 private:
 	void HandleMatchAssignmentIfNotExpectingOne();
 	void HandleExperienceLoaded(const UMiniExperienceDefinition* Experience);
 	UMiniExperienceManagerComponent* GetExperienceManager() const;
 	const UMiniPawnData* GetPawnDataForController(const AController* Controller) const;
+	void FinishRespawn(TWeakObjectPtr<AController> DeadController, TWeakObjectPtr<AMiniCharacter> DeadPawn);
+	void QueueRespawnRetry(TWeakObjectPtr<AController> DeadController,
+		TWeakObjectPtr<AMiniCharacter> DeadPawn, float Delay);
+	TSet<TWeakObjectPtr<AMiniCharacter>> PendingRespawns;
+	TMap<TWeakObjectPtr<AMiniCharacter>, int32> PendingAvatarBindingChecks;
 };

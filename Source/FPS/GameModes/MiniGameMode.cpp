@@ -1,6 +1,10 @@
 #include "MiniGameMode.h"
 
+#include "AbilitySystem/MiniAbilitySystemComponent.h"
+#include "AbilitySystem/MiniDamageGameplayEffect.h"
+#include "AbilitySystem/MiniHealthSet.h"
 #include "Character/MiniCharacter.h"
+#include "Character/MiniHealthComponent.h"
 #include "Character/MiniPawnData.h"
 #include "EngineUtils.h"
 #include "GameModes/MiniExperienceManagerComponent.h"
@@ -16,6 +20,7 @@
 #include "Player/MiniPlayerState.h"
 #include "System/MiniAssetManager.h"
 #include "System/MiniLogChannels.h"
+#include "System/MiniGameplayTags.h"
 #include "TimerManager.h"
 
 AMiniGameMode::AMiniGameMode(const FObjectInitializer& ObjectInitializer)
@@ -130,6 +135,18 @@ void AMiniGameMode::RestartPlayer(AController* NewPlayer)
 	}
 	UE_LOG(LogMiniExperience, Display, TEXT("MiniSpawn PawnDataAssigned: Controller=%s PawnData=%s PawnClass=%s"),
 		*GetNameSafe(NewPlayer), *PawnData->GetPathName(), *PawnData->PawnClass->GetPathName());
+	// The PlayerState ASC outlives Pawns. A replacement spawned by another
+	// server path must also begin with usable health.
+	if (UMiniHealthSet* HealthSet = PlayerState->GetHealthSet())
+	{
+		if (HealthSet->GetHealth() <= 0.0f)
+		{
+			PlayerState->GetMiniAbilitySystemComponent()->SetNumericAttributeBase(
+				UMiniHealthSet::GetHealthAttribute(), HealthSet->GetMaxHealth());
+		}
+		PlayerState->GetMiniAbilitySystemComponent()->SetNumericAttributeBase(
+			UMiniHealthSet::GetIncomingDamageAttribute(), 0.0f);
+	}
 	Super::RestartPlayer(NewPlayer);
 	if (const APawn* Pawn = NewPlayer->GetPawn())
 	{
@@ -137,6 +154,171 @@ void AMiniGameMode::RestartPlayer(AController* NewPlayer)
 			*GetNameSafe(NewPlayer), *Pawn->GetPathName(), *Pawn->GetClass()->GetPathName(),
 			*Manager->GetCurrentExperienceId().ToString());
 	}
+}
+
+bool AMiniGameMode::TryApplyTestDamage(AController* InstigatorController, AMiniCharacter* Target, float Amount)
+{
+	if (!HasAuthority() || !IsValid(InstigatorController) || !IsValid(Target) ||
+		Target->GetWorld() != GetWorld() || !FMath::IsFinite(Amount) || Amount <= 0.0f)
+	{
+		return false;
+	}
+	AMiniCharacter* SourcePawn = Cast<AMiniCharacter>(InstigatorController->GetPawn());
+	AMiniPlayerState* SourceState = InstigatorController->GetPlayerState<AMiniPlayerState>();
+	AMiniPlayerState* TargetState = Target->GetPlayerState<AMiniPlayerState>();
+	UMiniAbilitySystemComponent* SourceASC = SourceState ? SourceState->GetMiniAbilitySystemComponent() : nullptr;
+	UMiniAbilitySystemComponent* TargetASC = TargetState ? TargetState->GetMiniAbilitySystemComponent() : nullptr;
+	const UMiniHealthSet* HealthSet = TargetState ? TargetState->GetHealthSet() : nullptr;
+	const UMiniHealthComponent* SourceHealth = SourcePawn ? SourcePawn->GetHealthComponent() : nullptr;
+	const UMiniHealthComponent* TargetHealth = Target->GetHealthComponent();
+	if (!SourcePawn || SourcePawn == Target || !SourceASC || SourceASC->GetAvatarActor() != SourcePawn ||
+		!SourceHealth || SourceHealth->IsDead() || !TargetASC || TargetASC->GetAvatarActor() != Target ||
+		!TargetHealth || TargetHealth->IsDead() || !HealthSet || HealthSet->GetHealth() <= 0.0f ||
+		TargetASC->HasMatchingGameplayTag(MiniGameplayTags::State_Dead))
+	{
+		return false;
+	}
+
+	FGameplayEffectContextHandle Context = SourceASC->MakeEffectContext();
+	// PlayerState implements IAbilitySystemInterface. Keeping it as instigator
+	// preserves the source ASC in the effect context; the Pawn is effect causer.
+	Context.AddInstigator(SourceState, SourcePawn);
+	Context.AddSourceObject(SourcePawn);
+	FGameplayEffectSpecHandle Spec = SourceASC->MakeOutgoingSpec(
+		UMiniDamageGameplayEffect::StaticClass(), 1.0f, Context);
+	if (!Spec.IsValid())
+	{
+		return false;
+	}
+	Spec.Data->SetSetByCallerMagnitude(MiniGameplayTags::Data_Damage, Amount);
+	const float OldHealth = HealthSet->GetHealth();
+	SourceASC->ApplyGameplayEffectSpecToTarget(*Spec.Data.Get(), TargetASC);
+	const float NewHealth = HealthSet->GetHealth();
+	if (NewHealth >= OldHealth)
+	{
+		return false;
+	}
+	UE_LOG(LogMiniInit, Display,
+		TEXT("MiniHealth DAMAGE_APPLIED: Source=%s Target=%s Amount=%.1f Health=%.1f/%.1f"),
+		*SourcePawn->GetPathName(), *Target->GetPathName(), Amount, NewHealth, HealthSet->GetMaxHealth());
+	return true;
+}
+
+void AMiniGameMode::ScheduleRespawn(AMiniCharacter* DeadPawn)
+{
+	if (!HasAuthority() || !IsValid(DeadPawn) || !DeadPawn->GetHealthComponent() ||
+		!DeadPawn->GetHealthComponent()->IsDead() || PendingRespawns.Contains(DeadPawn))
+	{
+		return;
+	}
+	AController* Controller = DeadPawn->GetController();
+	if (!IsValid(Controller) || Controller->GetPawn() != DeadPawn)
+	{
+		return;
+	}
+	PendingRespawns.Add(DeadPawn);
+	FTimerHandle Timer;
+	GetWorldTimerManager().SetTimer(Timer,
+		FTimerDelegate::CreateUObject(this, &ThisClass::FinishRespawn,
+			TWeakObjectPtr<AController>(Controller), TWeakObjectPtr<AMiniCharacter>(DeadPawn)),
+		3.0f, false);
+	UE_LOG(LogMiniInit, Display, TEXT("MiniHealth RESPAWN_SCHEDULED: Pawn=%s Delay=3.0"),
+		*DeadPawn->GetPathName());
+}
+
+void AMiniGameMode::FinishRespawn(TWeakObjectPtr<AController> DeadController,
+	TWeakObjectPtr<AMiniCharacter> DeadPawn)
+{
+	PendingRespawns.Remove(DeadPawn);
+	AController* Controller = DeadController.Get();
+	AMiniCharacter* OldPawn = DeadPawn.Get();
+	AMiniPlayerState* PlayerState = Controller ? Controller->GetPlayerState<AMiniPlayerState>() : nullptr;
+	UMiniAbilitySystemComponent* ASC = PlayerState ? PlayerState->GetMiniAbilitySystemComponent() : nullptr;
+	UMiniHealthSet* HealthSet = PlayerState ? PlayerState->GetHealthSet() : nullptr;
+	if (!IsValid(Controller) || !ASC || !HealthSet)
+	{
+		return;
+	}
+	if (IsValid(OldPawn) &&
+		(!OldPawn->GetHealthComponent() || !OldPawn->GetHealthComponent()->IsDead()))
+	{
+		return;
+	}
+	if (AMiniCharacter* Replacement = Cast<AMiniCharacter>(Controller->GetPawn()))
+	{
+		if (Replacement != OldPawn)
+		{
+			Replacement->NotifyInitDependenciesChanged();
+			if (ASC->GetAvatarActor() == Replacement)
+			{
+				PendingAvatarBindingChecks.Remove(DeadPawn);
+				UE_LOG(LogMiniInit, Display,
+					TEXT("MiniHealth RESPAWNED: OldPawn=%s NewPawn=%s Health=%.1f"),
+					*GetPathNameSafe(OldPawn), *Replacement->GetPathName(), HealthSet->GetHealth());
+				if (IsValid(OldPawn))
+				{
+					OldPawn->Destroy();
+				}
+			}
+			else
+			{
+				int32& Checks = PendingAvatarBindingChecks.FindOrAdd(DeadPawn);
+				if (++Checks > 20)
+				{
+					UE_LOG(LogMiniInit, Error,
+						TEXT("MiniHealth AVATAR_BIND_TIMEOUT: Pawn=%s Replacement=%s"),
+						*GetPathNameSafe(OldPawn), *Replacement->GetPathName());
+					PendingAvatarBindingChecks.Remove(DeadPawn);
+					Replacement->Destroy();
+					QueueRespawnRetry(DeadController, DeadPawn, 1.0f);
+				}
+				else
+				{
+					QueueRespawnRetry(DeadController, DeadPawn, 0.25f);
+				}
+			}
+			return;
+		}
+	}
+	if (IsValid(OldPawn) && Controller->GetPawn() == OldPawn && ASC->GetAvatarActor() == OldPawn)
+	{
+		OldPawn->GetHealthComponent()->RemoveDeathEffect();
+		Controller->UnPossess();
+		ASC->SetNumericAttributeBase(UMiniHealthSet::GetHealthAttribute(), HealthSet->GetMaxHealth());
+		ASC->SetNumericAttributeBase(UMiniHealthSet::GetIncomingDamageAttribute(), 0.0f);
+	}
+	else if (!IsValid(OldPawn) && !Controller->GetPawn() && !ASC->GetAvatarActor())
+	{
+		// The corpse was destroyed before the timer fired. Its EndPlay has
+		// already removed the death effect and unbound the old Avatar.
+		ASC->SetNumericAttributeBase(UMiniHealthSet::GetHealthAttribute(), HealthSet->GetMaxHealth());
+		ASC->SetNumericAttributeBase(UMiniHealthSet::GetIncomingDamageAttribute(), 0.0f);
+	}
+	else if (Controller->GetPawn() || ASC->GetAvatarActor())
+	{
+		// Another server flow already possessed a replacement.
+		return;
+	}
+	RestartPlayer(Controller);
+	if (!Controller->GetPawn())
+	{
+		UE_LOG(LogMiniInit, Error, TEXT("MiniHealth RESPAWN_FAILED: OldPawn=%s Controller=%s"),
+			*GetPathNameSafe(OldPawn), *GetPathNameSafe(Controller));
+		QueueRespawnRetry(DeadController, DeadPawn, 1.0f);
+		return;
+	}
+	// Possession may finish ASC initialization in a later dependency callback.
+	QueueRespawnRetry(DeadController, DeadPawn, 0.25f);
+}
+
+void AMiniGameMode::QueueRespawnRetry(TWeakObjectPtr<AController> DeadController,
+	TWeakObjectPtr<AMiniCharacter> DeadPawn, float Delay)
+{
+	PendingRespawns.Add(DeadPawn);
+	FTimerHandle RetryTimer;
+	GetWorldTimerManager().SetTimer(RetryTimer,
+		FTimerDelegate::CreateUObject(this, &ThisClass::FinishRespawn, DeadController, DeadPawn),
+		Delay, false);
 }
 
 UClass* AMiniGameMode::GetDefaultPawnClassForController_Implementation(AController* InController)

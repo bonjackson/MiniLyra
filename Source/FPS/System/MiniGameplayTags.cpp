@@ -20,4 +20,5 @@ namespace MiniGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Ability_Fire, "Ability.Fire", "Firing ability family.");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Ability_Jump, "Ability.Jump", "Jumping ability family.");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Ability_Aim, "Ability.Aim", "Aiming ability family.");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Data_Damage, "Data.Damage", "Server-authoritative damage magnitude for the instant damage effect.");
 }
