@@ -162,12 +162,24 @@ void AMiniGameMode::RestartPlayer(AController* NewPlayer)
 
 bool AMiniGameMode::TryApplyTestDamage(AController* InstigatorController, AMiniCharacter* Target, float Amount)
 {
-	if (!HasAuthority() || !IsValid(InstigatorController) || !IsValid(Target) ||
+	return IsValid(InstigatorController)
+		? TryApplyDamage(Cast<AMiniCharacter>(InstigatorController->GetPawn()), Target, Amount)
+		: false;
+}
+
+bool AMiniGameMode::TryApplyDamage(AMiniCharacter* SourcePawn, AMiniCharacter* Target, float Amount)
+{
+	if (!HasAuthority() || !IsValid(SourcePawn) || !IsValid(Target) ||
 		Target->GetWorld() != GetWorld() || !FMath::IsFinite(Amount) || Amount <= 0.0f)
 	{
 		return false;
 	}
-	AMiniCharacter* SourcePawn = Cast<AMiniCharacter>(InstigatorController->GetPawn());
+	AController* InstigatorController = SourcePawn->GetController();
+	if (!IsValid(InstigatorController) || SourcePawn->GetWorld() != GetWorld() ||
+		InstigatorController->GetPawn() != SourcePawn)
+	{
+		return false;
+	}
 	AMiniPlayerState* SourceState = InstigatorController->GetPlayerState<AMiniPlayerState>();
 	AMiniPlayerState* TargetState = Target->GetPlayerState<AMiniPlayerState>();
 	UMiniAbilitySystemComponent* SourceASC = SourceState ? SourceState->GetMiniAbilitySystemComponent() : nullptr;

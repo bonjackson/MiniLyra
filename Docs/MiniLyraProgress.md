@@ -1,6 +1,6 @@
 # Mini Lyra 实施进度
 
-更新：2026-09-28（Asia/Shanghai）
+更新：2026-09-29（Asia/Shanghai）
 
 ## 当前进度
 
@@ -14,7 +14,9 @@
 - [x] 任务 08：PawnExtension／Hero 四态协作骨架完成；三进程两人／晚加入、两种条件可见性顺序和重复通知探针通过。
 - [x] 任务 09：PlayerState ASC、AbilitySet 来源与 Avatar 生命周期完成；两人／晚加入、撤销／恢复和重生探针通过。
 - [x] 任务 10：Enhanced Input→InputTag→GAS、可撤销本地映射与完整 GameplayReady 门控完成；构建、双进程专项和任务 06–09 回归通过。
-- [ ] 任务 11–30：尚未实施。
+- [x] 任务 11–15：第三人称相机与动画、能力 Tag 规则、生命死亡复活、私有库存、装备及两槽 QuickBar；详见各任务文档。
+- [x] 任务 16：服务器权威射线步枪、双射线遮挡、GameplayEffect 伤害与联机专项；详见 `Docs/Task16/AuthoritativeRifle.md`。
+- [ ] 任务 17–30：尚未实施。
 
 用户已确认第三人称、2–4 人竞技场，并明确允许忽略旧实现、从空项目开始。任务 01 据此重置活动源码和配置，保留旧工程文件作为本地备份；任务 02 在该空基线上建立独立的 Mini 内容入口。之前的 MiniExperience 启动壳不计作已完成框架。
 
@@ -203,4 +205,4 @@ git status --short
 
 ## 下一次入口
 
-任务 10 的 Editor／Game 构建、资产新进程复核、两进程按键／三次重生及菜单／Action 测试暂停探针和任务 06–09 回归均已通过。下一步进入任务 11：第三人称相机模式和基础动画。任务 06 的连续三次 PIE 与 Pak 打包程序单机烟测已通过；打包后联机、IoStore staging 及同进程不同 Experience 的多个 World 并存仍需后续验收。UE 内置 GameFeatureData AddComponents 随插件在进程级激活，当前 lease 防止过早卸载，但不阻止它注入到未请求插件的并存 World；详见任务 06 文档。
+任务 16 已建立可复用的服务器权威步枪射线、伤害及双重遮挡链路。下一步进入任务 17：弹匣／备用弹药、装填与手枪射击配置。任务 16 的延迟补偿及完整表现仍按路线图留给后续阶段；任务 06 的打包联机、IoStore staging 及同进程多 World Experience 并存也仍需后续验收。

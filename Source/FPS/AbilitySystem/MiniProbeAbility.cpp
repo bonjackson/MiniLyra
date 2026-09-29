@@ -2,12 +2,24 @@
 
 #include "System/MiniGameplayTags.h"
 #include "System/MiniLogChannels.h"
+#include "Misc/CommandLine.h"
+#include "Misc/Parse.h"
 
 UMiniPawnProbeAbility::UMiniPawnProbeAbility()
 {
 	FGameplayTagContainer AssetTags;
 	AssetTags.AddTag(MiniGameplayTags::Ability_Fire);
 	SetAssetTags(AssetTags);
+}
+
+bool UMiniPawnProbeAbility::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,
+	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags,
+	const FGameplayTagContainer* TargetTags, FGameplayTagContainer* OptionalRelevantTags) const
+{
+	// The old Pawn-level Fire grant remains for the task 09-12 lifecycle probes.
+	// Ordinary fire is supplied by the currently equipped rifle instead.
+	return FParse::Param(FCommandLine::Get(), TEXT("MiniProbeTask10")) &&
+		Super::CanActivateAbility(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags);
 }
 
 void UMiniPawnProbeAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle,

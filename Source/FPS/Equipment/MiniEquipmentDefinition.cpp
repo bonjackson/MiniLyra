@@ -2,7 +2,9 @@
 
 #include "AbilitySystem/MiniAbilitySet.h"
 #include "AbilitySystem/MiniGameplayAbility_FromEquipment.h"
+#include "AbilitySystem/MiniGameplayAbility_RifleFire.h"
 #include "Engine/SkeletalMesh.h"
+#include "System/MiniGameplayTags.h"
 
 USkeletalMesh* UMiniEquipmentDefinition::GetWeaponMesh() const
 {
@@ -15,7 +17,8 @@ UMiniRifleEquipmentDefinition::UMiniRifleEquipmentDefinition()
 		TEXT("/Game/Mini/Weapons/Rifle/Mesh/SK_Rifle.SK_Rifle")));
 	AbilitySet = CreateDefaultSubobject<UMiniAbilitySet>(TEXT("RifleEquipmentAbilities"));
 	FMiniAbilitySetAbility& Ability = AbilitySet->Abilities.AddDefaulted_GetRef();
-	Ability.Ability = UMiniGameplayAbility_EquipmentProbe::StaticClass();
+	Ability.Ability = UMiniGameplayAbility_RifleFire::StaticClass();
+	Ability.InputTag = MiniGameplayTags::InputTag_Fire;
 }
 
 UMiniPistolEquipmentDefinition::UMiniPistolEquipmentDefinition()

@@ -9,6 +9,7 @@ class UMiniHeroComponent;
 class UMiniCameraComponent;
 class UMiniHealthComponent;
 class UMiniEquipmentManagerComponent;
+class UMiniRangedWeaponComponent;
 class USkeletalMeshComponent;
 class AMiniPlayerState;
 class AController;
@@ -42,6 +43,7 @@ public:
 	UMiniCameraComponent* GetMiniCameraComponent() const { return CameraComponent; }
 	UMiniHealthComponent* GetHealthComponent() const { return HealthComponent; }
 	UMiniEquipmentManagerComponent* GetEquipmentManager() const { return EquipmentManager; }
+	UMiniRangedWeaponComponent* GetRangedWeaponComponent() const { return RangedWeaponComponent; }
 	USkeletalMeshComponent* GetPracticeRifleMesh() const { return PracticeRifleMesh; }
 	/** Applies the single replicated equipment source to the existing hand mesh. */
 	void RefreshEquipmentAppearance();
@@ -75,6 +77,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = "Mini|Equipment")
 	TObjectPtr<UMiniEquipmentManagerComponent> EquipmentManager;
+
+	UPROPERTY(VisibleAnywhere, Category = "Mini|Weapons")
+	TObjectPtr<UMiniRangedWeaponComponent> RangedWeaponComponent;
 
 	/** Task 11's visual-only rifle; equipment in task 15 owns the gameplay weapon. */
 	UPROPERTY(VisibleAnywhere, Category = "Mini|Cosmetic")

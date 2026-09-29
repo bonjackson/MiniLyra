@@ -26,6 +26,8 @@ public:
 	virtual void RestartPlayer(AController* NewPlayer) override;
 	virtual UClass* GetDefaultPawnClassForController_Implementation(AController* InController) override;
 	virtual APawn* SpawnDefaultPawnAtTransform_Implementation(AController* NewPlayer, const FTransform& SpawnTransform) override;
+	/** Server-only combat damage. Source and target must be live, distinct player avatars. */
+	bool TryApplyDamage(AMiniCharacter* SourcePawn, AMiniCharacter* Target, float Amount);
 	/** Server-only training damage entry; callers never modify Health directly. */
 	bool TryApplyTestDamage(AController* InstigatorController, AMiniCharacter* Target, float Amount);
 	/** Called once by a dead Pawn's HealthComponent. */

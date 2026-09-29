@@ -37,6 +37,20 @@ class FPS_API UMiniRifleEquipmentDefinition : public UMiniEquipmentDefinition
 
 public:
 	UMiniRifleEquipmentDefinition();
+	float GetFireDamage() const { return FireDamage; }
+	float GetFireRange() const { return FireRange; }
+	float GetFireInterval() const { return FireInterval; }
+
+private:
+	/** Server-owned combat tuning; clients never choose these values per request. */
+	UPROPERTY(EditDefaultsOnly, Category = "Mini|Equipment|Fire", meta = (ClampMin = "0.0"))
+	float FireDamage = 25.0f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Mini|Equipment|Fire", meta = (ClampMin = "0.0"))
+	float FireRange = 10000.0f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Mini|Equipment|Fire", meta = (ClampMin = "0.0"))
+	float FireInterval = 0.12f;
 };
 
 UCLASS(BlueprintType, Blueprintable)

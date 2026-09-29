@@ -9,6 +9,8 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "Equipment/MiniEquipmentDefinition.h"
 #include "Equipment/MiniEquipmentManagerComponent.h"
+#include "Weapons/MiniRangedWeaponComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Misc/CommandLine.h"
 #include "Misc/Parse.h"
@@ -28,6 +30,9 @@ AMiniCharacter::AMiniCharacter(const FObjectInitializer& ObjectInitializer)
 	CameraComponent->SetupAttachment(GetRootComponent());
 	HealthComponent = CreateDefaultSubobject<UMiniHealthComponent>(TEXT("Health"));
 	EquipmentManager = CreateDefaultSubobject<UMiniEquipmentManagerComponent>(TEXT("EquipmentManager"));
+	RangedWeaponComponent = CreateDefaultSubobject<UMiniRangedWeaponComponent>(TEXT("RangedWeapon"));
+	// Pawn's stock profile ignores Visibility. Weapon traces must hit live capsules.
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
 	PracticeRifleMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("PracticeRifle"));
 	PracticeRifleMesh->SetupAttachment(GetMesh(), TEXT("HandGrip_R"));
 	PracticeRifleMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
