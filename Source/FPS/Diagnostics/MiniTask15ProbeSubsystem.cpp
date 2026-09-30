@@ -165,7 +165,7 @@ bool UMiniTask15ProbeSubsystem::CheckServerEquipment(int32 Owner, int32 Slot) co
 		ASC->GetAvatarActor() != Pawn || Manager->GetCurrentDefinitionClass() != DefinitionForSlot(Slot) ||
 		Manager->GetCurrentItemId() != Item->GetInstanceId() ||
 		Equipment->GetSourceItem() != Item || Equipment->GetSourceItemId() != Item->GetInstanceId() ||
-		Equipment->GetGrantedHandles().GetAbilityCount() != 1 || !CheckWeaponMesh(Pawn, Slot))
+		Equipment->GetGrantedHandles().GetAbilityCount() != 2 || !CheckWeaponMesh(Pawn, Slot))
 	{
 		return false;
 	}
@@ -222,7 +222,7 @@ bool UMiniTask15ProbeSubsystem::TryStartServer()
 	{
 		InitialEquipment[Index] = Pawns[Index]->GetEquipmentManager()->GetCurrentEquipment();
 		InitialAbilityHandles[Index] = InitialEquipment[Index]->GetGrantedHandles().AbilityHandles;
-		if (InitialAbilityHandles[Index].Num() != 1)
+		if (InitialAbilityHandles[Index].Num() != 2)
 		{
 			Fail(TEXT("initial Rifle ability grant was missing"));
 			return false;
@@ -287,7 +287,7 @@ bool UMiniTask15ProbeSubsystem::SwitchBoth(int32 Slot)
 			? Old->GetGrantedHandles().AbilityHandles : TArray<FGameplayAbilitySpecHandle>();
 		UMiniQuickBarComponent* Bar = Controllers[Index].IsValid()
 			? Controllers[Index]->GetQuickBar() : nullptr;
-		if (!Old || OldHandles.Num() != 1 || !Bar || !Bar->SelectSlot(Slot) ||
+		if (!Old || OldHandles.Num() != 2 || !Bar || !Bar->SelectSlot(Slot) ||
 			Manager->GetCurrentEquipment() == Old || !NoOldGrants(ASC, Old, OldHandles) ||
 			!CheckServerBar(Index, Slot, false) || !CheckServerEquipment(Index, Slot))
 		{
@@ -313,7 +313,7 @@ bool UMiniTask15ProbeSubsystem::KillOwner(int32 Owner)
 	AMiniPlayerController* Source = Controllers[1 - Owner].Get();
 	const TArray<FGameplayAbilitySpecHandle> OldHandles = Old
 		? Old->GetGrantedHandles().AbilityHandles : TArray<FGameplayAbilitySpecHandle>();
-	if (!Pawn || !Manager || !Old || OldHandles.Num() != 1 || !ASC || !Bar ||
+	if (!Pawn || !Manager || !Old || OldHandles.Num() != 2 || !ASC || !Bar ||
 		!GameMode || !Source || !CheckServerEquipment(Owner, 0))
 	{
 		return false;

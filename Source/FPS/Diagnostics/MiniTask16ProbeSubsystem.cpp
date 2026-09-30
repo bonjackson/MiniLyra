@@ -428,7 +428,8 @@ void UMiniTask16ProbeSubsystem::TickClient(float DeltaTime)
 		UE_LOG(LogMiniInit, Display, TEXT("MiniTask16Probe CLIENT_FIRE_PRESSED: Input=LeftMouseButton"));
 		return;
 	}
-	if (bShooter && bClientPressed && !bClientReleased && ClientPressedSeconds >= 0.2f)
+	// Task 17 makes the rifle automatic while held; this legacy probe verifies one press/one shot.
+	if (bShooter && bClientPressed && !bClientReleased && ClientPressedSeconds >= 0.05f)
 	{
 		SendFireKey(Controller, IE_Released);
 		bClientReleased = true;

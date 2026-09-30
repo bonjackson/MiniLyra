@@ -1,24 +1,30 @@
 #pragma once
 
-#include "AbilitySystem/MiniGameplayAbility_FromEquipment.h"
+#include "AbilitySystem/MiniGameplayAbility_RangedFire.h"
+#include "TimerManager.h"
 #include "MiniGameplayAbility_RifleFire.generated.h"
 
-/** A press activates the equipped rifle and forwards one fire request from its owning player. */
+/** Rifle variant repeats at its configured interval while Fire is held. */
 UCLASS()
-class FPS_API UMiniGameplayAbility_RifleFire : public UMiniGameplayAbility_FromEquipment
+class FPS_API UMiniGameplayAbility_RifleFire : public UMiniGameplayAbility_RangedFire
 {
 	GENERATED_BODY()
 
 public:
 	UMiniGameplayAbility_RifleFire();
-	virtual bool CanActivateAbility(const FGameplayAbilitySpecHandle Handle,
-		const FGameplayAbilityActorInfo* ActorInfo,
-		const FGameplayTagContainer* SourceTags = nullptr,
-		const FGameplayTagContainer* TargetTags = nullptr,
-		FGameplayTagContainer* OptionalRelevantTags = nullptr) const override;
-
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		const FGameplayAbilityActorInfo* ActorInfo,
 		const FGameplayAbilityActivationInfo ActivationInfo,
 		const FGameplayEventData* TriggerEventData) override;
+	virtual void InputReleased(const FGameplayAbilitySpecHandle Handle,
+		const FGameplayAbilityActorInfo* ActorInfo,
+		const FGameplayAbilityActivationInfo ActivationInfo) override;
+	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle,
+		const FGameplayAbilityActorInfo* ActorInfo,
+		const FGameplayAbilityActivationInfo ActivationInfo,
+		bool bReplicateEndAbility, bool bWasCancelled) override;
+
+private:
+	void FireWhileHeld();
+	FTimerHandle FireTimer;
 };
