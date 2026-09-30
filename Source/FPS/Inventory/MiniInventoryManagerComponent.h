@@ -36,6 +36,7 @@ struct FPS_API FMiniInventoryList : public FFastArraySerializer
 	void PreReplicatedRemove(const TArrayView<int32> RemovedIndices, int32 FinalSize);
 	void PostReplicatedAdd(const TArrayView<int32> AddedIndices, int32 FinalSize);
 	void PostReplicatedChange(const TArrayView<int32> ChangedIndices, int32 FinalSize);
+	void PostReplicatedReceive(const FFastArraySerializer::FPostReplicatedReceiveParameters& Parameters);
 
 	bool NetDeltaSerialize(FNetDeltaSerializeInfo& DeltaParms)
 	{
@@ -58,6 +59,8 @@ class FPS_API UMiniInventoryManagerComponent : public UActorComponent
 	GENERATED_BODY()
 
 public:
+	FSimpleMulticastDelegate OnChanged;
+	void NotifyDataChanged() { OnChanged.Broadcast(); }
 	UMiniInventoryManagerComponent(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;

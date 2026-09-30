@@ -1,6 +1,7 @@
 #include "MiniInventoryItemInstance.h"
 
 #include "GameFramework/Actor.h"
+#include "Inventory/MiniInventoryManagerComponent.h"
 #include "Net/UnrealNetwork.h"
 
 void UMiniInventoryItemInstance::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -30,6 +31,7 @@ bool UMiniInventoryItemInstance::InitializeItem(TSubclassOf<UMiniInventoryItemDe
 			Fragment->OnInstanceCreated(this);
 		}
 	}
+	NotifyChanged();
 	return true;
 }
 
@@ -60,13 +62,33 @@ bool UMiniInventoryItemInstance::SetStat(FGameplayTag Tag, int32 Count)
 			{
 				Stat.Count = Count;
 				OwnerActor->ForceNetUpdate();
+				NotifyChanged();
 			}
 			return true;
 		}
 	}
 	Stats.Add(FMiniInventoryStat(Tag, Count));
 	OwnerActor->ForceNetUpdate();
+	NotifyChanged();
 	return true;
+}
+
+void UMiniInventoryItemInstance::OnRep_ItemData()
+{
+	NotifyChanged();
+}
+
+void UMiniInventoryItemInstance::NotifyChanged()
+{
+	OnChanged.Broadcast();
+	if (const AActor* OwnerActor = Cast<AActor>(GetOuter()))
+	{
+		if (UMiniInventoryManagerComponent* Inventory = OwnerActor->FindComponentByClass<UMiniInventoryManagerComponent>())
+		{
+			// The item GUID/definition can map after Slots and the FastArray entry.
+			Inventory->NotifyDataChanged();
+		}
+	}
 }
 
 const UMiniInventoryItemFragment* UMiniInventoryItemInstance::FindFragmentByClass(

@@ -13,6 +13,7 @@ class FPS_API UMiniQuickBarComponent : public UActorComponent
 	GENERATED_BODY()
 
 public:
+	FSimpleMulticastDelegate OnChanged;
 	UMiniQuickBarComponent(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 

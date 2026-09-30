@@ -2,6 +2,7 @@
 
 #include "AbilitySystem/MiniAbilitySystemComponent.h"
 #include "Character/MiniCharacter.h"
+#include "Character/MiniHealthComponent.h"
 #include "Character/MiniPawnData.h"
 #include "Character/MiniPawnExtensionComponent.h"
 #include "Components/GameFrameworkComponentDelegates.h"
@@ -135,7 +136,9 @@ bool UMiniHeroComponent::ActivateInput(UInputMappingContext* MappingContext)
 		? LocalPlayer->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>() : nullptr;
 	if (!MappingContext || !Pawn || !Controller || !InputComponent || !Config || !ASC || !Subsystem ||
 		!HasReachedInitState(MiniGameplayTags::InitState_DataInitialized) ||
-		ASC->GetAvatarActor() != Pawn || bInputSuppressed || Controller->IsMiniInputBlocked())
+		ASC->GetAvatarActor() != Pawn || bInputSuppressed || Controller->IsMiniInputBlocked() ||
+		(Pawn->GetHealthComponent() && Pawn->GetHealthComponent()->IsDead()) ||
+		ASC->HasMatchingGameplayTag(MiniGameplayTags::State_Dead))
 	{
 		return false;
 	}

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ModularPlayerController.h"
+#include "CommonPlayerController.h"
 #include "TimerManager.h"
 #include "MiniPlayerController.generated.h"
 
@@ -10,7 +10,7 @@ class UMiniQuickBarComponent;
 
 /** Extension receiver for a local or remote Mini player. */
 UCLASS()
-class FPS_API AMiniPlayerController : public AModularPlayerController
+class FPS_API AMiniPlayerController : public ACommonPlayerController
 {
 	GENERATED_BODY()
 
@@ -21,8 +21,10 @@ public:
 	virtual void OnRep_PlayerState() override;
 	virtual void OnUnPossess() override;
 	virtual void PostProcessInput(const float DeltaTime, const bool bGamePaused) override;
+	virtual void SetupInputComponent() override;
 	void SetMiniInputBlocked(bool bBlocked);
-	bool IsMiniInputBlocked() const { return bMiniInputBlocked; }
+	void SetMiniUIInputBlocked(bool bBlocked);
+	bool IsMiniInputBlocked() const { return bMiniInputBlocked || bMiniUIInputBlocked; }
 	UMiniInventoryManagerComponent* GetInventoryManager() const { return InventoryManager; }
 	UMiniQuickBarComponent* GetQuickBar() const { return QuickBar; }
 
@@ -31,6 +33,8 @@ public:
 	void MiniDumpInventory() const;
 	UFUNCTION(Exec)
 	void MiniDumpQuickBar() const;
+	UFUNCTION(Exec)
+	void MiniToggleMenu();
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = "Mini|Inventory")
@@ -43,6 +47,7 @@ private:
 	void ServerAdvanceTask10Probe(int32 CompletedCycle);
 	void FinishTask10ProbeRespawn();
 	void AdvanceTask10Probe();
+	void RefreshMiniInputBlock();
 
 	enum class ETask10ProbeStage : uint8
 	{
@@ -54,6 +59,7 @@ private:
 	};
 
 	bool bMiniInputBlocked = false;
+	bool bMiniUIInputBlocked = false;
 	bool bTask10ProbeEnabled = false;
 	int32 Task10ProbeCycle = 0;
 	int32 Task10ServerCompletedCycle = 0;

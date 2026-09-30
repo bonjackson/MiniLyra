@@ -1,6 +1,6 @@
 # Mini Lyra 实施进度
 
-更新：2026-09-30（Asia/Shanghai）
+更新：2026-10-01（Asia/Shanghai）
 
 ## 当前进度
 
@@ -18,7 +18,8 @@
 - [x] 任务 16：服务器权威射线步枪、双射线遮挡、GameplayEffect 伤害与联机专项；详见 `Docs/Task16/AuthoritativeRifle.md`。
 - [x] 任务 17：独立弹药、服务器装填、步枪连发／手枪单发及装备实例校验；构建、三进程专项、任务 10–16 回归通过，已提交推送 `04887b1`。
 - [x] 任务 18：GameplayCue、战斗反馈与武器动画完成；最终 Editor／Game 构建、增强三进程、缺失媒体、有声渲染、资产及 Cue 生命周期专项、任务 11／15／16／17 回归通过，观察者截图已复核。
-- [ ] 任务 19–30：尚未开始活动实现。
+- [x] 任务 19：GameplayMessage 本地 HUD 桥接、CommonUI 层栈和 UIExtension 注入完成；最终 Editor／Game 统一编译、资产三阶段、默认／媒体三进程与加载失败双端专项、任务 10／15／17／18 回归通过，十张截图已复核。
+- [ ] 任务 20–30：下一入口为完整训练 Experience；任务 20 的设计／Loadout 草稿尚未整合到活动代码。
 
 用户已确认第三人称、2–4 人竞技场，并明确允许忽略旧实现、从空项目开始。任务 01 据此重置活动源码和配置，保留旧工程文件作为本地备份；任务 02 在该空基线上建立独立的 Mini 内容入口。之前的 MiniExperience 启动壳不计作已完成框架。
 
@@ -177,7 +178,15 @@ Pawn 上新增 `UMiniCombatFeedbackComponent`，经角色 `IGameplayCueInterface
 
 最终 Editor／Game Win64 Development 构建、Cue／Animation 资产幂等创建及新进程验证、CuePath 激活／撤销专项、增强 `VerifyTask18.ps1` 默认和 `-NoMediaAssets` 三进程专项均通过。增强专项核对拥有者即时开火一次且回声抑制一次、观察者开火一次、可靠命中确认、撞击／受伤、切枪取消、同帧快速取消无孤立 Cue、重新装填恢复及死亡停止。清空媒体引用后两端声音／动画播放计数为零，但服务器仍结算 25 伤害并正确死亡。
 
-`-WithMedia` 重跑通过渲染与成功播放断言，生成四张 Reload／Death 截图，并导出两端实际 AudioMixer master mix WAV；一轮录音为双声道 48 kHz、约 2.3 秒、峰值 32763，两端 RMS 约 4220／4261，确认真实非静音音频输出。补光后的观察者截图已复核，枪械和死亡姿态清晰；证据保存为 [ObserverReload.png](Task18/ObserverReload.png) 与 [ObserverDeath.png](Task18/ObserverDeath.png)，黑背景来自高空隔离探针，不代表训练图效果。任务 11／15／16／17 回归全部通过；任务 16 旧探针改用 MOVE_Flying 保留朝向复制，并在相机校正后等待 0.45 秒再输入，正式服务器视角校验保持原样。任务 18 已完成，任务 19 尚未开始活动实现。资产路径、生命周期、命令和实际结果见 [任务 18 文档](Task18/CombatFeedback.md)。
+`-WithMedia` 重跑通过渲染与成功播放断言，生成四张 Reload／Death 截图，并导出两端实际 AudioMixer master mix WAV；一轮录音为双声道 48 kHz、约 2.3 秒、峰值 32763，两端 RMS 约 4220／4261，确认真实非静音音频输出。补光后的观察者截图已复核，枪械和死亡姿态清晰；证据保存为 [ObserverReload.png](Task18/ObserverReload.png) 与 [ObserverDeath.png](Task18/ObserverDeath.png)，黑背景来自高空隔离探针，不代表训练图效果。任务 11／15／16／17 回归全部通过；任务 16 旧探针改用 MOVE_Flying 保留朝向复制，并在相机校正后等待 0.45 秒再输入，正式服务器视角校验保持原样。任务 18 已完成，任务 19 的 HUD 接入现已完成，见下方记录。资产路径、生命周期、命令和实际结果见 [任务 18 文档](Task18/CombatFeedback.md)。
+
+## 任务 19：本地消息、CommonUI 与模块化 HUD（完成）
+
+CommonGame UI Policy 为每个 LocalPlayer 建立 Game／Menu／Modal 根层栈；MiniShooterCore 的 AddWidgets Action 按 World／上下文异步注入一个 HUDLayout 和四个 UIExtension 元素，并在 HUD、根布局、世界或功能撤销时清理自己的贡献。ViewModel 从当前 ASC、库存和装备先取快照再发 GameplayMessage 本地通知，处理迟到复制及重生重绑定；命中准星只使用服务器 owner-only 确认。菜单和基础加载／失败界面采用按来源登记的输入门控，停止监听不依赖 Widget GC。
+
+2026-10-01 最终 Editor／Game Development 均以 `-DisableAdaptiveUnity` 统一编译通过；资产 Create／CreateAgain／Verify、补强后的默认与媒体三进程、有效／未知 Experience 的加载双端默认与媒体专项全部 PASS。主机权威刷新、晚创建 HUD、菜单输入恢复、真实根布局释放／重建、重生、真实插件撤销和撤销后重建根布局仍零 HUD／Action／门控均验证；六张战斗 UI 图与四张加载图已复核。任务 10／15／17 回归和任务 18 等待条件括号修复后的重跑均通过。新增 Probe helper 使用任务前缀避免 unity 合并重名，正式射击／伤害校验保持不变。
+
+最终代表截图保存在 `Docs/Task19/Evidence`，实现、日志与命令见 [任务 19 文档](Task19/ModularHUD.md)。训练灰盒仍有光照未重建提示，真实可伤害训练靶、数据 Loadout／共享 ActionSet 和新的打包烟测留给任务 20；比分／时间保持占位。任务 19 单项提交推送由本次收尾执行，版本标识以 Git 为准。
 
 ## 插件状态与后续安排
 
@@ -190,9 +199,9 @@ Pawn 上新增 `UMiniCombatFeedbackComponent`，经角色 `IGameplayCueInterface
 | GameplayAbilities（GAS） | 引擎自带 | 任务 09 已接入 PlayerState ASC、AbilitySet 与效果／属性复制；任务 10 的输入处理已通过双进程专项验收 | 后续实现正式战斗能力 |
 | GameFeatures、ModularGameplay | 引擎自带 | 任务 06 已用于 `MiniShooterCore` 激活与 AddComponents 注入 | 后续 Action 类型沿用本次的 World 作用域和回收路径 |
 | EnhancedInput | 引擎自带 | 任务 03 已启用；任务 10 输入资产、重生及撤销专项验收通过 | 后续配合相机、装备和菜单接入 |
-| CommonUI／CommonInput | 引擎自带 | 任务 03 已核清并启用 CommonUI | 任务 19 实现 UI；CommonInput 是模块，不是独立插件 |
-| ModularGameplayActors、GameplayMessageRouter | 本机 Lyra 的 `Plugins` | 任务 03 已迁入 | 按需调用运行时模块 |
-| CommonGame、CommonUser、UIExtension | 本机 Lyra 的 `Plugins` | 任务 03 已迁入并核查依赖 | 会话与 HUD 在后续任务实现 |
+| CommonUI／CommonInput | 引擎自带 | 任务 19 层栈、菜单与输入回收已验证 | CommonInput 是模块；产品前端留到任务 24 |
+| ModularGameplayActors、GameplayMessageRouter | 本机 Lyra 的 `Plugins` | 任务 19 已接入 CommonPlayerController 生命周期和本地 HUD 消息 | 消息只做本地通知，不替代网络复制 |
+| CommonGame、CommonUser、UIExtension | 本机 Lyra 的 `Plugins` | 任务 19 UI Policy、LocalPlayer 插槽与功能撤销已验证 | CommonUser 仍作依赖，首版不接平台登录 |
 
 这里“不需要安装”指不用额外下载／购买；引擎插件启用、Lyra 项目插件迁入及 Build.cs／`.uproject` 配置已在任务 03 完成。CommonGame 的 CommonUser／OnlineFramework 传递依赖仍保留，即使首版不做平台登录。
 
@@ -223,4 +232,4 @@ git status --short
 
 ## 下一次入口
 
-任务 17 已完成并推送；任务 18 实现与验收已完成，按单项提交推送后开始任务 19 的 GameplayMessage、CommonUI 层栈与 HUD 注入。任务 16 的服务器回溯／竞技级延迟补偿仍属延期项；任务 06 的打包联机、IoStore staging 及同进程多 World Experience 并存也仍需后续验收。
+任务 01–19 的实现与验收已完成；本次收尾单独提交推送任务 19，随后完成任务 20 的可玩训练 Experience：真实训练靶、数据 Loadout／共享 ActionSet、训练补给与光照，以及新的打包烟测。任务 16 的服务器回溯／竞技级延迟补偿仍属延期项；任务 06 的旧包不代表当前训练模式已完成打包联机验收。

@@ -3,6 +3,7 @@
 #include "AbilitySystem/MiniAbilitySystemComponent.h"
 #include "AbilitySystem/MiniProbeAbility.h"
 #include "Character/MiniCharacter.h"
+#include "Character/MiniHealthComponent.h"
 #include "Character/MiniHeroComponent.h"
 #include "Character/MiniPawnExtensionComponent.h"
 #include "Engine/World.h"
@@ -23,6 +24,9 @@
 #include "Player/MiniPlayerState.h"
 #include "System/MiniGameplayTags.h"
 #include "System/MiniLogChannels.h"
+#include "UI/MiniHUDLayout.h"
+#include "UI/MiniHUDWidgets.h"
+#include "UI/MiniPrimaryGameLayout.h"
 
 namespace
 {
@@ -90,6 +94,34 @@ void AMiniPlayerController::MiniDumpQuickBar() const
 		*GetPathName(), QuickBar ? *QuickBar->GetDebugSnapshot() : TEXT("NoQuickBar"));
 }
 
+void AMiniPlayerController::SetupInputComponent()
+{
+	Super::SetupInputComponent();
+	if (InputComponent)
+	{
+		InputComponent->BindKey(EKeys::Escape, IE_Pressed, this, &ThisClass::MiniToggleMenu);
+	}
+}
+
+void AMiniPlayerController::MiniToggleMenu()
+{
+	UMiniPrimaryGameLayout* Root = IsLocalController()
+		? Cast<UMiniPrimaryGameLayout>(UPrimaryGameLayout::GetPrimaryGameLayout(this)) : nullptr;
+	UCommonActivatableWidgetContainerBase* Layer = Root
+		? Root->GetLayerWidget(UMiniPrimaryGameLayout::GetGameLayerTag()) : nullptr;
+	if (!Layer) { return; }
+	for (UCommonActivatableWidget* Widget : Layer->GetWidgetList())
+	{
+		if (UMiniHUDLayout* Layout = Cast<UMiniHUDLayout>(Widget))
+		{
+			UMiniDebugMenuWidget* Menu = Layout->GetDebugMenu();
+			if (Menu && Menu->IsActivated()) { Layout->CloseDebugMenu(); }
+			else { Layout->OpenDebugMenu(); }
+			return;
+		}
+	}
+}
+
 void AMiniPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
@@ -143,7 +175,7 @@ void AMiniPlayerController::PostProcessInput(const float DeltaTime, const bool b
 	UMiniHeroComponent* Hero = MiniPawn ? MiniPawn->GetHeroComponent() : nullptr;
 	if (ASC)
 	{
-		if (bMiniInputBlocked || !MiniPawn || !Hero || !Hero->IsInputActive() ||
+		if (IsMiniInputBlocked() || !MiniPawn || !Hero || !Hero->IsInputActive() ||
 			ASC->GetAvatarActor() != MiniPawn)
 		{
 			ASC->ClearAbilityInput();
@@ -162,6 +194,20 @@ void AMiniPlayerController::SetMiniInputBlocked(bool bBlocked)
 		return;
 	}
 	bMiniInputBlocked = bBlocked;
+	RefreshMiniInputBlock();
+}
+
+void AMiniPlayerController::SetMiniUIInputBlocked(bool bBlocked)
+{
+	if (bMiniUIInputBlocked != bBlocked)
+	{
+		bMiniUIInputBlocked = bBlocked;
+		RefreshMiniInputBlock();
+	}
+}
+
+void AMiniPlayerController::RefreshMiniInputBlock()
+{
 	if (AMiniPlayerState* MiniPlayerState = GetPlayerState<AMiniPlayerState>())
 	{
 		if (UMiniAbilitySystemComponent* ASC = MiniPlayerState->GetMiniAbilitySystemComponent())
@@ -173,7 +219,12 @@ void AMiniPlayerController::SetMiniInputBlocked(bool bBlocked)
 	{
 		if (UMiniHeroComponent* Hero = MiniPawn->GetHeroComponent())
 		{
-			Hero->SetInputSuppressed(bBlocked);
+			const UMiniHealthComponent* Health = MiniPawn->GetHealthComponent();
+			const AMiniPlayerState* State = GetPlayerState<AMiniPlayerState>();
+			const UMiniAbilitySystemComponent* ASC = State ? State->GetMiniAbilitySystemComponent() : nullptr;
+			const bool bDead = (Health && Health->IsDead()) ||
+				(ASC && ASC->HasMatchingGameplayTag(MiniGameplayTags::State_Dead));
+			Hero->SetInputSuppressed(IsMiniInputBlocked() || bDead);
 		}
 	}
 }

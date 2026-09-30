@@ -22,7 +22,7 @@
 #if WITH_EDITOR
 namespace
 {
-UEdGraph* FindAnimGraph(UAnimBlueprint* Blueprint)
+UEdGraph* Task18AnimFindAnimGraph(UAnimBlueprint* Blueprint)
 {
 	TArray<UEdGraph*> Graphs;
 	Blueprint->GetAllGraphs(Graphs);
@@ -36,7 +36,7 @@ UEdGraph* FindAnimGraph(UAnimBlueprint* Blueprint)
 	return nullptr;
 }
 
-UEdGraphPin* FindPosePin(UEdGraphNode* Node, EEdGraphPinDirection Direction)
+UEdGraphPin* Task18AnimFindPosePin(UEdGraphNode* Node, EEdGraphPinDirection Direction)
 {
 	for (UEdGraphPin* Pin : Node->Pins)
 	{
@@ -48,14 +48,14 @@ UEdGraphPin* FindPosePin(UEdGraphNode* Node, EEdGraphPinDirection Direction)
 	return nullptr;
 }
 
-bool IsDirectlyLinked(const UEdGraphPin* Output, const UEdGraphPin* Input)
+bool Task18AnimIsDirectlyLinked(const UEdGraphPin* Output, const UEdGraphPin* Input)
 {
 	return Output && Input && Output->LinkedTo.Num() == 1 && Output->LinkedTo[0] == Input &&
 		Input->LinkedTo.Num() == 1 && Input->LinkedTo[0] == Output;
 }
 
 template<typename NodeType>
-NodeType* MakeNode(UEdGraph* Graph, int32 X, int32 Y)
+NodeType* Task18AnimMakeNode(UEdGraph* Graph, int32 X, int32 Y)
 {
 	FGraphNodeCreator<NodeType> Creator(*Graph);
 	NodeType* Node = Creator.CreateNode();
@@ -65,7 +65,7 @@ NodeType* MakeNode(UEdGraph* Graph, int32 X, int32 Y)
 	return Node;
 }
 
-bool Compile(UAnimBlueprint* Blueprint)
+bool Task18AnimCompile(UAnimBlueprint* Blueprint)
 {
 	FBlueprintEditorUtils::MarkBlueprintAsStructurallyModified(Blueprint);
 	FKismetEditorUtilities::CompileBlueprint(Blueprint);
@@ -87,9 +87,9 @@ bool UMiniTask18AnimAssetLibrary::ConfigureCharacterSlot(UAnimBlueprint* AnimBlu
 	{
 		return true;
 	}
-	UEdGraph* Graph = FindAnimGraph(AnimBlueprint);
+	UEdGraph* Graph = Task18AnimFindAnimGraph(AnimBlueprint);
 	UAnimGraphNode_Root* Root = Graph ? FBlueprintEditorUtils::GetAnimGraphRoot(Graph) : nullptr;
-	UEdGraphPin* RootInput = Root ? FindPosePin(Root, EGPD_Input) : nullptr;
+	UEdGraphPin* RootInput = Root ? Task18AnimFindPosePin(Root, EGPD_Input) : nullptr;
 	if (!RootInput || RootInput->LinkedTo.Num() != 1 ||
 		Graph->Nodes.ContainsByPredicate([](const UEdGraphNode* Node) { return Node->IsA<UAnimGraphNode_Slot>(); }))
 	{
@@ -105,10 +105,10 @@ bool UMiniTask18AnimAssetLibrary::ConfigureCharacterSlot(UAnimBlueprint* AnimBlu
 	AnimBlueprint->TargetSkeleton->Modify();
 	Graph->Modify();
 	RootInput->BreakAllPinLinks();
-	UAnimGraphNode_Slot* Slot = MakeNode<UAnimGraphNode_Slot>(Graph, Root->NodePosX - 230, Root->NodePosY);
+	UAnimGraphNode_Slot* Slot = Task18AnimMakeNode<UAnimGraphNode_Slot>(Graph, Root->NodePosX - 230, Root->NodePosY);
 	Slot->Node.SlotName = SlotName;
-	if (!Graph->GetSchema()->TryCreateConnection(MovementOutput, FindPosePin(Slot, EGPD_Input)) ||
-		!Graph->GetSchema()->TryCreateConnection(FindPosePin(Slot, EGPD_Output), RootInput))
+	if (!Graph->GetSchema()->TryCreateConnection(MovementOutput, Task18AnimFindPosePin(Slot, EGPD_Input)) ||
+		!Graph->GetSchema()->TryCreateConnection(Task18AnimFindPosePin(Slot, EGPD_Output), RootInput))
 	{
 		Graph->RemoveNode(Slot);
 		Graph->GetSchema()->TryCreateConnection(MovementOutput, RootInput);
@@ -116,7 +116,7 @@ bool UMiniTask18AnimAssetLibrary::ConfigureCharacterSlot(UAnimBlueprint* AnimBlu
 	}
 	AnimBlueprint->TargetSkeleton->RegisterSlotNode(SlotName);
 	AnimBlueprint->TargetSkeleton->MarkPackageDirty();
-	return Compile(AnimBlueprint) && VerifyCharacterSlot(AnimBlueprint, SlotName);
+	return Task18AnimCompile(AnimBlueprint) && VerifyCharacterSlot(AnimBlueprint, SlotName);
 #else
 	return false;
 #endif
@@ -132,23 +132,23 @@ bool UMiniTask18AnimAssetLibrary::VerifyCharacterSlot(const UAnimBlueprint* Anim
 	{
 		return false;
 	}
-	UEdGraph* Graph = FindAnimGraph(const_cast<UAnimBlueprint*>(AnimBlueprint));
+	UEdGraph* Graph = Task18AnimFindAnimGraph(const_cast<UAnimBlueprint*>(AnimBlueprint));
 	UAnimGraphNode_Root* Root = Graph ? FBlueprintEditorUtils::GetAnimGraphRoot(Graph) : nullptr;
-	UEdGraphPin* RootInput = Root ? FindPosePin(Root, EGPD_Input) : nullptr;
+	UEdGraphPin* RootInput = Root ? Task18AnimFindPosePin(Root, EGPD_Input) : nullptr;
 	if (!RootInput || RootInput->LinkedTo.Num() != 1)
 	{
 		return false;
 	}
 	const UAnimGraphNode_Slot* Slot = Cast<UAnimGraphNode_Slot>(RootInput->LinkedTo[0]->GetOwningNode());
 	if (!Slot || Slot->Node.SlotName != SlotName ||
-		!IsDirectlyLinked(FindPosePin(const_cast<UAnimGraphNode_Slot*>(Slot), EGPD_Output), RootInput))
+		!Task18AnimIsDirectlyLinked(Task18AnimFindPosePin(const_cast<UAnimGraphNode_Slot*>(Slot), EGPD_Output), RootInput))
 	{
 		return false;
 	}
-	UEdGraphPin* SlotInput = FindPosePin(const_cast<UAnimGraphNode_Slot*>(Slot), EGPD_Input);
+	UEdGraphPin* SlotInput = Task18AnimFindPosePin(const_cast<UAnimGraphNode_Slot*>(Slot), EGPD_Input);
 	if (!SlotInput || SlotInput->LinkedTo.Num() != 1 ||
 		!SlotInput->LinkedTo[0]->GetOwningNode()->IsA<UAnimGraphNode_BlendListByBool>() ||
-		!IsDirectlyLinked(SlotInput->LinkedTo[0], SlotInput))
+		!Task18AnimIsDirectlyLinked(SlotInput->LinkedTo[0], SlotInput))
 	{
 		return false;
 	}
@@ -179,7 +179,7 @@ bool UMiniTask18AnimAssetLibrary::ConfigureWeaponAnim(UAnimBlueprint* AnimBluepr
 	{
 		return true;
 	}
-	UEdGraph* Graph = FindAnimGraph(AnimBlueprint);
+	UEdGraph* Graph = Task18AnimFindAnimGraph(AnimBlueprint);
 	UAnimGraphNode_Root* Root = Graph ? FBlueprintEditorUtils::GetAnimGraphRoot(Graph) : nullptr;
 	if (!Root || !Graph->Nodes.Contains(Root) ||
 		Graph->Nodes.ContainsByPredicate([Root](const UEdGraphNode* Node)
@@ -200,11 +200,11 @@ bool UMiniTask18AnimAssetLibrary::ConfigureWeaponAnim(UAnimBlueprint* AnimBluepr
 		}
 	}
 	Root->BreakAllNodeLinks();
-	UAnimGraphNode_LocalRefPose* BasePose = MakeNode<UAnimGraphNode_LocalRefPose>(Graph, -460, 0);
-	UAnimGraphNode_Slot* Slot = MakeNode<UAnimGraphNode_Slot>(Graph, -230, 0);
+	UAnimGraphNode_LocalRefPose* BasePose = Task18AnimMakeNode<UAnimGraphNode_LocalRefPose>(Graph, -460, 0);
+	UAnimGraphNode_Slot* Slot = Task18AnimMakeNode<UAnimGraphNode_Slot>(Graph, -230, 0);
 	Slot->Node.SlotName = SlotName;
-	if (!Graph->GetSchema()->TryCreateConnection(FindPosePin(BasePose, EGPD_Output), FindPosePin(Slot, EGPD_Input)) ||
-		!Graph->GetSchema()->TryCreateConnection(FindPosePin(Slot, EGPD_Output), FindPosePin(Root, EGPD_Input)))
+	if (!Graph->GetSchema()->TryCreateConnection(Task18AnimFindPosePin(BasePose, EGPD_Output), Task18AnimFindPosePin(Slot, EGPD_Input)) ||
+		!Graph->GetSchema()->TryCreateConnection(Task18AnimFindPosePin(Slot, EGPD_Output), Task18AnimFindPosePin(Root, EGPD_Input)))
 	{
 		Graph->RemoveNode(Slot);
 		Graph->RemoveNode(BasePose);
@@ -212,7 +212,7 @@ bool UMiniTask18AnimAssetLibrary::ConfigureWeaponAnim(UAnimBlueprint* AnimBluepr
 	}
 	AnimBlueprint->TargetSkeleton->RegisterSlotNode(SlotName);
 	AnimBlueprint->TargetSkeleton->MarkPackageDirty();
-	return Compile(AnimBlueprint) && VerifyWeaponAnim(AnimBlueprint, SlotName);
+	return Task18AnimCompile(AnimBlueprint) && VerifyWeaponAnim(AnimBlueprint, SlotName);
 #else
 	return false;
 #endif
@@ -228,23 +228,23 @@ bool UMiniTask18AnimAssetLibrary::VerifyWeaponAnim(const UAnimBlueprint* AnimBlu
 	{
 		return false;
 	}
-	UEdGraph* Graph = FindAnimGraph(const_cast<UAnimBlueprint*>(AnimBlueprint));
+	UEdGraph* Graph = Task18AnimFindAnimGraph(const_cast<UAnimBlueprint*>(AnimBlueprint));
 	UAnimGraphNode_Root* Root = Graph ? FBlueprintEditorUtils::GetAnimGraphRoot(Graph) : nullptr;
-	UEdGraphPin* RootInput = Root ? FindPosePin(Root, EGPD_Input) : nullptr;
+	UEdGraphPin* RootInput = Root ? Task18AnimFindPosePin(Root, EGPD_Input) : nullptr;
 	if (!Graph || Graph->Nodes.Num() != 3 || !RootInput || RootInput->LinkedTo.Num() != 1)
 	{
 		return false;
 	}
 	const UAnimGraphNode_Slot* Slot = Cast<UAnimGraphNode_Slot>(RootInput->LinkedTo[0]->GetOwningNode());
 	if (!Slot || Slot->Node.SlotName != SlotName ||
-		!IsDirectlyLinked(FindPosePin(const_cast<UAnimGraphNode_Slot*>(Slot), EGPD_Output), RootInput))
+		!Task18AnimIsDirectlyLinked(Task18AnimFindPosePin(const_cast<UAnimGraphNode_Slot*>(Slot), EGPD_Output), RootInput))
 	{
 		return false;
 	}
-	UEdGraphPin* SlotInput = FindPosePin(const_cast<UAnimGraphNode_Slot*>(Slot), EGPD_Input);
+	UEdGraphPin* SlotInput = Task18AnimFindPosePin(const_cast<UAnimGraphNode_Slot*>(Slot), EGPD_Input);
 	return SlotInput && SlotInput->LinkedTo.Num() == 1 &&
 		SlotInput->LinkedTo[0]->GetOwningNode()->IsA<UAnimGraphNode_LocalRefPose>() &&
-		IsDirectlyLinked(SlotInput->LinkedTo[0], SlotInput);
+		Task18AnimIsDirectlyLinked(SlotInput->LinkedTo[0], SlotInput);
 #else
 	return false;
 #endif

@@ -11,14 +11,14 @@
 
 namespace
 {
-const FString CuePath(TEXT("/MiniShooterCore/GameplayCues"));
+const FString Task18PathCuePath(TEXT("/MiniShooterCore/GameplayCues"));
 
-bool HasPluginPath()
+bool Task18PathHasPluginPath()
 {
-	return UAbilitySystemGlobals::Get().GetGameplayCueNotifyPaths().Contains(CuePath);
+	return UAbilitySystemGlobals::Get().GetGameplayCueNotifyPaths().Contains(Task18PathCuePath);
 }
 
-bool HasProbeCue()
+bool Task18PathHasProbeCue()
 {
 	UGameplayCueManager* Manager = UAbilitySystemGlobals::Get().GetGameplayCueManager();
 	const UGameplayCueSet* CueSet = Manager ? Manager->GetRuntimeCueSet() : nullptr;
@@ -31,7 +31,7 @@ bool HasProbeCue()
 	for (const FGameplayCueNotifyData& Data : CueSet->GameplayCueData)
 	{
 		if (Data.GameplayCueTag == ProbeTag &&
-			Data.GameplayCueNotifyObj.ToString().StartsWith(CuePath + TEXT("/")))
+			Data.GameplayCueNotifyObj.ToString().StartsWith(Task18PathCuePath + TEXT("/")))
 		{
 			return true;
 		}
@@ -39,7 +39,7 @@ bool HasProbeCue()
 	return false;
 }
 
-void Finish(bool bPassed, const TCHAR* Reason)
+void Task18PathFinish(bool bPassed, const TCHAR* Reason)
 {
 	if (bPassed)
 	{
@@ -52,32 +52,32 @@ void Finish(bool bPassed, const TCHAR* Reason)
 	FPlatformMisc::RequestExit(false);
 }
 
-void RunCuePathLifecycleProbe()
+void Task18PathRunCuePathLifecycleProbe()
 {
 	FString PluginURL;
 	if (!UGameFeaturesSubsystem::Get().GetPluginURLByName(TEXT("MiniShooterCore"), PluginURL))
 	{
-		Finish(false, TEXT("plugin not registered"));
+		Task18PathFinish(false, TEXT("plugin not registered"));
 		return;
 	}
-	const bool bInitiallyClear = !HasPluginPath() && !HasProbeCue();
+	const bool bInitiallyClear = !Task18PathHasPluginPath() && !Task18PathHasProbeCue();
 	UE_LOG(LogMiniInit, Display, TEXT("MiniTask18CuePath INITIAL: Path=%d Probe=%d"),
-		HasPluginPath() ? 1 : 0, HasProbeCue() ? 1 : 0);
+		Task18PathHasPluginPath() ? 1 : 0, Task18PathHasProbeCue() ? 1 : 0);
 	if (!bInitiallyClear)
 	{
-		Finish(false, TEXT("cue path or probe already registered before feature activation"));
+		Task18PathFinish(false, TEXT("cue path or probe already registered before feature activation"));
 		return;
 	}
 	UGameFeaturesSubsystem::Get().LoadAndActivateGameFeaturePlugin(PluginURL,
 		FGameFeaturePluginLoadComplete::CreateLambda([PluginURL](const UE::GameFeatures::FResult& Result)
 		{
-			const bool bActive = Result.HasValue() && HasPluginPath() && HasProbeCue();
+			const bool bActive = Result.HasValue() && Task18PathHasPluginPath() && Task18PathHasProbeCue();
 			UE_LOG(LogMiniInit, Display,
 				TEXT("MiniTask18CuePath ACTIVE: Result=%d Path=%d Probe=%d"),
-				Result.HasValue() ? 1 : 0, HasPluginPath() ? 1 : 0, HasProbeCue() ? 1 : 0);
+				Result.HasValue() ? 1 : 0, Task18PathHasPluginPath() ? 1 : 0, Task18PathHasProbeCue() ? 1 : 0);
 			if (!bActive)
 			{
-				Finish(false, TEXT("feature activation did not register and scan cue asset"));
+				Task18PathFinish(false, TEXT("feature activation did not register and scan cue asset"));
 				return;
 			}
 			UGameFeaturesSubsystem::Get().DeactivateGameFeaturePlugin(PluginURL,
@@ -85,12 +85,12 @@ void RunCuePathLifecycleProbe()
 					[](const UE::GameFeatures::FResult& DeactivateResult)
 					{
 						const bool bCleared = DeactivateResult.HasValue() &&
-							!HasPluginPath() && !HasProbeCue();
+							!Task18PathHasPluginPath() && !Task18PathHasProbeCue();
 						UE_LOG(LogMiniInit, Display,
 							TEXT("MiniTask18CuePath INACTIVE: Result=%d Path=%d Probe=%d"),
 							DeactivateResult.HasValue() ? 1 : 0,
-							HasPluginPath() ? 1 : 0, HasProbeCue() ? 1 : 0);
-						Finish(bCleared, bCleared ? TEXT("lifecycle complete") :
+							Task18PathHasPluginPath() ? 1 : 0, Task18PathHasProbeCue() ? 1 : 0);
+						Task18PathFinish(bCleared, bCleared ? TEXT("lifecycle complete") :
 							TEXT("feature deactivation left cue path or asset mapped"));
 					}));
 		}));
@@ -99,7 +99,7 @@ void RunCuePathLifecycleProbe()
 FAutoConsoleCommand CuePathLifecycleCommand(
 	TEXT("Mini.Task18CuePathLifecycle"),
 	TEXT("Activate and deactivate MiniShooterCore, checking Cue path and asset discovery."),
-	FConsoleCommandDelegate::CreateStatic(&RunCuePathLifecycleProbe));
+	FConsoleCommandDelegate::CreateStatic(&Task18PathRunCuePathLifecycleProbe));
 }
 
 #endif

@@ -1,8 +1,16 @@
 # Mini Experience Bootstrap
 
-> 历史文档：2026-09-27 执行任务 01 时，用户要求从空项目开始，本文涉及的旧实现已经归档至 `Backups/Task01_PreReset_20260927`，不在当前 Source/Config 中启用。请以 `MiniLyraProgress.md` 和 `MiniLyraRoadmap.md` 的任务顺序为准。
+> 历史文档：2026-09-27 执行任务 01 时，用户要求从空项目开始，下方归档章节涉及的旧实现已经归档至 `Backups/Task01_PreReset_20260927`，不在当前 Source/Config 中启用。请以 `MiniLyraProgress.md` 和 `MiniLyraRoadmap.md` 的任务顺序为准。
 
-## 目标
+## 当前启动链（更新至 2026-10-01）
+
+任务 01–19 已完成实现与验收。当前链路为地图／项目配置选择真实 Experience ID → GameState 复制 ID → 每端独立加载 Experience、PawnData、ActionSets 和 GameFeatures → 本地 Loaded → 服务器出生、PawnExtension／Hero 初始化、PlayerState ASC 绑定当前 Avatar → 输入与装备能力。下方旧实现的猜测 ID 兜底、网络加密测试和 CommonSession 反射绑定均不属于活动链路。
+
+任务 19 已增加 CommonGame UI Policy 和每 LocalPlayer 的 Game／Menu／Modal 根层栈；MiniShooterCore 经 AddWidgets Action 和 UIExtension 注入战斗 HUD。HUD 从已复制属性／装备取初始快照，GameplayMessage 只发本地通知；根布局的加载／失败界面在玩法 HUD 未创建或撤销后仍可存在。菜单、HUD 监听与异步句柄按对应生命周期回收，主机与客户端独立显示自己的数据。
+
+最终 Editor／Game 统一编译、资产三阶段、三进程默认／媒体 UI 专项、有效／未知 ID 的双端加载专项及任务 10／15／17／18 回归均通过，十张图已复核；见 [任务 19 文档](Task19/ModularHUD.md)。下一入口是任务 20 的训练靶、数据装配与当前包烟测，训练灰盒光照和比分／计时占位仍需后续完成。
+
+## 归档实现的目标
 
 为 FPS 项目搭建一套最小可演示的 Experience 启动链路，用于后续接入地图 Experience、项目默认 Experience、Game Feature 加载、网络加密测试数据和初始化状态协作。
 

@@ -9,7 +9,7 @@
 namespace
 {
 const FName CueActionName(TEXT("MiniTask18_AddGameplayCuePath"));
-const FString CuePath(TEXT("/MiniShooterCore/GameplayCues"));
+const FString Task18AssetCuePath(TEXT("/MiniShooterCore/GameplayCues"));
 }
 #endif
 
@@ -41,7 +41,7 @@ bool UMiniTask18CueAssetSetupLibrary::EnsurePluginCueAction(UGameFeatureData* Fe
 		Actions.Add(CueAction);
 	}
 	CueAction->Modify();
-	CueAction->CuePath = CuePath;
+	CueAction->CuePath = Task18AssetCuePath;
 	FeatureData->MarkPackageDirty();
 	return true;
 #else
@@ -63,7 +63,7 @@ bool UMiniTask18CueAssetSetupLibrary::VerifyPluginCueAction(const UGameFeatureDa
 		{
 			const UMiniGameFeatureAction_AddGameplayCuePath* CueAction =
 				Cast<UMiniGameFeatureAction_AddGameplayCuePath>(Action);
-			if (!CueAction || CueAction->CuePath != CuePath)
+			if (!CueAction || CueAction->CuePath != Task18AssetCuePath)
 			{
 				return false;
 			}
@@ -80,7 +80,7 @@ bool UMiniTask18CueAssetSetupLibrary::VerifyProbeCueClass(UClass* CueClass)
 {
 #if WITH_EDITOR
 	if (!CueClass || !CueClass->IsChildOf(UGameplayCueNotify_Static::StaticClass()) ||
-		!CueClass->GetPathName().StartsWith(CuePath + TEXT("/")))
+		!CueClass->GetPathName().StartsWith(Task18AssetCuePath + TEXT("/")))
 	{
 		return false;
 	}

@@ -122,11 +122,11 @@ try {
         if ($serverText.Contains($pass) -and
             ($clientAText + $clientBText) -match 'MiniTask18Probe CLIENT_DEATH_COUNTS: Owner=1 Death=1 ReloadStop=2' -and
             ($clientAText + $clientBText) -match 'MiniTask18Probe CLIENT_DEATH_COUNTS: Owner=2 Death=1 ReloadStop=2' -and
-            (-not $WithMedia -or @($screenshots + $recordings | Where-Object {
+            (-not $WithMedia -or (@($screenshots + $recordings | Where-Object {
                 -not (Test-Path -LiteralPath $_ -PathType Leaf)
             }).Count -eq 0 -and
                 ($clientAText + $clientBText) -match 'CLIENT_AUDIO_EXPORTED: Owner=1' -and
-                ($clientAText + $clientBText) -match 'CLIENT_AUDIO_EXPORTED: Owner=2')) {
+                ($clientAText + $clientBText) -match 'CLIENT_AUDIO_EXPORTED: Owner=2'))) {
             break
         }
         Start-Sleep -Milliseconds 500

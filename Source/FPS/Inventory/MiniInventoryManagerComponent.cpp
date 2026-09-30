@@ -39,6 +39,15 @@ UMiniInventoryManagerComponent::UMiniInventoryManagerComponent(const FObjectInit
 	InventoryList.OwnerComponent = this;
 }
 
+void FMiniInventoryList::PostReplicatedReceive(const FFastArraySerializer::FPostReplicatedReceiveParameters& Parameters)
+{
+	// Runs after add/change/remove and again when delayed UObject references map.
+	if (OwnerComponent)
+	{
+		OwnerComponent->NotifyDataChanged();
+	}
+}
+
 void UMiniInventoryManagerComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -77,6 +86,7 @@ UMiniInventoryItemInstance* UMiniInventoryManagerComponent::AddItem(
 	Entry.Instance = Instance;
 	Entry.StackCount = StackCount;
 	InventoryList.MarkItemDirty(Entry);
+	NotifyDataChanged();
 	Owner->ForceNetUpdate();
 	UE_LOG(LogMiniInit, Display, TEXT("MiniInventory SERVER_ADD: Owner=%s Definition=%s InstanceId=%s Count=%d"),
 		*Owner->GetPathName(), *GetNameSafe(Definition.Get()), *Instance->GetInstanceId().ToString(), StackCount);
@@ -116,6 +126,7 @@ bool UMiniInventoryManagerComponent::RemoveItem(UMiniInventoryItemInstance* Inst
 	const FGuid RemovedId = Instance->GetInstanceId();
 	InventoryList.Entries.RemoveAt(Index);
 	InventoryList.MarkArrayDirty();
+	NotifyDataChanged();
 	// The legacy ReplicateSubobjects path no longer sends this item. Explicitly
 	// close its client replica rather than waiting for the actor channel to end.
 	DestroyReplicatedSubObjectOnRemotePeers(Instance);

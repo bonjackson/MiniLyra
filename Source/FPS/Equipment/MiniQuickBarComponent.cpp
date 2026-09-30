@@ -88,6 +88,7 @@ bool UMiniQuickBarComponent::InitializeForPawn(AMiniCharacter* Pawn)
 	Slots.SetNum(2);
 	Slots[0].Invalidate();
 	Slots[1].Invalidate();
+	OnChanged.Broadcast();
 	// The controller survives respawns, so old item objects cannot be reused.
 	TArray<TObjectPtr<UMiniInventoryItemInstance>> OldItems;
 	for (const FMiniInventoryEntry& Entry : Inventory->GetEntries())
@@ -113,6 +114,7 @@ bool UMiniQuickBarComponent::InitializeForPawn(AMiniCharacter* Pawn)
 	}
 	Slots[0] = Rifle->GetInstanceId();
 	Slots[1] = Pistol->GetInstanceId();
+	OnChanged.Broadcast();
 	Controller->ForceNetUpdate();
 	UE_LOG(LogMiniEquipment, Display,
 		TEXT("MiniQuickBar DEFAULTS: Controller=%s Pawn=%s Rifle=%s Pistol=%s"),
@@ -126,6 +128,7 @@ bool UMiniQuickBarComponent::InitializeForPawn(AMiniCharacter* Pawn)
 	Slots[0].Invalidate();
 	Slots[1].Invalidate();
 	BoundPawn.Reset();
+	OnChanged.Broadcast();
 	Controller->ForceNetUpdate();
 	return false;
 }
@@ -144,6 +147,7 @@ void UMiniQuickBarComponent::HandlePawnLost(AMiniCharacter* Pawn)
 	BoundPawn.Reset();
 	ActiveSlotIndex = INDEX_NONE;
 	Controller->ForceNetUpdate();
+	OnChanged.Broadcast();
 	UE_LOG(LogMiniEquipment, Display, TEXT("MiniQuickBar PAWN_LOST: Controller=%s Pawn=%s"),
 		*Controller->GetPathName(), *Pawn->GetPathName());
 }
@@ -172,6 +176,7 @@ void UMiniQuickBarComponent::HandleItemRemoved(UMiniInventoryItemInstance* Item)
 		ActiveSlotIndex = INDEX_NONE;
 	}
 	Slots[SlotIndex].Invalidate();
+	OnChanged.Broadcast();
 	Controller->ForceNetUpdate();
 }
 
@@ -196,6 +201,7 @@ bool UMiniQuickBarComponent::SelectSlot(int32 SlotIndex)
 		return false;
 	}
 	ActiveSlotIndex = SlotIndex;
+	OnChanged.Broadcast();
 	Controller->ForceNetUpdate();
 	UE_LOG(LogMiniEquipment, Display, TEXT("MiniQuickBar SELECTED: Controller=%s Slot=%d Item=%s"),
 		*Controller->GetPathName(), SlotIndex, *Item->GetInstanceId().ToString());
@@ -226,11 +232,13 @@ void UMiniQuickBarComponent::ServerSelectNextSlot_Implementation()
 
 void UMiniQuickBarComponent::OnRep_Slots()
 {
+	OnChanged.Broadcast();
 	UE_LOG(LogMiniEquipment, Display, TEXT("MiniQuickBar CLIENT_SLOTS: %s"), *GetDebugSnapshot());
 }
 
 void UMiniQuickBarComponent::OnRep_ActiveSlotIndex()
 {
+	OnChanged.Broadcast();
 	UE_LOG(LogMiniEquipment, Display, TEXT("MiniQuickBar CLIENT_ACTIVE: %s"), *GetDebugSnapshot());
 }
 

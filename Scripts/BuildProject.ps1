@@ -4,7 +4,8 @@ param(
     [ValidateSet('FPSEditor', 'FPS')]
     [string]$Target = 'FPSEditor',
     [ValidateSet('Development', 'DebugGame', 'Shipping')]
-    [string]$Configuration = 'Development'
+    [string]$Configuration = 'Development',
+    [switch]$DisableAdaptiveUnity
 )
 
 $ErrorActionPreference = 'Stop'
@@ -25,8 +26,10 @@ New-Item -ItemType Directory -Path $ubaRoot -Force | Out-Null
 
 # UE 5.8 still uses the UBA executor with -NoUBA (detouring is disabled).
 # Keep its storage in this project rather than a system-wide ProgramData folder.
+$unityArguments = @()
+if ($DisableAdaptiveUnity) { $unityArguments += '-DisableAdaptiveUnity' }
 & $buildScript $Target 'Win64' $Configuration "-Project=$projectFile" `
-    '-WaitMutex' '-NoHotReloadFromIDE' '-NoUBA' '-NoXGE' "-UBARootDir=$ubaRoot" "-Log=$buildLog"
+    '-WaitMutex' '-NoHotReloadFromIDE' '-NoUBA' '-NoXGE' "-UBARootDir=$ubaRoot" "-Log=$buildLog" @unityArguments
 if ($LASTEXITCODE -ne 0) {
     throw "UnrealBuildTool failed with exit code $LASTEXITCODE. See $buildLog"
 }

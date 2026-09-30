@@ -11,6 +11,8 @@ class FPS_API UMiniInventoryItemInstance : public UObject
 	GENERATED_BODY()
 
 public:
+	/** Local authoritative mutations and completed replicated fields share this notification. */
+	FSimpleMulticastDelegate OnChanged;
 	virtual bool IsSupportedForNetworking() const override { return true; }
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
@@ -42,12 +44,16 @@ public:
 	}
 
 private:
-	UPROPERTY(Replicated)
+	UFUNCTION()
+	void OnRep_ItemData();
+	void NotifyChanged();
+
+	UPROPERTY(ReplicatedUsing=OnRep_ItemData)
 	TSubclassOf<UMiniInventoryItemDefinition> ItemDefinition;
 
-	UPROPERTY(Replicated)
+	UPROPERTY(ReplicatedUsing=OnRep_ItemData)
 	FGuid InstanceId;
 
-	UPROPERTY(Replicated)
+	UPROPERTY(ReplicatedUsing=OnRep_ItemData)
 	TArray<FMiniInventoryStat> Stats;
 };

@@ -10,11 +10,12 @@ public class FPS : ModuleRules
 		{
 			"Core", "CoreUObject", "Engine", "InputCore", "NetCore",
 			"CommonGame", "GameplayTags", "GameplayAbilities", "GameplayTasks", "EnhancedInput",
-			"GameFeatures", "ModularGameplayActors"
+			"GameFeatures", "ModularGameplayActors", "CommonUI", "CommonInput",
+			"UMG", "UIExtension", "GameplayMessageRuntime"
 		});
 		PrivateDependencyModuleNames.AddRange(new string[]
 		{
-			"ModularGameplay", "AudioMixer"
+			"ModularGameplay", "AudioMixer", "SlateCore", "Slate"
 		});
 		if (Target.bBuildEditor)
 		{
