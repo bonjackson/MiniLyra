@@ -7,6 +7,7 @@
 #include "Character/MiniHeroComponent.h"
 #include "Equipment/MiniEquipmentManagerComponent.h"
 #include "Equipment/MiniQuickBarComponent.h"
+#include "Feedback/MiniCombatFeedbackComponent.h"
 #include "Engine/World.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameModes/MiniGameMode.h"
@@ -103,6 +104,11 @@ void UMiniHealthComponent::StartDeath()
 		return;
 	}
 	bDeathStarted = true;
+	FGameplayCueParameters DeathCue;
+	DeathCue.Location = Pawn->GetActorLocation();
+	DeathCue.Instigator = Pawn;
+	DeathCue.EffectCauser = Pawn;
+	ASC->ExecuteGameplayCue(MiniGameplayTags::GameplayCue_Mini_Death, DeathCue);
 	// Revoke this life's weapon grants while the PlayerState ASC still has this Pawn as Avatar.
 	if (AMiniPlayerController* Controller = Cast<AMiniPlayerController>(Pawn->GetController()))
 	{
@@ -141,6 +147,10 @@ void UMiniHealthComponent::ApplyDeathPresentation()
 	if (UMiniHeroComponent* Hero = Pawn->GetHeroComponent())
 	{
 		Hero->SetInputSuppressed(true);
+	}
+	if (UMiniCombatFeedbackComponent* Feedback = Pawn->GetCombatFeedbackComponent())
+	{
+		Feedback->NotifyDeathState();
 	}
 }
 

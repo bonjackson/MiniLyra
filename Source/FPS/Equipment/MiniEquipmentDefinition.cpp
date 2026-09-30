@@ -4,12 +4,18 @@
 #include "AbilitySystem/MiniGameplayAbility_RangedFire.h"
 #include "AbilitySystem/MiniGameplayAbility_Reload.h"
 #include "AbilitySystem/MiniGameplayAbility_RifleFire.h"
+#include "Animation/AnimInstance.h"
 #include "Engine/SkeletalMesh.h"
 #include "System/MiniGameplayTags.h"
 
 USkeletalMesh* UMiniEquipmentDefinition::GetWeaponMesh() const
 {
 	return WeaponMesh.LoadSynchronous();
+}
+
+UClass* UMiniEquipmentDefinition::GetWeaponAnimClass() const
+{
+	return WeaponAnimClass.LoadSynchronous();
 }
 
 UMiniRifleEquipmentDefinition::UMiniRifleEquipmentDefinition()
@@ -21,6 +27,8 @@ UMiniRifleEquipmentDefinition::UMiniRifleEquipmentDefinition()
 	ReloadDuration = 1.8f;
 	WeaponMesh = TSoftObjectPtr<USkeletalMesh>(FSoftObjectPath(
 		TEXT("/Game/Mini/Weapons/Rifle/Mesh/SK_Rifle.SK_Rifle")));
+	WeaponAnimClass = TSoftClassPtr<UAnimInstance>(FSoftObjectPath(
+		TEXT("/Game/Mini/Weapons/Rifle/Animations/ABP_MiniRifleWeapon.ABP_MiniRifleWeapon_C")));
 	AbilitySet = CreateDefaultSubobject<UMiniAbilitySet>(TEXT("RifleEquipmentAbilities"));
 	FMiniAbilitySetAbility& Fire = AbilitySet->Abilities.AddDefaulted_GetRef();
 	Fire.Ability = UMiniGameplayAbility_RifleFire::StaticClass();
@@ -39,6 +47,8 @@ UMiniPistolEquipmentDefinition::UMiniPistolEquipmentDefinition()
 	ReloadDuration = 1.45f;
 	WeaponMesh = TSoftObjectPtr<USkeletalMesh>(FSoftObjectPath(
 		TEXT("/Game/Mini/Weapons/Pistol/Mesh/SK_Pistol.SK_Pistol")));
+	WeaponAnimClass = TSoftClassPtr<UAnimInstance>(FSoftObjectPath(
+		TEXT("/Game/Mini/Weapons/Pistol/Animations/ABP_MiniPistolWeapon.ABP_MiniPistolWeapon_C")));
 	AbilitySet = CreateDefaultSubobject<UMiniAbilitySet>(TEXT("PistolEquipmentAbilities"));
 	FMiniAbilitySetAbility& Fire = AbilitySet->Abilities.AddDefaulted_GetRef();
 	Fire.Ability = UMiniGameplayAbility_RangedFire::StaticClass();

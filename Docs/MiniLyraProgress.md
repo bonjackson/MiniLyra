@@ -1,6 +1,6 @@
 # Mini Lyra 实施进度
 
-更新：2026-09-29（Asia/Shanghai）
+更新：2026-09-30（Asia/Shanghai）
 
 ## 当前进度
 
@@ -16,7 +16,9 @@
 - [x] 任务 10：Enhanced Input→InputTag→GAS、可撤销本地映射与完整 GameplayReady 门控完成；构建、双进程专项和任务 06–09 回归通过。
 - [x] 任务 11–15：第三人称相机与动画、能力 Tag 规则、生命死亡复活、私有库存、装备及两槽 QuickBar；详见各任务文档。
 - [x] 任务 16：服务器权威射线步枪、双射线遮挡、GameplayEffect 伤害与联机专项；详见 `Docs/Task16/AuthoritativeRifle.md`。
-- [ ] 任务 17–30：尚未实施。
+- [x] 任务 17：独立弹药、服务器装填、步枪连发／手枪单发及装备实例校验；构建、三进程专项、任务 10–16 回归通过，已提交推送 `04887b1`。
+- [x] 任务 18：GameplayCue、战斗反馈与武器动画完成；最终 Editor／Game 构建、增强三进程、缺失媒体、有声渲染、资产及 Cue 生命周期专项、任务 11／15／16／17 回归通过，观察者截图已复核。
+- [ ] 任务 19–30：尚未开始活动实现。
 
 用户已确认第三人称、2–4 人竞技场，并明确允许忽略旧实现、从空项目开始。任务 01 据此重置活动源码和配置，保留旧工程文件作为本地备份；任务 02 在该空基线上建立独立的 Mini 内容入口。之前的 MiniExperience 启动壳不计作已完成框架。
 
@@ -161,6 +163,22 @@ Editor／Game target、资产新进程重载、三进程两人／晚加入、功
 
 Editor／Game target 构建、资产创建及新进程重载通过。两个独立的未 Cook 进程已验证本地移动、四个角色周期的 Fire 按住／释放、三次服务端重生、每轮单份映射和 16 个句柄、模拟代理零绑定，以及菜单／Action 测试暂停和恢复。客户端最终记录 `PASS: Cycles=4 Respawns=3 MenuGate=1 ActionGate=1`。任务 08／09／07／06 回归通过；任务 08 三端第三人晚加入后各有 3 个角色到达 `GameplayReady`，任务 06 三次真实 World 停用各记录输入解绑及 Action 停用。该专项未验证实际菜单、枪械、图形画面或打包后联机。
 
+## 任务 17：弹药、装填与手枪（完成）
+
+两把武器各自的私有库存物品保存弹匣和备用弹药，装备定义提供容量、伤害、射速和装填时长。步枪支持按住连发，手枪一次按键只发一发；共用服务器射线和装填链路。服务器装填能力用 `State.Reloading` 阻断射击，完成时重新核对 Pawn、来源装备和物品，切枪、死亡或能力撤销时清理计时器与效果。每次射击 RPC 同时验证物品 GUID 和当前装备实例，防止切枪或重新装备后旧会话请求影响当前武器。空仓通知按耗尽周期去重，并停止拥有者的步枪持续开火。
+
+Editor／Game Win64 Development 构建、`Scripts/VerifyTask17.ps1` 三进程专项及任务 10–16 联机回归全部通过。专项覆盖满弹匣、空仓、部分／零备用弹药、装填中射击阻断、切枪／死亡取消、步枪／手枪命中、手枪长按单发、旧请求拒绝和拥有者私有弹药一致。提交 `04887b1` 已推送到远端 `main`。详见 [任务 17 文档](Task17/AmmoReloadPistol.md)。
+
+## 任务 18：GameplayCue、动画与战斗反馈（完成）
+
+Pawn 上新增 `UMiniCombatFeedbackComponent`，经角色 `IGameplayCueInterface` 接收 ASC Cue。拥有者即时开火以 ShotSequence 去重服务器回声，观察者只播放服务器接受的射击；服务器命中、受伤和死亡分别触发 Cue。可靠 owner-only 命中通知暴露明确的 `OnHitConfirmed(ShotSequence, AppliedDamage, bKilled)` 事件，为任务 19 的准星 HUD 提供真实确认来源。六个独立 SoundWave、四个武器 Fire／Reload Montage 和对应 Mini 武器 AnimBP 已接入，角色原移动图保留并加入 DefaultSlot；死亡使用简单网格侧倾姿态。
+
+装填使用可复制的活动 Cue，携带来源装备并随能力结束撤销；处理 Cue 先到、装备先到及来源对象延迟映射，避免旧装备动画和同帧取消留下孤立效果。`MiniShooterCore` 的 Action 按进程路径引用计数注册／撤销 `/MiniShooterCore/GameplayCues`；独立 AssetProbe Cue 验证真实插件扫描，不叠加实战特效。
+
+最终 Editor／Game Win64 Development 构建、Cue／Animation 资产幂等创建及新进程验证、CuePath 激活／撤销专项、增强 `VerifyTask18.ps1` 默认和 `-NoMediaAssets` 三进程专项均通过。增强专项核对拥有者即时开火一次且回声抑制一次、观察者开火一次、可靠命中确认、撞击／受伤、切枪取消、同帧快速取消无孤立 Cue、重新装填恢复及死亡停止。清空媒体引用后两端声音／动画播放计数为零，但服务器仍结算 25 伤害并正确死亡。
+
+`-WithMedia` 重跑通过渲染与成功播放断言，生成四张 Reload／Death 截图，并导出两端实际 AudioMixer master mix WAV；一轮录音为双声道 48 kHz、约 2.3 秒、峰值 32763，两端 RMS 约 4220／4261，确认真实非静音音频输出。补光后的观察者截图已复核，枪械和死亡姿态清晰；证据保存为 [ObserverReload.png](Task18/ObserverReload.png) 与 [ObserverDeath.png](Task18/ObserverDeath.png)，黑背景来自高空隔离探针，不代表训练图效果。任务 11／15／16／17 回归全部通过；任务 16 旧探针改用 MOVE_Flying 保留朝向复制，并在相机校正后等待 0.45 秒再输入，正式服务器视角校验保持原样。任务 18 已完成，任务 19 尚未开始活动实现。资产路径、生命周期、命令和实际结果见 [任务 18 文档](Task18/CombatFeedback.md)。
+
 ## 插件状态与后续安排
 
 | 插件 | 来源 | 当前状态 | 后续安排 |
@@ -205,4 +223,4 @@ git status --short
 
 ## 下一次入口
 
-任务 16 已建立可复用的服务器权威步枪射线、伤害及双重遮挡链路。下一步进入任务 17：弹匣／备用弹药、装填与手枪射击配置。任务 16 的延迟补偿及完整表现仍按路线图留给后续阶段；任务 06 的打包联机、IoStore staging 及同进程多 World Experience 并存也仍需后续验收。
+任务 17 已完成并推送；任务 18 实现与验收已完成，按单项提交推送后开始任务 19 的 GameplayMessage、CommonUI 层栈与 HUD 注入。任务 16 的服务器回溯／竞技级延迟补偿仍属延期项；任务 06 的打包联机、IoStore staging 及同进程多 World Experience 并存也仍需后续验收。

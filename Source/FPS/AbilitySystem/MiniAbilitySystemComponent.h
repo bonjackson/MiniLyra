@@ -26,6 +26,8 @@ public:
 	/** Releases and cancels abilities started by held input, then forgets all pending input. */
 	void ClearAbilityInput();
 	int32 GetHeldInputCount() const { return InputHeldSpecHandles.Num(); }
+	/** Re-read parameters after replicated UObject references become mapped. */
+	bool FindActiveGameplayCueParameters(FGameplayTag CueTag, FGameplayCueParameters& OutParameters) const;
 
 protected:
 	virtual void AbilitySpecInputPressed(FGameplayAbilitySpec& Spec) override;

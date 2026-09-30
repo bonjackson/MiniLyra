@@ -8,7 +8,9 @@
 #include "Character/MiniPawnExtensionComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Equipment/MiniEquipmentDefinition.h"
+#include "Equipment/MiniEquipmentInstance.h"
 #include "Equipment/MiniEquipmentManagerComponent.h"
+#include "Feedback/MiniCombatFeedbackComponent.h"
 #include "Weapons/MiniRangedWeaponComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -31,6 +33,7 @@ AMiniCharacter::AMiniCharacter(const FObjectInitializer& ObjectInitializer)
 	HealthComponent = CreateDefaultSubobject<UMiniHealthComponent>(TEXT("Health"));
 	EquipmentManager = CreateDefaultSubobject<UMiniEquipmentManagerComponent>(TEXT("EquipmentManager"));
 	RangedWeaponComponent = CreateDefaultSubobject<UMiniRangedWeaponComponent>(TEXT("RangedWeapon"));
+	CombatFeedbackComponent = CreateDefaultSubobject<UMiniCombatFeedbackComponent>(TEXT("CombatFeedback"));
 	// Pawn's stock profile ignores Visibility. Weapon traces must hit live capsules.
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
 	PracticeRifleMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("PracticeRifle"));
@@ -48,6 +51,15 @@ AMiniCharacter::AMiniCharacter(const FObjectInitializer& ObjectInitializer)
 		bInitProbePlayerStateVisible = false;
 	}
 #endif
+}
+
+void AMiniCharacter::HandleGameplayCue(UObject* Self, FGameplayTag GameplayCueTag,
+	EGameplayCueEvent::Type EventType, const FGameplayCueParameters& Parameters)
+{
+	if (CombatFeedbackComponent)
+	{
+		CombatFeedbackComponent->HandleCombatCue(GameplayCueTag, EventType, Parameters);
+	}
 }
 
 const UMiniPawnData* AMiniCharacter::GetPawnDataForInitialization() const
@@ -222,6 +234,10 @@ void AMiniCharacter::NotifyInitDependenciesChanged()
 			}
 		}
 	}
+	if (CombatFeedbackComponent)
+	{
+		CombatFeedbackComponent->RefreshPendingReload();
+	}
 }
 
 void AMiniCharacter::RefreshEquipmentAppearance()
@@ -233,12 +249,30 @@ void AMiniCharacter::RefreshEquipmentAppearance()
 	const TSubclassOf<UMiniEquipmentDefinition> DefinitionClass = EquipmentManager->GetCurrentDefinitionClass();
 	const UMiniEquipmentDefinition* Definition = DefinitionClass
 		? GetDefault<UMiniEquipmentDefinition>(DefinitionClass) : nullptr;
+	UMiniEquipmentInstance* Equipment = EquipmentManager->GetCurrentEquipment();
+	if (AppearanceEquipment.Get() != Equipment)
+	{
+		if (CombatFeedbackComponent)
+		{
+			CombatFeedbackComponent->HandleEquipmentChanged();
+		}
+		AppearanceEquipment = Equipment;
+	}
 	USkeletalMesh* WeaponMesh = Definition ? Definition->GetWeaponMesh() : nullptr;
-	if (WeaponMesh)
+	if (PracticeRifleMesh->GetSkeletalMeshAsset() != WeaponMesh)
 	{
 		PracticeRifleMesh->SetSkeletalMesh(WeaponMesh);
 	}
+	UClass* AnimClass = WeaponMesh && Definition ? Definition->GetWeaponAnimClass() : nullptr;
+	if (PracticeRifleMesh->GetAnimClass() != AnimClass)
+	{
+		PracticeRifleMesh->SetAnimInstanceClass(AnimClass);
+	}
 	PracticeRifleMesh->SetVisibility(WeaponMesh != nullptr);
+	if (CombatFeedbackComponent)
+	{
+		CombatFeedbackComponent->RefreshPendingReload();
+	}
 }
 
 void AMiniCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

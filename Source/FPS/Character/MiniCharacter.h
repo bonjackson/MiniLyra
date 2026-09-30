@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ModularCharacter.h"
+#include "GameplayCueInterface.h"
 #include "MiniCharacter.generated.h"
 
 class UMiniPawnData;
@@ -10,6 +11,8 @@ class UMiniCameraComponent;
 class UMiniHealthComponent;
 class UMiniEquipmentManagerComponent;
 class UMiniRangedWeaponComponent;
+class UMiniCombatFeedbackComponent;
+class UMiniEquipmentInstance;
 class USkeletalMeshComponent;
 class AMiniPlayerState;
 class AController;
@@ -17,7 +20,7 @@ class UInputComponent;
 
 /** A modular, replicated pawn whose data is assigned before deferred spawning finishes. */
 UCLASS(Blueprintable)
-class FPS_API AMiniCharacter : public AModularCharacter
+class FPS_API AMiniCharacter : public AModularCharacter, public IGameplayCueInterface
 {
 	GENERATED_BODY()
 
@@ -32,6 +35,8 @@ public:
 	virtual void OnRep_Controller() override;
 	virtual void OnRep_PlayerState() override;
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
+	virtual void HandleGameplayCue(UObject* Self, FGameplayTag GameplayCueTag,
+		EGameplayCueEvent::Type EventType, const FGameplayCueParameters& Parameters) override;
 
 	/** Authority only. The first assignment must happen before FinishSpawning. */
 	bool SetPawnData(const UMiniPawnData* InPawnData);
@@ -44,6 +49,7 @@ public:
 	UMiniHealthComponent* GetHealthComponent() const { return HealthComponent; }
 	UMiniEquipmentManagerComponent* GetEquipmentManager() const { return EquipmentManager; }
 	UMiniRangedWeaponComponent* GetRangedWeaponComponent() const { return RangedWeaponComponent; }
+	UMiniCombatFeedbackComponent* GetCombatFeedbackComponent() const { return CombatFeedbackComponent; }
 	USkeletalMeshComponent* GetPracticeRifleMesh() const { return PracticeRifleMesh; }
 	/** Applies the single replicated equipment source to the existing hand mesh. */
 	void RefreshEquipmentAppearance();
@@ -81,9 +87,14 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "Mini|Weapons")
 	TObjectPtr<UMiniRangedWeaponComponent> RangedWeaponComponent;
 
+	UPROPERTY(VisibleAnywhere, Category = "Mini|Feedback")
+	TObjectPtr<UMiniCombatFeedbackComponent> CombatFeedbackComponent;
+
 	/** Task 11's visual-only rifle; equipment in task 15 owns the gameplay weapon. */
 	UPROPERTY(VisibleAnywhere, Category = "Mini|Cosmetic")
 	TObjectPtr<USkeletalMeshComponent> PracticeRifleMesh;
+
+	TWeakObjectPtr<UMiniEquipmentInstance> AppearanceEquipment;
 
 	bool bInitOrderProbeEnabled = false;
 	bool bInitProbePawnDataVisible = true;

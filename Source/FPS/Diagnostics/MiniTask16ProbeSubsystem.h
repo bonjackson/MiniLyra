@@ -43,10 +43,12 @@ private:
 	FVector TestDirection = FVector::ZeroVector;
 	uint32 NextSequence = 5;
 	int32 LethalShots = 0;
+	bool bClientAimSet = false;
 	bool bClientPressed = false;
 	bool bClientReleased = false;
 	bool bClientDeathLogged = false;
 	bool bClientRoleLogged = false;
 	float ClientReadySeconds = 0.0f;
+	float ClientAimSeconds = 0.0f;
 	float ClientPressedSeconds = 0.0f;
 };

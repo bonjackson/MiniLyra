@@ -5,6 +5,20 @@
 #include "AbilitySystem/MiniGameplayAbility.h"
 #include "System/MiniGameplayTags.h"
 
+bool UMiniAbilitySystemComponent::FindActiveGameplayCueParameters(
+	FGameplayTag CueTag, FGameplayCueParameters& OutParameters) const
+{
+	for (const FActiveGameplayCue& Cue : ActiveGameplayCues.GameplayCues)
+	{
+		if (Cue.GameplayCueTag == CueTag && !Cue.bPredictivelyRemoved)
+		{
+			OutParameters = Cue.Parameters;
+			return true;
+		}
+	}
+	return false;
+}
+
 UMiniAbilitySystemComponent::UMiniAbilitySystemComponent(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {

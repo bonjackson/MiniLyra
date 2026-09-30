@@ -8,6 +8,7 @@
 
 class UMiniAbilitySet;
 class USkeletalMesh;
+class UAnimInstance;
 
 /** Immutable equipment data; an item fragment selects one of these classes. */
 UCLASS(BlueprintType, Blueprintable, Abstract, Const)
@@ -18,12 +19,16 @@ class FPS_API UMiniEquipmentDefinition : public UObject
 public:
 	UFUNCTION(BlueprintCallable, Category = "Mini|Equipment")
 	USkeletalMesh* GetWeaponMesh() const;
+	UClass* GetWeaponAnimClass() const;
 
 	const UMiniAbilitySet* GetAbilitySet() const { return AbilitySet; }
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Mini|Equipment")
 	TSoftObjectPtr<USkeletalMesh> WeaponMesh;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Mini|Equipment")
+	TSoftClassPtr<UAnimInstance> WeaponAnimClass;
 
 	/** Granted only while an instance of this equipment is active. */
 	UPROPERTY(VisibleDefaultsOnly, Category = "Mini|Equipment")

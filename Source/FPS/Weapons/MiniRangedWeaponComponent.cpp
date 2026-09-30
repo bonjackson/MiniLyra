@@ -1,6 +1,7 @@
 #include "MiniRangedWeaponComponent.h"
 
 #include "AbilitySystem/MiniAbilitySystemComponent.h"
+#include "AbilitySystem/MiniHealthSet.h"
 #include "AbilitySystem/MiniGameplayAbility_RangedFire.h"
 #include "AbilitySystem/MiniGameplayAbility_RifleFire.h"
 #include "Camera/MiniCameraComponent.h"
@@ -14,6 +15,7 @@
 #include "Equipment/MiniEquipmentDefinition.h"
 #include "Equipment/MiniEquipmentInstance.h"
 #include "Equipment/MiniEquipmentManagerComponent.h"
+#include "Feedback/MiniCombatFeedbackComponent.h"
 #include "GameModes/MiniGameMode.h"
 #include "HAL/IConsoleManager.h"
 #include "Inventory/MiniInventoryItemDefinition.h"
@@ -72,6 +74,17 @@ void UMiniRangedWeaponComponent::RequestFire()
 	}
 
 	const uint32 ShotSequence = ++NextLocalSequence;
+	const UClass* DefinitionClass = Equipment->GetEquipmentDefinition().Get();
+	const bool bPistol = DefinitionClass &&
+		DefinitionClass->IsChildOf(UMiniPistolEquipmentDefinition::StaticClass());
+	const UMiniInventoryItemInstance* LocalItem = Equipment->GetSourceItem();
+	if (LocalItem && LocalItem->GetStat(MiniInventoryTags::AmmoInMagazine) > 0)
+	{
+		if (UMiniCombatFeedbackComponent* Feedback = Pawn->GetCombatFeedbackComponent())
+		{
+			Feedback->PlayPredictedFire(ShotSequence, bPistol, GetMuzzleLocation(Pawn));
+		}
+	}
 	if (CVarMiniWeaponLocalTracer.GetValueOnGameThread() != 0)
 	{
 		DrawDebugLine(GetWorld(), View.Location, View.Location + AimDirection * 1500.0,
@@ -121,6 +134,19 @@ void UMiniRangedWeaponComponent::ClientNotifyEmptyMagazine_Implementation(
 		{
 			World->GetTimerManager().SetTimerForNextTick(FTimerDelegate::CreateUObject(
 				this, &ThisClass::CancelActiveFireAbilityForEmptyMagazine, SourceEquipment));
+		}
+	}
+}
+
+void UMiniRangedWeaponComponent::ClientNotifyHitConfirmed_Implementation(
+	uint32 ShotSequence, float AppliedDamage, bool bKilled)
+{
+	AMiniCharacter* Pawn = Cast<AMiniCharacter>(GetOwner());
+	if (Pawn && Pawn->IsLocallyControlled())
+	{
+		if (UMiniCombatFeedbackComponent* Feedback = Pawn->GetCombatFeedbackComponent())
+		{
+			Feedback->NotifyConfirmedHit(ShotSequence, AppliedDamage, bKilled);
 		}
 	}
 }
@@ -383,6 +409,23 @@ bool UMiniRangedWeaponComponent::TryFireOnServer(const FVector& CameraOrigin,
 	LastHitCharacter.Reset();
 	LastAcceptedCameraOrigin = CameraOrigin;
 	LastAcceptedAimDirection = AimDirection.GetSafeNormal();
+	AMiniPlayerState* ShooterState = Pawn->GetPlayerState<AMiniPlayerState>();
+	UMiniAbilitySystemComponent* ShooterASC = ShooterState
+		? ShooterState->GetMiniAbilitySystemComponent() : nullptr;
+	if (ShooterASC)
+	{
+		FGameplayCueParameters FireCue;
+		FireCue.Location = GetMuzzleLocation(Pawn);
+		// RawMagnitude is an exactly representable float for a normal play session.
+		// It identifies the locally predicted shot so its server echo is suppressed.
+		FireCue.RawMagnitude = static_cast<float>(ShotSequence);
+		FireCue.Instigator = Pawn;
+		FireCue.EffectCauser = Pawn;
+		ShooterASC->ExecuteGameplayCue(
+			WeaponDefinition->IsA<UMiniPistolEquipmentDefinition>()
+				? MiniGameplayTags::GameplayCue_Mini_PistolFire
+				: MiniGameplayTags::GameplayCue_Mini_RifleFire, FireCue);
+	}
 
 	const FVector Direction = AimDirection.GetSafeNormal();
 	const float Range = WeaponDefinition->GetFireRange();
@@ -416,10 +459,37 @@ bool UMiniRangedWeaponComponent::TryFireOnServer(const FVector& CameraOrigin,
 	if (Target && Target != Pawn && bMuzzleHit && MuzzleHit.GetActor() == Target)
 	{
 		AMiniGameMode* GameMode = GetWorld()->GetAuthGameMode<AMiniGameMode>();
+		const AMiniPlayerState* TargetState = Target->GetPlayerState<AMiniPlayerState>();
+		const UMiniHealthSet* TargetHealthSet = TargetState ? TargetState->GetHealthSet() : nullptr;
+		const float OldHealth = TargetHealthSet ? TargetHealthSet->GetHealth() : 0.0f;
 		if (GameMode && GameMode->TryApplyDamage(Pawn, Target, WeaponDefinition->GetFireDamage()))
 		{
 			LastHitCharacter = Target;
+			const float AppliedDamage = TargetHealthSet
+				? FMath::Max(0.0f, OldHealth - TargetHealthSet->GetHealth())
+				: WeaponDefinition->GetFireDamage();
+			ClientNotifyHitConfirmed(ShotSequence, AppliedDamage,
+				Target->GetHealthComponent() && Target->GetHealthComponent()->IsDead());
+			if (UMiniAbilitySystemComponent* TargetASC = TargetState
+				? TargetState->GetMiniAbilitySystemComponent() : nullptr)
+			{
+				FGameplayCueParameters DamageCue;
+				DamageCue.Location = MuzzleHit.ImpactPoint;
+				DamageCue.RawMagnitude = AppliedDamage;
+				DamageCue.Instigator = Pawn;
+				DamageCue.EffectCauser = Pawn;
+				TargetASC->ExecuteGameplayCue(MiniGameplayTags::GameplayCue_Mini_Damage, DamageCue);
+			}
 		}
+	}
+	if (bMuzzleHit && ShooterASC)
+	{
+		FGameplayCueParameters ImpactCue;
+		ImpactCue.Location = MuzzleHit.ImpactPoint;
+		ImpactCue.Normal = MuzzleHit.ImpactNormal;
+		ImpactCue.Instigator = Pawn;
+		ImpactCue.EffectCauser = Pawn;
+		ShooterASC->ExecuteGameplayCue(MiniGameplayTags::GameplayCue_Mini_Impact, ImpactCue);
 	}
 	UE_LOG(LogMiniInit, Display,
 		TEXT("MiniWeapon FIRE_ACCEPTED: Pawn=%s Sequence=%u Ammo=%d Hit=%s CameraHit=%s MuzzleHit=%s"),

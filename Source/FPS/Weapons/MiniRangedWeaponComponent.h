@@ -64,6 +64,9 @@ private:
 	UFUNCTION(Client, Reliable)
 	void ClientNotifyEmptyMagazine(UMiniEquipmentInstance* SourceEquipment);
 
+	UFUNCTION(Client, Reliable)
+	void ClientNotifyHitConfirmed(uint32 ShotSequence, float AppliedDamage, bool bKilled);
+
 	bool IsPlausibleView(const AMiniCharacter* Pawn, const FVector& CameraOrigin,
 		const FVector& AimDirection) const;
 	const UMiniRangedWeaponEquipmentDefinition* GetUsableRangedWeapon(AMiniCharacter* Pawn) const;

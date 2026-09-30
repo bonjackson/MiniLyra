@@ -159,6 +159,16 @@ void UMiniTask16ProbeSubsystem::TickServer(float DeltaTime)
 	StageSeconds += DeltaTime;
 	if (StageSeconds > (Stage == EStage::WaitPlayers ? 90.0f : 30.0f))
 	{
+		if (Stage == EStage::WaitClientShot && Shooter.IsValid())
+		{
+			const UMiniRangedWeaponComponent* TimedOutWeapon = Shooter->GetRangedWeaponComponent();
+			UE_LOG(LogMiniInit, Error,
+				TEXT("MiniTask16Probe SERVER_FIRE_TIMEOUT: Shots=%u Sequence=%u Reason=%d ControlRotation=%s"),
+				TimedOutWeapon ? TimedOutWeapon->GetAcceptedShotCount() : 0,
+				TimedOutWeapon ? TimedOutWeapon->GetLastProcessedSequence() : 0,
+				TimedOutWeapon ? static_cast<int32>(TimedOutWeapon->GetLastFireRejectionReason()) : -1,
+				*Shooter->GetControlRotation().ToString());
+		}
 		Fail(TEXT("server stage timed out"));
 		return;
 	}
@@ -194,7 +204,11 @@ void UMiniTask16ProbeSubsystem::TickServer(float DeltaTime)
 		for (int32 Index = 0; Index < 2; ++Index)
 		{
 			AMiniCharacter* Pawn = Ready[Index];
-			Pawn->GetCharacterMovement()->DisableMovement();
+			// Keep movement replication active: it uploads the owner's aim to
+			// the server. MOVE_None would freeze the server's control rotation.
+			UCharacterMovementComponent* Movement = Pawn->GetCharacterMovement();
+			Movement->StopMovementImmediately();
+			Movement->SetMovementMode(MOVE_Flying);
 			Pawn->SetActorLocation(Index == 0 ? ShooterPosition : TargetPosition,
 				false, nullptr, ETeleportType::TeleportPhysics);
 			Pawn->ForceNetUpdate();
@@ -394,6 +408,10 @@ void UMiniTask16ProbeSubsystem::TickClient(float DeltaTime)
 			bShooter ? TEXT("Shooter") : TEXT("Target"), *Pawn->GetPathName(), *Peer->GetPathName());
 	}
 	ClientReadySeconds += DeltaTime;
+	if (bClientAimSet && !bClientPressed)
+	{
+		ClientAimSeconds += DeltaTime;
+	}
 	if (bClientPressed)
 	{
 		ClientPressedSeconds += DeltaTime;
@@ -414,15 +432,33 @@ void UMiniTask16ProbeSubsystem::TickClient(float DeltaTime)
 			Fail(TEXT("local camera missing"));
 			return;
 		}
-		for (int32 Iteration = 0; Iteration < 4; ++Iteration)
+		if (!bClientAimSet)
 		{
-			FMinimalViewInfo View;
+			for (int32 Iteration = 0; Iteration < 4; ++Iteration)
+			{
+				FMinimalViewInfo View;
+				Camera->ResetCamera();
+				Camera->GetCameraView(0.0f, View);
+				Controller->SetControlRotation(
+					(Peer->GetActorLocation() + FVector(0.0, 0.0, 45.0) - View.Location).Rotation());
+			}
 			Camera->ResetCamera();
-			Camera->GetCameraView(0.0f, View);
-			Controller->SetControlRotation(
-				(Peer->GetActorLocation() + FVector(0.0, 0.0, 45.0) - View.Location).Rotation());
+			FMinimalViewInfo FinalView;
+			Camera->GetCameraView(0.0f, FinalView);
+			bClientAimSet = true;
+			ClientAimSeconds = 0.0f;
+			UE_LOG(LogMiniInit, Display,
+				TEXT("MiniTask16Probe CLIENT_AIM: ControlRotation=%s CameraOrigin=%s CameraRotation=%s"),
+				*Controller->GetControlRotation().ToString(),
+				*FinalView.Location.ToString(), *FinalView.Rotation.ToString());
+			return;
 		}
-		Camera->ResetCamera();
+		// A shot RPC can arrive before the movement packet carrying this aim.
+		// Wait a full interval after camera setup rather than firing in its frame.
+		if (ClientAimSeconds < 0.45f)
+		{
+			return;
+		}
 		SendFireKey(Controller, IE_Pressed);
 		bClientPressed = true;
 		UE_LOG(LogMiniInit, Display, TEXT("MiniTask16Probe CLIENT_FIRE_PRESSED: Input=LeftMouseButton"));

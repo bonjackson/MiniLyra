@@ -101,6 +101,13 @@ void UMiniGameplayAbility_Reload::ActivateAbility(const FGameplayAbilitySpecHand
 	}
 	ReloadEquipment = Equipment;
 	ReloadItem = Item;
+	FGameplayCueParameters ReloadCue;
+	ReloadCue.Location = Pawn->GetActorLocation();
+	ReloadCue.Instigator = Pawn;
+	ReloadCue.EffectCauser = Pawn;
+	ReloadCue.SourceObject = Equipment;
+	ReloadCue.RawMagnitude = Definition->IsA<UMiniPistolEquipmentDefinition>() ? 1.0f : 2.0f;
+	ASC->AddGameplayCue(MiniGameplayTags::GameplayCue_Mini_Reload, ReloadCue);
 	Pawn->GetWorldTimerManager().SetTimer(ReloadTimer, this, &ThisClass::FinishReload,
 		Definition->GetReloadDuration(), false);
 	UE_LOG(LogMiniInit, Display,
@@ -175,6 +182,10 @@ void UMiniGameplayAbility_Reload::EndAbility(const FGameplayAbilitySpecHandle Ha
 	}
 	if (UMiniAbilitySystemComponent* ASC = ReloadASC.Get())
 	{
+		if (ReloadEffectHandle.IsValid())
+		{
+			ASC->RemoveGameplayCue(MiniGameplayTags::GameplayCue_Mini_Reload);
+		}
 		if (ReloadEffectHandle.IsValid())
 		{
 			ASC->RemoveActiveGameplayEffect(ReloadEffectHandle);

@@ -21,4 +21,11 @@ namespace MiniGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Ability_Jump, "Ability.Jump", "Jumping ability family.");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Ability_Aim, "Ability.Aim", "Aiming ability family.");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Data_Damage, "Data.Damage", "Server-authoritative damage magnitude for the instant damage effect.");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(GameplayCue_Mini_RifleFire, "GameplayCue.Mini.RifleFire", "Accepted rifle shot presentation.");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(GameplayCue_Mini_PistolFire, "GameplayCue.Mini.PistolFire", "Accepted pistol shot presentation.");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(GameplayCue_Mini_Impact, "GameplayCue.Mini.Impact", "Authoritative hit surface presentation.");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(GameplayCue_Mini_Damage, "GameplayCue.Mini.Damage", "Authoritative victim damage presentation.");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(GameplayCue_Mini_Death, "GameplayCue.Mini.Death", "Authoritative death presentation.");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(GameplayCue_Mini_Reload, "GameplayCue.Mini.Reload", "Active weapon reload presentation.");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(GameplayCue_Mini_HitConfirmed, "GameplayCue.Mini.HitConfirmed", "Owner-only confirmed hit event for local UI.");
 }

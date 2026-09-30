@@ -14,7 +14,7 @@ public class FPS : ModuleRules
 		});
 		PrivateDependencyModuleNames.AddRange(new string[]
 		{
-			"ModularGameplay"
+			"ModularGameplay", "AudioMixer"
 		});
 		if (Target.bBuildEditor)
 		{

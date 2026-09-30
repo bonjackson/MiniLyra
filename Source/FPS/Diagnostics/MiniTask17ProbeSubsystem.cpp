@@ -30,10 +30,10 @@
 
 namespace
 {
-const FVector ShooterPosition(0.0, 0.0, 3000.0);
-const FVector TargetPosition(800.0, 0.0, 3000.0);
+const FVector Task17ShooterPosition(0.0, 0.0, 3000.0);
+const FVector Task17TargetPosition(800.0, 0.0, 3000.0);
 
-void SendKey(AMiniPlayerController* Controller, FKey Key, EInputEvent Event)
+void SendTask17Key(AMiniPlayerController* Controller, FKey Key, EInputEvent Event)
 {
 	Controller->InputKey(FInputKeyEventArgs::CreateSimulated(
 		Key, Event, Event == IE_Released ? 0.0f : 1.0f));
@@ -51,7 +51,7 @@ UMiniAbilitySystemComponent* GetASC(const AMiniCharacter* Pawn)
 	return State ? State->GetMiniAbilitySystemComponent() : nullptr;
 }
 
-const UMiniHealthSet* GetHealth(const AMiniCharacter* Pawn)
+const UMiniHealthSet* GetTask17Health(const AMiniCharacter* Pawn)
 {
 	const AMiniPlayerState* State = Pawn ? Pawn->GetPlayerState<AMiniPlayerState>() : nullptr;
 	return State ? State->GetHealthSet() : nullptr;
@@ -193,7 +193,7 @@ bool UMiniTask17ProbeSubsystem::StartServer()
 		UCharacterMovementComponent* Movement = Pawn->GetCharacterMovement();
 		Movement->StopMovementImmediately();
 		Movement->SetMovementMode(MOVE_Flying);
-		Pawn->SetActorLocation(Index == 0 ? ShooterPosition : TargetPosition,
+		Pawn->SetActorLocation(Index == 0 ? Task17ShooterPosition : Task17TargetPosition,
 			false, nullptr, ETeleportType::TeleportPhysics);
 		Pawn->ForceNetUpdate();
 		FActorSpawnParameters Params;
@@ -287,7 +287,7 @@ void UMiniTask17ProbeSubsystem::TickServer(float DeltaTime)
 	UMiniRangedWeaponComponent* Weapon = Shooter ? Shooter->GetRangedWeaponComponent() : nullptr;
 	UMiniAbilitySystemComponent* ShooterASC = GetASC(Shooter);
 	UMiniAbilitySystemComponent* TargetASC = GetASC(Target);
-	const UMiniHealthSet* TargetHealth = GetHealth(Target);
+	const UMiniHealthSet* TargetHealth = GetTask17Health(Target);
 	if (!Shooter || !Target || !Weapon || !ShooterASC || !TargetASC || !TargetHealth)
 	{
 		Fail(TEXT("server lost a player or combat dependency"));
@@ -686,7 +686,7 @@ void UMiniTask17ProbeSubsystem::TickClient(float DeltaTime)
 	UMiniInventoryItemInstance* Rifle = GetItem(Controller, 0);
 	UMiniInventoryItemInstance* Pistol = GetItem(Controller, 1);
 	UMiniRangedWeaponComponent* Weapon = Pawn ? Pawn->GetRangedWeaponComponent() : nullptr;
-	const UMiniHealthSet* VictimHealth = GetHealth(bShooter ? Peer : Pawn);
+	const UMiniHealthSet* VictimHealth = GetTask17Health(bShooter ? Peer : Pawn);
 	const bool bInputReady = Pawn && Pawn->GetHeroComponent() && Pawn->GetHeroComponent()->IsInputActive();
 	const int32 ReadyWeaponSpecCount = GetReadyWeaponSpecCount(Pawn);
 	if ((Phase == EMiniTask17Phase::Initial || Phase == EMiniTask17Phase::RifleShot) &&
@@ -737,8 +737,8 @@ void UMiniTask17ProbeSubsystem::TickClient(float DeltaTime)
 		if (bInputReady && ReadyWeaponSpecCount == 2 &&
 			HasAmmo(Rifle, 30, 90) && HasAmmo(Pistol, 12, 36) &&
 			HasWeapon(Pawn, UMiniRifleEquipmentDefinition::StaticClass(), 0) &&
-			FVector::Dist(Pawn->GetActorLocation(), bShooter ? ShooterPosition : TargetPosition) < 30.0 &&
-			FVector::Dist(Peer->GetActorLocation(), bShooter ? TargetPosition : ShooterPosition) < 30.0)
+			FVector::Dist(Pawn->GetActorLocation(), bShooter ? Task17ShooterPosition : Task17TargetPosition) < 30.0 &&
+			FVector::Dist(Peer->GetActorLocation(), bShooter ? Task17TargetPosition : Task17ShooterPosition) < 30.0)
 		{
 			AcknowledgeClient(Probe, TEXT("INITIAL"));
 		}
@@ -757,7 +757,7 @@ void UMiniTask17ProbeSubsystem::TickClient(float DeltaTime)
 		if (bShooter && bClientAimSet && !bClientInputPressed &&
 			ClientPhaseSeconds >= 0.60f)
 		{
-			SendKey(Controller, EKeys::LeftMouseButton, IE_Pressed);
+			SendTask17Key(Controller, EKeys::LeftMouseButton, IE_Pressed);
 			bClientInputPressed = true;
 		}
 		if (bShooter && bClientInputPressed && !bClientInputReleased)
@@ -765,7 +765,7 @@ void UMiniTask17ProbeSubsystem::TickClient(float DeltaTime)
 			ClientInputSeconds += DeltaTime;
 			if (ClientInputSeconds >= 0.05f)
 			{
-				SendKey(Controller, EKeys::LeftMouseButton, IE_Released);
+				SendTask17Key(Controller, EKeys::LeftMouseButton, IE_Released);
 				bClientInputReleased = true;
 			}
 		}
@@ -779,7 +779,7 @@ void UMiniTask17ProbeSubsystem::TickClient(float DeltaTime)
 	case EMiniTask17Phase::FullReload:
 		if (!bShooter && bInputReady && !bClientInputPressed)
 		{
-			SendKey(Controller, EKeys::R, IE_Pressed);
+			SendTask17Key(Controller, EKeys::R, IE_Pressed);
 			bClientInputPressed = true;
 		}
 		if (!bShooter && bClientInputPressed && !bClientInputReleased)
@@ -787,7 +787,7 @@ void UMiniTask17ProbeSubsystem::TickClient(float DeltaTime)
 			ClientInputSeconds += DeltaTime;
 			if (ClientInputSeconds >= 0.05f)
 			{
-				SendKey(Controller, EKeys::R, IE_Released);
+				SendTask17Key(Controller, EKeys::R, IE_Released);
 				bClientInputReleased = true;
 			}
 		}
@@ -805,7 +805,7 @@ void UMiniTask17ProbeSubsystem::TickClient(float DeltaTime)
 		}
 		if (bInputReady && HasAmmo(Rifle, 0, 90) && !bClientInputPressed)
 		{
-			SendKey(Controller, EKeys::LeftMouseButton, IE_Pressed);
+			SendTask17Key(Controller, EKeys::LeftMouseButton, IE_Pressed);
 			bClientInputPressed = true;
 		}
 		if (bClientInputPressed && !bClientInputReleased)
@@ -813,7 +813,7 @@ void UMiniTask17ProbeSubsystem::TickClient(float DeltaTime)
 			ClientInputSeconds += DeltaTime;
 			if (ClientInputSeconds >= 0.05f)
 			{
-				SendKey(Controller, EKeys::LeftMouseButton, IE_Released);
+				SendTask17Key(Controller, EKeys::LeftMouseButton, IE_Released);
 				bClientInputReleased = true;
 			}
 		}
@@ -831,7 +831,7 @@ void UMiniTask17ProbeSubsystem::TickClient(float DeltaTime)
 		}
 		if (bInputReady && HasAmmo(Rifle, 0, 90) && !bClientInputPressed)
 		{
-			SendKey(Controller, EKeys::R, IE_Pressed);
+			SendTask17Key(Controller, EKeys::R, IE_Pressed);
 			bClientInputPressed = true;
 		}
 		if (bClientInputPressed && !bClientInputReleased)
@@ -839,14 +839,14 @@ void UMiniTask17ProbeSubsystem::TickClient(float DeltaTime)
 			ClientInputSeconds += DeltaTime;
 			if (ClientInputSeconds >= 0.05f)
 			{
-				SendKey(Controller, EKeys::R, IE_Released);
+				SendTask17Key(Controller, EKeys::R, IE_Released);
 				bClientInputReleased = true;
 			}
 		}
 		if (bClientInputReleased && !bClientBlockedFirePressed && GetASC(Pawn) &&
 			GetASC(Pawn)->HasMatchingGameplayTag(MiniGameplayTags::State_Reloading))
 		{
-			SendKey(Controller, EKeys::LeftMouseButton, IE_Pressed);
+			SendTask17Key(Controller, EKeys::LeftMouseButton, IE_Pressed);
 			bClientBlockedFirePressed = true;
 			UE_LOG(LogMiniInit, Display,
 				TEXT("MiniTask17Probe CLIENT_BLOCKED_FIRE_PRESSED: Owner=1 Reloading=1"));
@@ -856,7 +856,7 @@ void UMiniTask17ProbeSubsystem::TickClient(float DeltaTime)
 			BlockedFireSeconds += DeltaTime;
 			if (BlockedFireSeconds >= 0.05f)
 			{
-				SendKey(Controller, EKeys::LeftMouseButton, IE_Released);
+				SendTask17Key(Controller, EKeys::LeftMouseButton, IE_Released);
 				bClientBlockedFireReleased = true;
 			}
 		}
@@ -873,7 +873,7 @@ void UMiniTask17ProbeSubsystem::TickClient(float DeltaTime)
 		}
 		if (bInputReady && HasAmmo(Rifle, 25, 3) && !bClientInputPressed)
 		{
-			SendKey(Controller, EKeys::R, IE_Pressed);
+			SendTask17Key(Controller, EKeys::R, IE_Pressed);
 			bClientInputPressed = true;
 		}
 		if (bClientInputPressed && !bClientInputReleased)
@@ -881,7 +881,7 @@ void UMiniTask17ProbeSubsystem::TickClient(float DeltaTime)
 			ClientInputSeconds += DeltaTime;
 			if (ClientInputSeconds >= 0.05f)
 			{
-				SendKey(Controller, EKeys::R, IE_Released);
+				SendTask17Key(Controller, EKeys::R, IE_Released);
 				bClientInputReleased = true;
 			}
 		}
@@ -893,7 +893,7 @@ void UMiniTask17ProbeSubsystem::TickClient(float DeltaTime)
 	case EMiniTask17Phase::NoReserveReload:
 		if (!bShooter && bInputReady && !bClientInputPressed)
 		{
-			SendKey(Controller, EKeys::R, IE_Pressed);
+			SendTask17Key(Controller, EKeys::R, IE_Pressed);
 			bClientInputPressed = true;
 		}
 		if (!bShooter && bClientInputPressed && !bClientInputReleased)
@@ -901,7 +901,7 @@ void UMiniTask17ProbeSubsystem::TickClient(float DeltaTime)
 			ClientInputSeconds += DeltaTime;
 			if (ClientInputSeconds >= 0.05f)
 			{
-				SendKey(Controller, EKeys::R, IE_Released);
+				SendTask17Key(Controller, EKeys::R, IE_Released);
 				bClientInputReleased = true;
 			}
 		}
@@ -919,7 +919,7 @@ void UMiniTask17ProbeSubsystem::TickClient(float DeltaTime)
 		}
 		if (bInputReady && HasAmmo(Rifle, 20, 60) && !bClientInputPressed)
 		{
-			SendKey(Controller, EKeys::R, IE_Pressed);
+			SendTask17Key(Controller, EKeys::R, IE_Pressed);
 			bClientInputPressed = true;
 		}
 		if (bClientInputPressed && !bClientInputReleased)
@@ -927,7 +927,7 @@ void UMiniTask17ProbeSubsystem::TickClient(float DeltaTime)
 			ClientInputSeconds += DeltaTime;
 			if (ClientInputSeconds >= 0.05f)
 			{
-				SendKey(Controller, EKeys::R, IE_Released);
+				SendTask17Key(Controller, EKeys::R, IE_Released);
 				bClientInputReleased = true;
 				AcknowledgeClient(Probe, TEXT("RIFLE_CANCEL_START"));
 			}
@@ -941,7 +941,7 @@ void UMiniTask17ProbeSubsystem::TickClient(float DeltaTime)
 		}
 		if (bInputReady && !bClientInputPressed)
 		{
-			SendKey(Controller, EKeys::Q, IE_Pressed);
+			SendTask17Key(Controller, EKeys::Q, IE_Pressed);
 			bClientInputPressed = true;
 		}
 		if (bClientInputPressed && !bClientInputReleased)
@@ -949,7 +949,7 @@ void UMiniTask17ProbeSubsystem::TickClient(float DeltaTime)
 			ClientInputSeconds += DeltaTime;
 			if (ClientInputSeconds >= 0.05f)
 			{
-				SendKey(Controller, EKeys::Q, IE_Released);
+				SendTask17Key(Controller, EKeys::Q, IE_Released);
 				bClientInputReleased = true;
 			}
 		}
@@ -973,7 +973,7 @@ void UMiniTask17ProbeSubsystem::TickClient(float DeltaTime)
 		if (bShooter && bClientAimSet && !bClientInputPressed &&
 			ClientPhaseSeconds >= 0.60f)
 		{
-			SendKey(Controller, EKeys::LeftMouseButton, IE_Pressed);
+			SendTask17Key(Controller, EKeys::LeftMouseButton, IE_Pressed);
 			bClientInputPressed = true;
 		}
 		if (bShooter && bClientInputPressed && !bClientInputReleased)
@@ -981,7 +981,7 @@ void UMiniTask17ProbeSubsystem::TickClient(float DeltaTime)
 			ClientInputSeconds += DeltaTime;
 			if (ClientInputSeconds >= 0.55f)
 			{
-				SendKey(Controller, EKeys::LeftMouseButton, IE_Released);
+				SendTask17Key(Controller, EKeys::LeftMouseButton, IE_Released);
 				bClientInputReleased = true;
 			}
 		}
@@ -1000,7 +1000,7 @@ void UMiniTask17ProbeSubsystem::TickClient(float DeltaTime)
 		}
 		if (bInputReady && HasAmmo(Pistol, 11, 36) && !bClientInputPressed)
 		{
-			SendKey(Controller, EKeys::R, IE_Pressed);
+			SendTask17Key(Controller, EKeys::R, IE_Pressed);
 			bClientInputPressed = true;
 		}
 		if (bClientInputPressed && !bClientInputReleased)
@@ -1008,7 +1008,7 @@ void UMiniTask17ProbeSubsystem::TickClient(float DeltaTime)
 			ClientInputSeconds += DeltaTime;
 			if (ClientInputSeconds >= 0.05f)
 			{
-				SendKey(Controller, EKeys::R, IE_Released);
+				SendTask17Key(Controller, EKeys::R, IE_Released);
 				bClientInputReleased = true;
 			}
 		}
@@ -1025,7 +1025,7 @@ void UMiniTask17ProbeSubsystem::TickClient(float DeltaTime)
 		}
 		if (bInputReady && HasAmmo(Pistol, 5, 35) && !bClientInputPressed)
 		{
-			SendKey(Controller, EKeys::R, IE_Pressed);
+			SendTask17Key(Controller, EKeys::R, IE_Pressed);
 			bClientInputPressed = true;
 		}
 		if (bClientInputPressed && !bClientInputReleased)
@@ -1033,7 +1033,7 @@ void UMiniTask17ProbeSubsystem::TickClient(float DeltaTime)
 			ClientInputSeconds += DeltaTime;
 			if (ClientInputSeconds >= 0.05f)
 			{
-				SendKey(Controller, EKeys::R, IE_Released);
+				SendTask17Key(Controller, EKeys::R, IE_Released);
 				bClientInputReleased = true;
 				AcknowledgeClient(Probe, TEXT("DEATH_CANCEL_START"));
 			}
