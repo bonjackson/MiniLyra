@@ -1,0 +1,1 @@
+[2026.10.01-12.34.55:777][981]LogMiniInit: Display: MiniTask23Probe PRACTICE_PASS: MapDefaultPractice=1 TrainingTargets=3 RealGE=1 RealFall=1 Respawn3=1 Ground=1 ArenaRules=0 MatchSource=0 PhaseSource=0 FFAHUD=0 Protection=0

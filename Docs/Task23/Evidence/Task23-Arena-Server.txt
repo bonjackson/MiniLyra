@@ -1,0 +1,55 @@
+[2026.10.01-12.32.23:996][ 22]LogMiniInit: Display: MiniTask23Probe SERVER_MAP_PASS: Starts=8 StartCapsules=8 Ground=1 Routes=3 CapsuleSweeps=1 PitOpen=1 Covers=11 Hazards=2 DefaultArena=1
+[2026.10.01-12.32.24:157][250]LogMiniInit: Display: MiniTask23Probe SERVER_WARMUP_FALL_PASS: ActualKillZ=1 SameLife=1 NoDeath=1
+[2026.10.01-12.32.25:324][297]LogMiniInit: Display: MiniTask23Probe SERVER_BLOCKED_FALL_PASS: StartsBlocked=8 SamePawn=1 SameLife=1 Health=1 Scores=1 Equipment=1 Pending=1
+[2026.10.01-12.32.25:324][297]LogMiniInit: Display: MiniTask23Probe SERVER_BLOCKED_CLEANUP_PASS: SharedProductionEntry=1 PendingRecovery=0 PendingRespawn=0 SameLife=1 Health=1 Scores=1 Equipment=1 OwnedMovementPauseReleased=1
+[2026.10.01-12.32.25:904][314]LogMiniInit: Display: MiniTask23Probe SERVER_RECOVERY_REQUEUED_PASS: ActualNextMovementTick=1 StartsStillBlocked=8 NewRecovery=1 SameLife=1 DuplicateRecovery=0
+[2026.10.01-12.32.38:016][787]LogMiniInit: Display: MiniTask23Probe SERVER_CLIENT_ACK: Owner=1 Checkpoint=ArenaReady Round=1 Life=2 Kills=0 Deaths=0 Map=1 HUD=1 ClockError=0.061
+[2026.10.01-12.32.38:027][797]LogMiniInit: Display: MiniTask23Probe SERVER_CLIENT_ACK: Owner=2 Checkpoint=ArenaReady Round=1 Life=1 Kills=0 Deaths=0 Map=1 HUD=1 ClockError=0.028
+[2026.10.01-12.32.38:573][373]LogMiniInit: Display: MiniTask23Probe SERVER_CLIENT_ACK: Owner=3 Checkpoint=ArenaReady Round=1 Life=1 Kills=0 Deaths=0 Map=1 HUD=1 ClockError=0.025
+[2026.10.01-12.32.38:574][373]LogMiniInit: Display: MiniTask23Probe SERVER_FOUR_PLAYING_PASS: Players=4 Clients=3 Ground=1 MapDefaultArena=1 Deadline=300 HUD=1
+[2026.10.01-12.32.38:580][374]LogMiniInit: Display: MiniTask23Probe SERVER_ENVIRONMENT_DEATH: PlayerId=257 Life=2 Deaths=1 KillsUnchanged=1 RealGE=1 PawnRetained=1
+[2026.10.01-12.32.43:576][ 99]LogMiniInit: Display: MiniTask23Probe SERVER_PROTECTED_FALL_PASS: SameLife=1 RealGEExpired=1 DuplicateInitNoRefresh=1
+[2026.10.01-12.32.43:578][101]LogMiniInit: Display: MiniTask23Probe SERVER_ENVIRONMENT_DEATH: PlayerId=258 Life=1 Deaths=1 KillsUnchanged=1 RealGE=1 PawnRetained=1
+[2026.10.01-12.32.48:581][903]LogMiniInit: Display: MiniTask23Probe SERVER_ENVIRONMENT_DEATH: PlayerId=259 Life=1 Deaths=1 KillsUnchanged=1 RealGE=1 PawnRetained=1
+[2026.10.01-12.32.53:584][801]LogMiniInit: Display: MiniTask23Probe SERVER_ENVIRONMENT_DEATH: PlayerId=256 Life=2 Deaths=1 KillsUnchanged=1 RealGE=1 PawnRetained=1
+[2026.10.01-12.32.58:592][ 65]LogMiniInit: Display: MiniTask23Probe SERVER_CLIENT_ACK: Owner=1 Checkpoint=EnvironmentDeaths Round=1 Life=3 Kills=0 Deaths=1 Map=1 HUD=1 ClockError=0.054
+[2026.10.01-12.32.58:604][ 80]LogMiniInit: Display: MiniTask23Probe SERVER_CLIENT_ACK: Owner=3 Checkpoint=EnvironmentDeaths Round=1 Life=2 Kills=0 Deaths=1 Map=1 HUD=1 ClockError=0.061
+[2026.10.01-12.32.58:614][ 91]LogMiniInit: Display: MiniTask23Probe SERVER_CLIENT_ACK: Owner=2 Checkpoint=EnvironmentDeaths Round=1 Life=2 Kills=0 Deaths=1 Map=1 HUD=1 ClockError=0.050
+[2026.10.01-12.32.58:615][ 91]LogMiniInit: Display: MiniTask23Probe SERVER_ALL_FALLS_PASS: Players=4 EnvironmentDeaths=4 PlayerKills=0 Respawn=3 Ground=1
+[2026.10.01-12.32.58:616][ 92]LogMiniInit: Display: MiniTask23Probe SERVER_COMBAT_GE: Round=1 Kill=1 Victim=257 Life=3
+[2026.10.01-12.33.03:614][299]LogMiniInit: Display: MiniTask23Probe SERVER_COMBAT_GE: Round=1 Kill=2 Victim=258 Life=2
+[2026.10.01-12.33.08:614][522]LogMiniInit: Display: MiniTask23Probe SERVER_COMBAT_GE: Round=1 Kill=3 Victim=259 Life=2
+[2026.10.01-12.33.13:613][660]LogMiniInit: Display: MiniTask23Probe SERVER_COMBAT_GE: Round=1 Kill=4 Victim=257 Life=4
+[2026.10.01-12.33.18:612][761]LogMiniInit: Display: MiniTask23Probe SERVER_COMBAT_GE: Round=1 Kill=5 Victim=258 Life=3
+[2026.10.01-12.33.23:613][828]LogMiniInit: Display: MiniTask23Probe SERVER_COMBAT_GE: Round=1 Kill=6 Victim=259 Life=3
+[2026.10.01-12.33.28:614][720]LogMiniInit: Display: MiniTask23Probe SERVER_COMBAT_GE: Round=1 Kill=7 Victim=257 Life=5
+[2026.10.01-12.33.33:612][944]LogMiniInit: Display: MiniTask23Probe SERVER_COMBAT_GE: Round=1 Kill=8 Victim=258 Life=4
+[2026.10.01-12.33.38:612][ 70]LogMiniInit: Display: MiniTask23Probe SERVER_COMBAT_GE: Round=1 Kill=9 Victim=259 Life=4
+[2026.10.01-12.33.43:613][213]LogMiniInit: Display: MiniTask23Probe SERVER_COMBAT_GE: Round=1 Kill=10 Victim=257 Life=6
+[2026.10.01-12.33.43:790][402]LogMiniInit: Display: MiniTask23Probe SERVER_CLIENT_ACK: Owner=1 Checkpoint=Result1 Round=1 Life=6 Kills=0 Deaths=5 Map=1 HUD=1 ClockError=0.067
+[2026.10.01-12.33.43:797][409]LogMiniInit: Display: MiniTask23Probe SERVER_CLIENT_ACK: Owner=2 Checkpoint=Result1 Round=1 Life=5 Kills=0 Deaths=4 Map=1 HUD=1 ClockError=0.058
+[2026.10.01-12.33.43:820][438]LogMiniInit: Display: MiniTask23Probe SERVER_CLIENT_ACK: Owner=3 Checkpoint=Result1 Round=1 Life=5 Kills=0 Deaths=4 Map=1 HUD=1 ClockError=0.060
+[2026.10.01-12.33.43:820][438]LogMiniInit: Display: MiniTask23Probe SERVER_RESULT_PASS: CompletedRound=1 Players=4 RealKills=10 Clients=3 Frozen=1 PostFallSameLife=1 PendingRespawn=0
+[2026.10.01-12.33.48:651][428]LogMiniInit: Display: MiniTask23Probe SERVER_CLIENT_ACK: Owner=1 Checkpoint=Round2 Round=2 Life=7 Kills=0 Deaths=0 Map=1 HUD=1 ClockError=0.071
+[2026.10.01-12.33.48:652][429]LogMiniInit: Display: MiniTask23Probe SERVER_CLIENT_ACK: Owner=3 Checkpoint=Round2 Round=2 Life=6 Kills=0 Deaths=0 Map=1 HUD=1 ClockError=0.065
+[2026.10.01-12.33.48:677][447]LogMiniInit: Display: MiniTask23Probe SERVER_CLIENT_ACK: Owner=2 Checkpoint=Round2 Round=2 Life=6 Kills=0 Deaths=0 Map=1 HUD=1 ClockError=0.067
+[2026.10.01-12.33.48:678][447]LogMiniInit: Display: MiniTask23Probe SERVER_NEXT_ROUND_PASS: Round=2 Players=4 ScoresCleared=1 NewLives=4 Ground=1 Clients=3
+[2026.10.01-12.33.50:619][445]LogMiniInit: Display: MiniTask23Probe SERVER_COMBAT_GE: Round=2 Kill=1 Victim=257 Life=7
+[2026.10.01-12.33.55:622][394]LogMiniInit: Display: MiniTask23Probe SERVER_COMBAT_GE: Round=2 Kill=2 Victim=258 Life=6
+[2026.10.01-12.34.00:624][628]LogMiniInit: Display: MiniTask23Probe SERVER_COMBAT_GE: Round=2 Kill=3 Victim=259 Life=6
+[2026.10.01-12.34.05:627][687]LogMiniInit: Display: MiniTask23Probe SERVER_COMBAT_GE: Round=2 Kill=4 Victim=257 Life=8
+[2026.10.01-12.34.10:629][601]LogMiniInit: Display: MiniTask23Probe SERVER_COMBAT_GE: Round=2 Kill=5 Victim=258 Life=7
+[2026.10.01-12.34.15:631][ 60]LogMiniInit: Display: MiniTask23Probe SERVER_COMBAT_GE: Round=2 Kill=6 Victim=259 Life=7
+[2026.10.01-12.34.20:633][691]LogMiniInit: Display: MiniTask23Probe SERVER_COMBAT_GE: Round=2 Kill=7 Victim=257 Life=9
+[2026.10.01-12.34.25:694][819]LogMiniInit: Display: MiniTask23Probe SERVER_COMBAT_GE: Round=2 Kill=8 Victim=258 Life=8
+[2026.10.01-12.34.30:693][366]LogMiniInit: Display: MiniTask23Probe SERVER_COMBAT_GE: Round=2 Kill=9 Victim=259 Life=8
+[2026.10.01-12.34.35:694][258]LogMiniInit: Display: MiniTask23Probe SERVER_COMBAT_GE: Round=2 Kill=10 Victim=257 Life=10
+[2026.10.01-12.34.35:867][431]LogMiniInit: Display: MiniTask23Probe SERVER_CLIENT_ACK: Owner=1 Checkpoint=Result2 Round=2 Life=10 Kills=0 Deaths=4 Map=1 HUD=1 ClockError=0.063
+[2026.10.01-12.34.35:876][442]LogMiniInit: Display: MiniTask23Probe SERVER_CLIENT_ACK: Owner=3 Checkpoint=Result2 Round=2 Life=9 Kills=0 Deaths=3 Map=1 HUD=1 ClockError=0.067
+[2026.10.01-12.34.35:893][463]LogMiniInit: Display: MiniTask23Probe SERVER_CLIENT_ACK: Owner=2 Checkpoint=Result2 Round=2 Life=9 Kills=0 Deaths=3 Map=1 HUD=1 ClockError=0.071
+[2026.10.01-12.34.35:893][463]LogMiniInit: Display: MiniTask23Probe SERVER_RESULT_PASS: CompletedRound=2 Players=4 RealKills=10 Clients=3 Frozen=1 PostFallSameLife=1 PendingRespawn=0
+[2026.10.01-12.34.40:733][320]LogMiniInit: Display: MiniTask23Probe SERVER_CLIENT_ACK: Owner=1 Checkpoint=Round3 Round=3 Life=11 Kills=0 Deaths=0 Map=1 HUD=1 ClockError=0.071
+[2026.10.01-12.34.40:740][326]LogMiniInit: Display: MiniTask23Probe SERVER_CLIENT_ACK: Owner=2 Checkpoint=Round3 Round=3 Life=10 Kills=0 Deaths=0 Map=1 HUD=1 ClockError=0.064
+[2026.10.01-12.34.40:842][435]LogMiniInit: Display: MiniTask23Probe SERVER_CLIENT_ACK: Owner=3 Checkpoint=Round3 Round=3 Life=10 Kills=0 Deaths=0 Map=1 HUD=1 ClockError=0.066
+[2026.10.01-12.34.40:842][435]LogMiniInit: Display: MiniTask23Probe SERVER_NEXT_ROUND_PASS: Round=3 Players=4 ScoresCleared=1 NewLives=4 Ground=1 Clients=3
+[2026.10.01-12.34.45:843][389]LogMiniInit: Display: MiniTask23Probe ARENA_PASS: MapDefaultArena=1 Starts=8 Routes=3 Listen=1 Clients=3 CompletedRounds=2 RealGEKills=20 EnvironmentDeaths=4 WarmupFall=1 ProtectedFall=1 PostFall=2 BlockedAndReleased=1 SharedRecoveryCleanup=1 SameLifeRecovery=1 Respawn3=1 ProtectionNoRefresh=1 HUD=1

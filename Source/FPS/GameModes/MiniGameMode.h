@@ -48,6 +48,11 @@ public:
 	/** Server GE entries for suicide and unowned environmental damage; use the same damage gate. */
 	bool TryApplySuicideDamage(AMiniCharacter* Target, float Amount);
 	bool TryApplyEnvironmentDamage(AMiniCharacter* Target, float Amount, AActor* EffectCauser = nullptr);
+	/** Authority handles a current player's fall through GE death or same-life recovery. */
+	bool HandlePlayerFellOutOfWorld(AMiniCharacter* Pawn);
+	/** Pawn lifecycle cleanup; never changes a replacement Pawn or a dead life. */
+	void CancelPendingOutOfWorldRecovery(AMiniCharacter* Pawn);
+	int32 GetPendingOutOfWorldRecoveryCount() const { return PendingOutOfWorldRecoveries.Num(); }
 	void NotifyPlayerDeath(const FMiniPlayerDeathInfo& DeathInfo);
 	/** Called once by a dead Pawn's HealthComponent. */
 	void ScheduleRespawn(AMiniCharacter* DeadPawn);
@@ -70,6 +75,34 @@ private:
 	void QueueSpawnRetry(AController* Controller);
 	void CancelPendingRespawn(AController* Controller);
 	void DestroyPawnForRestart(AController* Controller);
+	struct FPendingOutOfWorldRecovery
+	{
+		FTimerHandle Timer;
+		TWeakObjectPtr<AMiniCharacter> Pawn;
+		TWeakObjectPtr<AController> Controller;
+		TWeakObjectPtr<AMiniPlayerState> PlayerState;
+		TWeakObjectPtr<UMiniMatchRulesComponent> Match;
+		uint32 WorkSerial = 0;
+		uint32 LifeId = 0;
+		uint32 RulesGeneration = 0;
+		int32 RoundId = 0;
+		uint8 SavedMovementMode = 0;
+		uint8 SavedCustomMovementMode = 0;
+		bool bFFA = false;
+		bool bMovementSuspended = false;
+	};
+	bool IsCurrentRecoveryLife(const FPendingOutOfWorldRecovery& Work) const;
+	bool IsRecoveryContextCurrent(const FPendingOutOfWorldRecovery& Work) const;
+	bool IsOutOfWorldRecoveryLocationSafe(AMiniCharacter* Pawn, AController* Controller,
+		const FVector& Location, const FQuat& Rotation) const;
+	void FinishOutOfWorldRecovery(TWeakObjectPtr<AMiniCharacter> Pawn, uint32 WorkSerial);
+	void QueueOutOfWorldRecoveryRetry(TWeakObjectPtr<AMiniCharacter> Pawn, uint32 WorkSerial);
+	void RestoreOutOfWorldRecoveryMovement(const FPendingOutOfWorldRecovery& Work);
+	void CancelOutOfWorldRecovery(TWeakObjectPtr<AMiniCharacter> Pawn);
+	void CancelOutOfWorldRecoveriesForController(AController* Controller);
+	void CancelPendingOutOfWorldRecoveriesForMatch();
+	TMap<TWeakObjectPtr<AMiniCharacter>, FPendingOutOfWorldRecovery> PendingOutOfWorldRecoveries;
+	uint32 NextOutOfWorldRecoveryWorkSerial = 0;
 	struct FPendingRespawn
 	{
 		FTimerHandle Timer;

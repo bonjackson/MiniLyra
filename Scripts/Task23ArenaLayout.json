@@ -1,0 +1,55 @@
+{
+  "map": "/Game/Mini/Maps/L_MiniArena",
+  "experience": "/Game/Mini/System/Experiences/DA_MiniArenaExperience",
+  "kill_z": -650,
+  "cube": "/Engine/BasicShapes/Cube.Cube",
+  "materials": {
+    "Floor": [0.22, 0.25, 0.29],
+    "Wall": [0.46, 0.51, 0.59],
+    "Cover": [0.18, 0.22, 0.28],
+    "Blue": [0.025, 0.32, 0.8],
+    "Orange": [1.0, 0.3, 0.025],
+    "Center": [0.66, 0.69, 0.74],
+    "Hazard": [1.0, 0.75, 0.015]
+  },
+  "boxes": [
+    {"name":"Arena_Floor_Main", "center":[-300,0,-50], "size":[3400,3200,100], "material":"Floor", "kind":"Floor"},
+    {"name":"Arena_Floor_East", "center":[1700,-275,-50], "size":[600,2650,100], "material":"Floor", "kind":"Floor"},
+    {"name":"Arena_Wall_W", "center":[-2040,0,200], "size":[80,3360,400], "material":"Wall", "kind":"Boundary"},
+    {"name":"Arena_Wall_E", "center":[2040,0,200], "size":[80,3360,400], "material":"Wall", "kind":"Boundary"},
+    {"name":"Arena_Wall_S", "center":[0,-1640,200], "size":[4000,80,400], "material":"Wall", "kind":"Boundary"},
+    {"name":"Arena_Wall_N", "center":[0,1640,200], "size":[4000,80,400], "material":"Wall", "kind":"Boundary"},
+    {"name":"Arena_Cover_SW", "center":[-850,-550,130], "size":[800,200,260], "material":"Blue", "kind":"Cover"},
+    {"name":"Arena_Cover_NW", "center":[-850,550,130], "size":[800,200,260], "material":"Blue", "kind":"Cover"},
+    {"name":"Arena_Cover_SE", "center":[850,-550,130], "size":[800,200,260], "material":"Orange", "kind":"Cover"},
+    {"name":"Arena_Cover_NE", "center":[850,550,130], "size":[800,200,260], "material":"Orange", "kind":"Cover"},
+    {"name":"Arena_Cover_WSpawn", "center":[-1325,0,150], "size":[180,1100,300], "material":"Cover", "kind":"Cover"},
+    {"name":"Arena_Cover_ESpawn", "center":[1325,0,150], "size":[180,1100,300], "material":"Cover", "kind":"Cover"},
+    {"name":"Arena_Cover_Center", "center":[0,0,160], "size":[400,440,320], "material":"Center", "kind":"Cover"},
+    {"name":"Arena_Cover_NBlue", "center":[-1250,1150,130], "size":[200,420,260], "material":"Blue", "kind":"Cover"},
+    {"name":"Arena_Cover_SBlue", "center":[-1250,-1150,130], "size":[200,420,260], "material":"Blue", "kind":"Cover"},
+    {"name":"Arena_Cover_SOrange", "center":[1250,-1150,130], "size":[200,420,260], "material":"Orange", "kind":"Cover"},
+    {"name":"Arena_Cover_NOrange", "center":[650,1150,130], "size":[200,420,260], "material":"Orange", "kind":"Cover"},
+    {"name":"Arena_Accent_Blue", "center":[-1988,0,240], "size":[20,1500,90], "material":"Blue", "kind":"Accent", "collision":false},
+    {"name":"Arena_Accent_Orange", "center":[1988,-200,240], "size":[20,1500,90], "material":"Orange", "kind":"Accent", "collision":false},
+    {"name":"Arena_Hazard_W", "center":[1385,1325,3], "size":[30,550,6], "material":"Hazard", "kind":"Hazard", "collision":false},
+    {"name":"Arena_Hazard_S", "center":[1700,1035,3], "size":[600,30,6], "material":"Hazard", "kind":"Hazard", "collision":false}
+  ],
+  "starts": [
+    {"name":"Arena_Start_SW", "position":[-1700,-1250,100], "yaw":35},
+    {"name":"Arena_Start_SE", "position":[1700,-1250,100], "yaw":145},
+    {"name":"Arena_Start_WLow", "position":[-1720,-450,100], "yaw":0},
+    {"name":"Arena_Start_ELow", "position":[1720,-450,100], "yaw":180},
+    {"name":"Arena_Start_WHigh", "position":[-1720,450,100], "yaw":0},
+    {"name":"Arena_Start_EHigh", "position":[1720,450,100], "yaw":180},
+    {"name":"Arena_Start_NW", "position":[-1700,1250,100], "yaw":-35},
+    {"name":"Arena_Start_NE", "position":[850,1250,100], "yaw":-65}
+  ],
+  "signs": [
+    {"name":"Arena_Sign_Blue", "text":"BLUE", "position":[-1955,0,325], "yaw":0, "color":[40,145,255]},
+    {"name":"Arena_Sign_Orange", "text":"ORANGE", "position":[1955,-200,325], "yaw":180, "color":[255,150,45]},
+    {"name":"Arena_Sign_CenterW", "text":"CENTER", "position":[-205,0,360], "yaw":180, "color":[235,240,255]},
+    {"name":"Arena_Sign_CenterE", "text":"CENTER", "position":[205,0,360], "yaw":0, "color":[235,240,255]},
+    {"name":"Arena_Sign_Fall", "text":"FALL", "position":[1700,1590,310], "yaw":-90, "color":[255,220,25]}
+  ]
+}

@@ -79,6 +79,7 @@ bool UMiniHeroComponent::OwnsInputMapping() const
 
 void UMiniHeroComponent::NotifyInputDependenciesChanged()
 {
+	RefreshInputReadinessASC();
 	AMiniCharacter* Pawn = GetPawn<AMiniCharacter>();
 	const UMiniPawnExtensionComponent* Extension = Pawn ? Pawn->GetPawnExtensionComponent() : nullptr;
 	const UMiniAbilitySystemComponent* ASC = Extension ? Extension->GetMiniAbilitySystemComponent() : nullptr;
@@ -90,6 +91,66 @@ void UMiniHeroComponent::NotifyInputDependenciesChanged()
 		return;
 	}
 	UGameFrameworkComponentManager::SendGameFrameworkComponentExtensionEvent(Pawn, NAME_BindInputsNow);
+}
+
+void UMiniHeroComponent::RefreshInputReadinessASC()
+{
+	AMiniCharacter* Pawn = GetPawn<AMiniCharacter>();
+	const AController* Controller = Pawn ? Pawn->GetController() : nullptr;
+	const UMiniPawnExtensionComponent* Extension = Pawn ? Pawn->GetPawnExtensionComponent() : nullptr;
+	UMiniAbilitySystemComponent* ASC = Extension ? Extension->GetMiniAbilitySystemComponent() : nullptr;
+	const UMiniHealthComponent* Health = Pawn ? Pawn->GetHealthComponent() : nullptr;
+	// The persistent ASC can still have the previous life's replicated death tag
+	// when this live Pawn receives ClientRestart and first asks to bind input.
+	if (!Pawn || !Pawn->IsLocallyControlled() || !Controller || Controller->GetPawn() != Pawn ||
+		!ASC || ASC->GetAvatarActor() != Pawn || !Health || Health->IsDead() ||
+		!ASC->HasMatchingGameplayTag(MiniGameplayTags::State_Dead))
+	{
+		ClearInputReadinessASC();
+		return;
+	}
+	if (InputReadinessASC.Get() == ASC && DeathTagChangedHandle.IsValid()) { return; }
+	ClearInputReadinessASC();
+	InputReadinessASC = ASC;
+	DeathTagChangedHandle = ASC->RegisterGameplayTagEvent(
+		MiniGameplayTags::State_Dead, EGameplayTagEventType::NewOrRemoved).AddUObject(
+			this, &ThisClass::HandleDeathTagChanged);
+}
+
+void UMiniHeroComponent::ClearInputReadinessASC()
+{
+	if (UMiniAbilitySystemComponent* ASC = InputReadinessASC.Get())
+	{
+		if (DeathTagChangedHandle.IsValid())
+		{
+			ASC->UnregisterGameplayTagEvent(DeathTagChangedHandle,
+				MiniGameplayTags::State_Dead, EGameplayTagEventType::NewOrRemoved);
+		}
+	}
+	DeathTagChangedHandle.Reset();
+	InputReadinessASC.Reset();
+}
+
+void UMiniHeroComponent::HandleDeathTagChanged(FGameplayTag Tag, int32 NewCount)
+{
+	if (Tag != MiniGameplayTags::State_Dead || NewCount != 0) { return; }
+	AMiniCharacter* Pawn = GetPawn<AMiniCharacter>();
+	AMiniPlayerController* Controller = Pawn ? Cast<AMiniPlayerController>(Pawn->GetController()) : nullptr;
+	const UMiniPawnExtensionComponent* Extension = Pawn ? Pawn->GetPawnExtensionComponent() : nullptr;
+	UMiniAbilitySystemComponent* ASC = InputReadinessASC.Get();
+	const UMiniHealthComponent* Health = Pawn ? Pawn->GetHealthComponent() : nullptr;
+	if (!Pawn || !Pawn->IsLocallyControlled() || !Controller || Controller->GetPawn() != Pawn ||
+		Controller->IsMiniInputBlocked() || !ASC || !Extension || Extension->GetMiniAbilitySystemComponent() != ASC ||
+		ASC->GetAvatarActor() != Pawn || !Health || Health->IsDead() ||
+		ASC->HasMatchingGameplayTag(MiniGameplayTags::State_Dead))
+	{
+		return;
+	}
+	UE_LOG(LogMiniInit, Display, TEXT("MiniInput DEATH_TAG_CLEARED: Pawn=%s ASC=%s RetryBind=1"),
+		*Pawn->GetPathName(), *ASC->GetPathName());
+	// This reevaluates current input prerequisites and feature-owned binding;
+	// it neither removes a client tag nor revives the previous Pawn.
+	SetInputSuppressed(false);
 }
 
 void UMiniHeroComponent::NotifyPawnUnpossessed()
@@ -116,6 +177,7 @@ void UMiniHeroComponent::SetInputSuppressed(bool bSuppressed)
 	if (bSuppressed)
 	{
 		DeactivateInput();
+		RefreshInputReadinessASC();
 	}
 	else
 	{
@@ -177,6 +239,7 @@ bool UMiniHeroComponent::ActivateInput(UInputMappingContext* MappingContext)
 
 void UMiniHeroComponent::DeactivateInput()
 {
+	ClearInputReadinessASC();
 	if (AMiniCharacter* Pawn = GetPawn<AMiniCharacter>())
 	{
 		Pawn->StopJumping();

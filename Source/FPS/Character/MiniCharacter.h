@@ -17,6 +17,7 @@ class USkeletalMeshComponent;
 class AMiniPlayerState;
 class AController;
 class UInputComponent;
+class UDamageType;
 
 /** A modular, replicated pawn whose data is assigned before deferred spawning finishes. */
 UCLASS(Blueprintable)
@@ -35,6 +36,8 @@ public:
 	virtual void OnRep_Controller() override;
 	virtual void OnRep_PlayerState() override;
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
+	virtual bool CheckStillInWorld() override;
+	virtual void FellOutOfWorld(const UDamageType& DamageType) override;
 	virtual void HandleGameplayCue(UObject* Self, FGameplayTag GameplayCueTag,
 		EGameplayCueEvent::Type EventType, const FGameplayCueParameters& Parameters) override;
 

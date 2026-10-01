@@ -1,0 +1,11 @@
+[2026.10.01-12.40.00:761][  9]LogMiniInit: Display: MiniTask23Probe CLIENT_SCREENSHOT: Path=F:\FPS\FPS\Saved\Screenshots/Task23-Owner3-ArenaReady.png
+[2026.10.01-12.40.00:761][  9]LogMiniInit: Display: MiniTask23Probe CLIENT_CHECKPOINT: Owner=3 Checkpoint=ArenaReady Round=1 Life=1 MapDefaultArena=1 HUD=1
+[2026.10.01-12.40.20:799][599]LogMiniInit: Display: MiniTask23Probe CLIENT_CHECKPOINT: Owner=3 Checkpoint=EnvironmentDeaths Round=1 Life=2 MapDefaultArena=1 HUD=1
+[2026.10.01-12.40.33:934][993]LogMiniInit: Display: MiniInput DEATH_TAG_CLEARED: Pawn=/Game/Mini/Maps/L_MiniArena.L_MiniArena:PersistentLevel.BP_MiniCharacter_C_10 ASC=/Game/Mini/Maps/L_MiniArena.L_MiniArena:PersistentLevel.MiniPlayerState_3.AbilitySystemComponent RetryBind=1
+[2026.10.01-12.41.06:000][955]LogMiniInit: Display: MiniTask23Probe CLIENT_SCREENSHOT: Path=F:\FPS\FPS\Saved\Screenshots/Task23-Owner3-Result1.png
+[2026.10.01-12.41.06:000][955]LogMiniInit: Display: MiniTask23Probe CLIENT_CHECKPOINT: Owner=3 Checkpoint=Result1 Round=1 Life=5 MapDefaultArena=1 HUD=1
+[2026.10.01-12.41.10:872][100]LogMiniInit: Display: MiniTask23Probe CLIENT_CHECKPOINT: Owner=3 Checkpoint=Round2 Round=2 Life=6 MapDefaultArena=1 HUD=1
+[2026.10.01-12.41.25:873][550]LogMiniInit: Display: MiniInput DEATH_TAG_CLEARED: Pawn=/Game/Mini/Maps/L_MiniArena.L_MiniArena:PersistentLevel.BP_MiniCharacter_C_23 ASC=/Game/Mini/Maps/L_MiniArena.L_MiniArena:PersistentLevel.MiniPlayerState_3.AbilitySystemComponent RetryBind=1
+[2026.10.01-12.41.58:005][514]LogMiniInit: Display: MiniTask23Probe CLIENT_SCREENSHOT: Path=F:\FPS\FPS\Saved\Screenshots/Task23-Owner3-Result2.png
+[2026.10.01-12.41.58:005][514]LogMiniInit: Display: MiniTask23Probe CLIENT_CHECKPOINT: Owner=3 Checkpoint=Result2 Round=2 Life=9 MapDefaultArena=1 HUD=1
+[2026.10.01-12.42.02:883][659]LogMiniInit: Display: MiniTask23Probe CLIENT_CHECKPOINT: Owner=3 Checkpoint=Round3 Round=3 Life=10 MapDefaultArena=1 HUD=1

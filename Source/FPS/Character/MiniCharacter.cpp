@@ -14,6 +14,9 @@
 #include "Weapons/MiniRangedWeaponComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Engine/World.h"
+#include "GameModes/MiniGameMode.h"
+#include "GameFramework/WorldSettings.h"
 #include "Misc/CommandLine.h"
 #include "Misc/Parse.h"
 #include "Net/UnrealNetwork.h"
@@ -103,6 +106,13 @@ void AMiniCharacter::BeginPlay()
 
 void AMiniCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
+	if (HasAuthority() && GetWorld())
+	{
+		if (AMiniGameMode* Mode = GetWorld()->GetAuthGameMode<AMiniGameMode>())
+		{
+			Mode->CancelPendingOutOfWorldRecovery(this);
+		}
+	}
 	if (HasAuthority() && EquipmentManager)
 	{
 		EquipmentManager->UnequipItem();
@@ -136,6 +146,10 @@ void AMiniCharacter::UnPossessed()
 {
 	if (HasAuthority())
 	{
+		if (AMiniGameMode* Mode = GetWorld() ? GetWorld()->GetAuthGameMode<AMiniGameMode>() : nullptr)
+		{
+			Mode->CancelPendingOutOfWorldRecovery(this);
+		}
 		if (AMiniPlayerController* MiniController = Cast<AMiniPlayerController>(GetController()))
 		{
 			if (UMiniQuickBarComponent* QuickBar = MiniController->GetQuickBar())
@@ -196,6 +210,40 @@ void AMiniCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 	NotifyInitDependenciesChanged();
+}
+
+bool AMiniCharacter::CheckStillInWorld()
+{
+	UWorld* World = GetWorld();
+	const AWorldSettings* Settings = World ? World->GetWorldSettings() : nullptr;
+	if (HasAuthority() && !IsActorBeingDestroyed() && Settings && Settings->AreWorldBoundsChecksEnabled() &&
+		GetRootComponent() && GetRootComponent()->IsRegistered())
+	{
+		const FBox Bounds = GetRootComponent()->Bounds.GetBox();
+		if (Bounds.Min.X < -HALF_WORLD_MAX || Bounds.Max.X > HALF_WORLD_MAX ||
+			Bounds.Min.Y < -HALF_WORLD_MAX || Bounds.Max.Y > HALF_WORLD_MAX ||
+			Bounds.Min.Z < -HALF_WORLD_MAX || Bounds.Max.Z > HALF_WORLD_MAX)
+		{
+			// The engine's hard-bounds branch detaches the Controller and disables
+			// collision after OutsideWorldBounds. Intercept before those side effects.
+			if (AMiniGameMode* Mode = World->GetAuthGameMode<AMiniGameMode>())
+			{
+				if (Mode->HandlePlayerFellOutOfWorld(this)) { return false; }
+			}
+		}
+	}
+	return Super::CheckStillInWorld();
+}
+
+void AMiniCharacter::FellOutOfWorld(const UDamageType& DamageType)
+{
+	// A predicted client fall never decides death, score, or the recovery point.
+	if (!HasAuthority()) { return; }
+	if (AMiniGameMode* Mode = GetWorld() ? GetWorld()->GetAuthGameMode<AMiniGameMode>() : nullptr)
+	{
+		if (Mode->HandlePlayerFellOutOfWorld(this)) { return; }
+	}
+	Super::FellOutOfWorld(DamageType);
 }
 
 void AMiniCharacter::NotifyInitDependenciesChanged()

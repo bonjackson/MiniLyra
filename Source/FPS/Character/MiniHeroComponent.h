@@ -49,6 +49,9 @@ protected:
 
 private:
 	void DeactivateInput();
+	void RefreshInputReadinessASC();
+	void ClearInputReadinessASC();
+	void HandleDeathTagChanged(FGameplayTag Tag, int32 NewCount);
 	void Input_Move(const FInputActionValue& Value);
 	void Input_Look(const FInputActionValue& Value);
 	void Input_JumpPressed(const FInputActionValue& Value);
@@ -60,6 +63,8 @@ private:
 	TWeakObjectPtr<UEnhancedInputLocalPlayerSubsystem> MappingSubsystem;
 	TWeakObjectPtr<UMiniInputComponent> BoundInputComponent;
 	TWeakObjectPtr<UMiniAbilitySystemComponent> BoundAbilitySystem;
+	TWeakObjectPtr<UMiniAbilitySystemComponent> InputReadinessASC;
+	FDelegateHandle DeathTagChangedHandle;
 	TArray<uint32> BindingHandles;
 	bool bInputActive = false;
 	bool bInputSuppressed = false;

@@ -17,6 +17,9 @@
 #include "Engine/World.h"
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/PlayerStart.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/WorldSettings.h"
+#include "Interfaces/MovementBaseInterface.h"
 #include "Kismet/GameplayStatics.h"
 #include "Misc/CommandLine.h"
 #include "Misc/Parse.h"
@@ -96,6 +99,7 @@ void AMiniGameMode::PostLogin(APlayerController* NewPlayer)
 void AMiniGameMode::Logout(AController* Exiting)
 {
 	CancelPendingRespawn(Exiting);
+	CancelOutOfWorldRecoveriesForController(Exiting);
 	if (UMiniMatchRulesComponent* Match = GetMatchRules())
 	{
 		// Notify while the leaving Controller and PlayerState are still available.
@@ -324,10 +328,279 @@ bool AMiniGameMode::TryApplyEnvironmentDamage(AMiniCharacter* Target, float Amou
 	return ApplyPlayerDamageEffect(nullptr, nullptr, Target, Amount, EffectCauser);
 }
 
+bool AMiniGameMode::IsCurrentRecoveryLife(const FPendingOutOfWorldRecovery& Work) const
+{
+	AMiniCharacter* Pawn = Work.Pawn.Get();
+	AController* Controller = Work.Controller.Get();
+	AMiniPlayerState* State = Work.PlayerState.Get();
+	const UMiniHealthComponent* Health = Pawn ? Pawn->GetHealthComponent() : nullptr;
+	const UMiniAbilitySystemComponent* ASC = State ? State->GetMiniAbilitySystemComponent() : nullptr;
+	return HasAuthority() && GetWorld() && !GetWorld()->bIsTearingDown && IsValid(Pawn) &&
+		!Pawn->IsActorBeingDestroyed() && Pawn->GetWorld() == GetWorld() && IsValid(Controller) &&
+		Controller->GetWorld() == GetWorld() && Controller->GetPawn() == Pawn && Pawn->GetController() == Controller &&
+		IsValid(State) && Controller->GetPlayerState<AMiniPlayerState>() == State &&
+		!State->IsOnlyASpectator() && !State->IsInactive() && Work.LifeId != 0 &&
+		State->GetCurrentLifeId() == Work.LifeId && State->GetCurrentLifePawn() == Pawn &&
+		ASC && ASC->GetAvatarActor() == Pawn && Health && !Health->IsDead() &&
+		!ASC->HasMatchingGameplayTag(MiniGameplayTags::State_Dead);
+}
+
+bool AMiniGameMode::IsRecoveryContextCurrent(const FPendingOutOfWorldRecovery& Work) const
+{
+	const UMiniMatchRulesComponent* Match = GetMatchRules();
+	return IsCurrentRecoveryLife(Work) && Match == Work.Match.Get() &&
+		(Work.bFFA ? Match && Match->IsFFAConfigured() && Match->GetRoundId() == Work.RoundId &&
+			Match->GetRulesGeneration() == Work.RulesGeneration : !Match || !Match->IsFFAConfigured());
+}
+
+bool AMiniGameMode::HandlePlayerFellOutOfWorld(AMiniCharacter* Pawn)
+{
+	if (!HasAuthority() || !IsValid(Pawn) || !Pawn->HasAuthority() || Pawn->GetWorld() != GetWorld() ||
+		!GetWorld() || GetWorld()->bIsTearingDown)
+	{
+		return false;
+	}
+	UMiniHealthComponent* Health = Pawn->GetHealthComponent();
+	if (Health && Health->IsDead())
+	{
+		// The existing death work owns this corpse until its life-aware respawn.
+		CancelPendingOutOfWorldRecovery(Pawn);
+		return true;
+	}
+	if (PendingOutOfWorldRecoveries.Contains(Pawn))
+	{
+		// CharacterMovement still checks KillZ while MOVE_None. Do not repeat GE,
+		// spawn queries, or timer setup on each of those engine callbacks.
+		return true;
+	}
+	AController* Controller = Pawn->GetController();
+	AMiniPlayerState* State = Controller ? Controller->GetPlayerState<AMiniPlayerState>() : nullptr;
+	UMiniMatchRulesComponent* Match = GetMatchRules();
+	FPendingOutOfWorldRecovery Work;
+	Work.Pawn = Pawn;
+	Work.Controller = Controller;
+	Work.PlayerState = State;
+	Work.Match = Match;
+	Work.LifeId = State ? State->GetCurrentLifeId() : 0;
+	Work.bFFA = Match && Match->IsFFAConfigured();
+	Work.RoundId = Work.bFFA ? Match->GetRoundId() : 0;
+	Work.RulesGeneration = Work.bFFA ? Match->GetRulesGeneration() : 0;
+	if (!IsCurrentRecoveryLife(Work))
+	{
+		return false;
+	}
+	Work.WorkSerial = ++NextOutOfWorldRecoveryWorkSerial;
+	PendingOutOfWorldRecoveries.Add(Pawn, Work);
+	// Saving the work before GE/teleport also guards their synchronous overlap
+	// and health callbacks. Never retain a TMap reference across either call.
+	const UMiniHealthSet* HealthSet = State->GetHealthSet();
+	if ((!Work.bFFA || Match->CanApplyPlayerDamage(Pawn)) && HealthSet &&
+		FMath::IsFinite(HealthSet->GetHealth()) && HealthSet->GetHealth() > 0.0f)
+	{
+		TryApplyEnvironmentDamage(Pawn, FMath::Max(HealthSet->GetHealth(), 1.0f));
+		if (!IsValid(Pawn) || Health->IsDead())
+		{
+			CancelPendingOutOfWorldRecovery(Pawn);
+			UE_LOG(LogMiniInit, Display, TEXT("MiniFall ENVIRONMENT_DEATH: Pawn=%s Round=%d Life=%u"),
+				*GetPathNameSafe(Pawn), Work.RoundId, Work.LifeId);
+			return true;
+		}
+	}
+	// A rejected GE (phase, protection, deadline, or stopped rules) never turns
+	// into destruction or a fresh life. Later retries only finish this recovery.
+	FinishOutOfWorldRecovery(Pawn, Work.WorkSerial);
+	return true;
+}
+
+bool AMiniGameMode::IsOutOfWorldRecoveryLocationSafe(AMiniCharacter* Pawn, AController* Controller,
+	const FVector& Location, const FQuat& Rotation) const
+{
+	const AWorldSettings* Settings = GetWorld() ? GetWorld()->GetWorldSettings() : nullptr;
+	const UCapsuleComponent* Capsule = Pawn ? Pawn->GetCapsuleComponent() : nullptr;
+	const UCharacterMovementComponent* Movement = Pawn ? Pawn->GetCharacterMovement() : nullptr;
+	if (!Settings || !Capsule || !Movement || Location.ContainsNaN() || Rotation.ContainsNaN()) { return false; }
+	const float Radius = Capsule->GetScaledCapsuleRadius();
+	const float HalfHeight = Capsule->GetScaledCapsuleHalfHeight();
+	if (!FMath::IsFinite(Radius) || !FMath::IsFinite(HalfHeight) || Radius <= 0.0f || HalfHeight < Radius ||
+		Location.Z - HalfHeight <= Settings->KillZ || FMath::Abs(Location.X) + Radius >= HALF_WORLD_MAX ||
+		FMath::Abs(Location.Y) + Radius >= HALF_WORLD_MAX || FMath::Abs(Location.Z) + HalfHeight >= HALF_WORLD_MAX)
+	{
+		return false;
+	}
+	FCollisionQueryParams Query(SCENE_QUERY_STAT(MiniFallRecovery), false);
+	Query.AddIgnoredActor(Pawn);
+	Query.AddIgnoredActor(Controller);
+	if (GetWorld()->OverlapBlockingTestByProfile(Location, Rotation, Capsule->GetCollisionProfileName(),
+		FCollisionShape::MakeCapsule(Radius, HalfHeight), Query))
+	{
+		return false;
+	}
+	FHitResult FloorHit;
+	return GetWorld()->LineTraceSingleByChannel(FloorHit, Location,
+		Location - FVector(0.0f, 0.0f, HalfHeight + 250.0f), ECC_Pawn, Query) &&
+		FloorHit.ImpactPoint.Z > Settings->KillZ && !Cast<APawn>(FloorHit.GetActor()) && Movement->IsWalkable(FloorHit);
+}
+
+void AMiniGameMode::FinishOutOfWorldRecovery(TWeakObjectPtr<AMiniCharacter> PawnKey, uint32 WorkSerial)
+{
+	const FPendingOutOfWorldRecovery* SavedWork = PendingOutOfWorldRecoveries.Find(PawnKey);
+	if (!SavedWork || SavedWork->WorkSerial != WorkSerial) { return; }
+	const FPendingOutOfWorldRecovery Work = *SavedWork;
+	AMiniCharacter* Pawn = Work.Pawn.Get();
+	if (!IsRecoveryContextCurrent(Work))
+	{
+		CancelOutOfWorldRecovery(PawnKey);
+		return;
+	}
+	AController* Controller = Work.Controller.Get();
+	UCharacterMovementComponent* Movement = Pawn->GetCharacterMovement();
+	TArray<APlayerStart*> Starts;
+	for (TActorIterator<APlayerStart> It(GetWorld()); It; ++It) { Starts.Add(*It); }
+	Starts.Sort([](const APlayerStart& A, const APlayerStart& B) { return A.GetPathName() < B.GetPathName(); });
+	if (APlayerStart* Preferred = Cast<APlayerStart>(ChoosePlayerStart(Controller)))
+	{
+		Starts.Remove(Preferred);
+		Starts.Insert(Preferred, 0);
+	}
+	SavedWork = PendingOutOfWorldRecoveries.Find(PawnKey);
+	if (!SavedWork || SavedWork->WorkSerial != WorkSerial) { return; }
+	if (!IsRecoveryContextCurrent(Work))
+	{
+		CancelOutOfWorldRecovery(PawnKey);
+		return;
+	}
+	for (APlayerStart* Start : Starts)
+	{
+		const FRotator Rotation(0.0f, Start->GetActorRotation().Yaw, 0.0f);
+		if (!IsOutOfWorldRecoveryLocationSafe(Pawn, Controller, Start->GetActorLocation(), FQuat(Rotation))) { continue; }
+		SavedWork = PendingOutOfWorldRecoveries.Find(PawnKey);
+		if (!SavedWork || SavedWork->WorkSerial != WorkSerial) { return; }
+		if (!IsRecoveryContextCurrent(Work))
+		{
+			CancelOutOfWorldRecovery(PawnKey);
+			return;
+		}
+		Pawn->StopJumping();
+		Movement->StopMovementImmediately();
+		Movement->ClearAccumulatedForces();
+		Pawn->SetBase(static_cast<FMovementBaseInterfaceData*>(nullptr));
+		if (!Pawn->TeleportTo(Start->GetActorLocation(), Rotation, false, false)) { continue; }
+		SavedWork = PendingOutOfWorldRecoveries.Find(PawnKey);
+		if (!SavedWork || SavedWork->WorkSerial != WorkSerial) { return; }
+		if (!IsRecoveryContextCurrent(*SavedWork))
+		{
+			CancelOutOfWorldRecovery(PawnKey);
+			return;
+		}
+		// TeleportTo may adjust the requested point. Validate its actual result.
+		if (!IsOutOfWorldRecoveryLocationSafe(Pawn, Controller, Pawn->GetActorLocation(), Pawn->GetActorQuat())) { continue; }
+		CancelPendingOutOfWorldRecovery(Pawn);
+		if (IsCurrentRecoveryLife(Work))
+		{
+			Movement->ForceClientAdjustment();
+			Pawn->ForceNetUpdate();
+			UE_LOG(LogMiniInit, Display, TEXT("MiniFall RECOVERED: Pawn=%s Start=%s Round=%d Life=%u"),
+				*Pawn->GetPathName(), *Start->GetPathName(), Work.RoundId, Work.LifeId);
+		}
+		return;
+	}
+	SavedWork = PendingOutOfWorldRecoveries.Find(PawnKey);
+	if (!SavedWork || SavedWork->WorkSerial != WorkSerial) { return; }
+	if (!IsRecoveryContextCurrent(*SavedWork))
+	{
+		CancelOutOfWorldRecovery(PawnKey);
+		return;
+	}
+	if (Movement && !SavedWork->bMovementSuspended && Movement->MovementMode != MOVE_None)
+	{
+		FPendingOutOfWorldRecovery* MutableWork = PendingOutOfWorldRecoveries.Find(PawnKey);
+		MutableWork->SavedMovementMode = Movement->MovementMode;
+		MutableWork->SavedCustomMovementMode = Movement->CustomMovementMode;
+		MutableWork->bMovementSuspended = true;
+		Pawn->StopJumping();
+		Movement->StopMovementImmediately();
+		Movement->ClearAccumulatedForces();
+		Pawn->SetBase(static_cast<FMovementBaseInterfaceData*>(nullptr));
+		Movement->DisableMovement();
+		Movement->ForceClientAdjustment();
+		Pawn->ForceNetUpdate();
+		UE_LOG(LogMiniInit, Display, TEXT("MiniFall RECOVERY_BLOCKED: Pawn=%s Round=%d Life=%u Retry=0.50"),
+			*Pawn->GetPathName(), Work.RoundId, Work.LifeId);
+	}
+	QueueOutOfWorldRecoveryRetry(PawnKey, WorkSerial);
+}
+
+void AMiniGameMode::QueueOutOfWorldRecoveryRetry(TWeakObjectPtr<AMiniCharacter> PawnKey, uint32 WorkSerial)
+{
+	if (FPendingOutOfWorldRecovery* Work = PendingOutOfWorldRecoveries.Find(PawnKey))
+	{
+		if (Work->WorkSerial == WorkSerial)
+		{
+			GetWorldTimerManager().SetTimer(Work->Timer,
+				FTimerDelegate::CreateUObject(this, &ThisClass::FinishOutOfWorldRecovery, PawnKey, WorkSerial), 0.5f, false);
+		}
+	}
+}
+
+void AMiniGameMode::RestoreOutOfWorldRecoveryMovement(const FPendingOutOfWorldRecovery& Work)
+{
+	// Round/source changes cancel retries, but must still release a pause owned
+	// by this exact live Pawn. Never enable movement on a dead or replacement life.
+	if (!Work.bMovementSuspended || !IsCurrentRecoveryLife(Work)) { return; }
+	AMiniCharacter* Pawn = Work.Pawn.Get();
+	UCharacterMovementComponent* Movement = Pawn->GetCharacterMovement();
+	if (Movement && Movement->MovementMode == MOVE_None)
+	{
+		Movement->SetMovementMode(static_cast<EMovementMode>(Work.SavedMovementMode), Work.SavedCustomMovementMode);
+		if (IsCurrentRecoveryLife(Work) && !PendingOutOfWorldRecoveries.Contains(Pawn))
+		{
+			Movement->OnTeleported();
+			Movement->ForceClientAdjustment();
+			Pawn->ForceNetUpdate();
+		}
+	}
+}
+
+void AMiniGameMode::CancelPendingOutOfWorldRecovery(AMiniCharacter* Pawn)
+{
+	if (Pawn) { CancelOutOfWorldRecovery(Pawn); }
+}
+
+void AMiniGameMode::CancelOutOfWorldRecovery(TWeakObjectPtr<AMiniCharacter> PawnKey)
+{
+	FPendingOutOfWorldRecovery Work;
+	if (PendingOutOfWorldRecoveries.RemoveAndCopyValue(PawnKey, Work))
+	{
+		GetWorldTimerManager().ClearTimer(Work.Timer);
+		RestoreOutOfWorldRecoveryMovement(Work);
+	}
+}
+
+void AMiniGameMode::CancelOutOfWorldRecoveriesForController(AController* Controller)
+{
+	TArray<TWeakObjectPtr<AMiniCharacter>> Keys;
+	for (const TPair<TWeakObjectPtr<AMiniCharacter>, FPendingOutOfWorldRecovery>& Entry : PendingOutOfWorldRecoveries)
+	{
+		if (Entry.Value.Controller.Get() == Controller) { Keys.Add(Entry.Key); }
+	}
+	for (const TWeakObjectPtr<AMiniCharacter>& Key : Keys) { CancelOutOfWorldRecovery(Key); }
+}
+
+void AMiniGameMode::CancelPendingOutOfWorldRecoveriesForMatch()
+{
+	TArray<FPendingOutOfWorldRecovery> Works;
+	PendingOutOfWorldRecoveries.GenerateValueArray(Works);
+	PendingOutOfWorldRecoveries.Reset();
+	++NextOutOfWorldRecoveryWorkSerial;
+	for (FPendingOutOfWorldRecovery& Work : Works) { GetWorldTimerManager().ClearTimer(Work.Timer); }
+	for (const FPendingOutOfWorldRecovery& Work : Works) { RestoreOutOfWorldRecoveryMovement(Work); }
+}
+
 void AMiniGameMode::NotifyPlayerDeath(const FMiniPlayerDeathInfo& DeathInfo)
 {
 	if (HasAuthority())
 	{
+		CancelPendingOutOfWorldRecovery(DeathInfo.VictimPawn.Get());
 		if (UMiniMatchRulesComponent* Match = GetMatchRules())
 		{
 			Match->NotifyPlayerDeath(DeathInfo);
@@ -444,6 +717,7 @@ void AMiniGameMode::CancelPendingRespawn(AController* Controller)
 
 void AMiniGameMode::CancelPendingRespawnsForMatch()
 {
+	CancelPendingOutOfWorldRecoveriesForMatch();
 	for (TPair<TWeakObjectPtr<AController>, FPendingRespawn>& Entry : PendingRespawns)
 	{
 		GetWorldTimerManager().ClearTimer(Entry.Value.Timer);

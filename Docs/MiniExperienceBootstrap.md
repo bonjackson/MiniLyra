@@ -8,7 +8,7 @@
 
 任务 19 已增加 CommonGame UI Policy 和每 LocalPlayer 的 Game／Menu／Modal 根层栈；MiniShooterCore 经 AddWidgets Action 和 UIExtension 注入战斗 HUD。HUD 从已复制属性／装备取初始快照，GameplayMessage 只发本地通知；根布局的加载／失败界面在玩法 HUD 未创建或撤销后仍可存在。菜单、HUD 监听与异步句柄按对应生命周期回收，主机与客户端独立显示自己的数据。
 
-任务 20 完成训练内容，任务 21 完成独立 GameState 阶段 ASC／MiniArena 注入。任务 22 在生产 ArenaSet 增加 MatchRules，使用人数门槛、PlayerState 统计、复制冻结结果和共同 GE 伤害门控，生命保护与重生工作按局和生命释放；HUD 独立读取 World 比赛快照。构建、资产、普通生产 URL、达分／超时／并列／晚加入／真实断开再加入／撤销和媒体专项均通过，旧训练及阶段回归保留；见 [任务 20](Task20/PracticeExperience.md)、[任务 21](Task21/GamePhases.md) 与 [任务 22](Task22/FFAMatchRules.md)。下一入口为任务 23 竞技地图；生产 cook 与 Cue 路径提示留任务 28 收敛。
+任务 20 完成训练内容，任务 21 完成独立 GameState 阶段 ASC／MiniArena 注入，任务 22 建立生产 FFA。任务 23 增加独立竞技图与地图 Experience 覆盖，八个安全出生点、真实环境 GE 跌落／同生命返回及全堵恢复工作接入既有死亡重生链；修复新 Avatar 等待旧死亡 Tag 解除时的输入重试事件。最终构建、资产三阶段、普通无探针四进程、两局真实 GE 与第三局清分、训练及输入／HUD／撤销回归、媒体复核均通过；见 [任务 20](Task20/PracticeExperience.md)、[任务 21](Task21/GamePhases.md)、[任务 22](Task22/FFAMatchRules.md) 与 [任务 23](Task23/ArenaMap.md)。下一入口为任务 24 前端与直接 IP 旅行；生产 cook 与 Cue 路径提示留任务 28 收敛。
 
 ## 归档实现的目标
 
