@@ -12,6 +12,7 @@
 #include "Equipment/MiniQuickBarComponent.h"
 #include "Feedback/MiniCombatFeedbackComponent.h"
 #include "GameFramework/GameplayMessageSubsystem.h"
+#include "GameModes/MiniGamePhaseSubsystem.h"
 #include "Inventory/MiniInventoryItemInstance.h"
 #include "Inventory/MiniInventoryManagerComponent.h"
 #include "Player/MiniPlayerController.h"
@@ -41,7 +42,8 @@ bool SameSnapshot(const FMiniHUDSnapshot& A, const FMiniHUDSnapshot& B)
 		A.MagazineAmmo == B.MagazineAmmo && A.ReserveAmmo == B.ReserveAmmo &&
 		A.bHealthReady == B.bHealthReady && A.bAmmoReady == B.bAmmoReady &&
 		A.bDead == B.bDead && A.bReloading == B.bReloading &&
-		A.bHasMatchData == B.bHasMatchData && A.Score == B.Score && A.RemainingSeconds == B.RemainingSeconds;
+		A.bHasMatchData == B.bHasMatchData && A.Score == B.Score && A.RemainingSeconds == B.RemainingSeconds &&
+		A.bHasPhaseData == B.bHasPhaseData && A.PhaseTag == B.PhaseTag && A.PhaseRemainingSeconds == B.PhaseRemainingSeconds;
 }
 }
 
@@ -65,6 +67,13 @@ void UMiniHUDViewModel::Start(ULocalPlayer* LocalPlayer, UWorld* World)
 	PlayerStateSetHandle = CommonPlayer->OnPlayerStateSet.AddUObject(this, &ThisClass::HandleLocalPlayerState);
 	PawnSetHandle = CommonPlayer->OnPlayerPawnSet.AddUObject(this, &ThisClass::HandleLocalPawn);
 	WorldCleanupHandle = FWorldDelegates::OnWorldCleanup.AddUObject(this, &ThisClass::HandleWorldCleanup);
+	BoundPhaseSubsystem = World->GetSubsystem<UMiniGamePhaseSubsystem>();
+	if (UMiniGamePhaseSubsystem* Phases = BoundPhaseSubsystem.Get())
+	{
+		PhaseStateHandle = Phases->OnPhaseStateChanged.AddUObject(this, &ThisClass::HandlePhaseStateChanged);
+	}
+	// Phase listeners belong to this World, independently of Pawn rebindings.
+	HandlePhaseStateChanged(BoundPhaseSubsystem.IsValid() ? BoundPhaseSubsystem->GetCurrentPhaseState() : FMiniGamePhaseState());
 	// Read current objects after installing identity listeners; readiness never
 	// depends on having witnessed their original one-time broadcasts.
 	RebindSources();
@@ -73,6 +82,11 @@ void UMiniHUDViewModel::Start(ULocalPlayer* LocalPlayer, UWorld* World)
 void UMiniHUDViewModel::Stop()
 {
 	bRunning = false;
+	if (UWorld* World = BoundWorld.Get()) { World->GetTimerManager().ClearTimer(PhaseCountdownTimer); }
+	PhaseCountdownTimer.Invalidate();
+	if (UMiniGamePhaseSubsystem* Phases = BoundPhaseSubsystem.Get()) { Phases->OnPhaseStateChanged.Remove(PhaseStateHandle); }
+	PhaseStateHandle.Reset();
+	BoundPhaseSubsystem.Reset();
 	UnbindSources();
 	if (UCommonLocalPlayer* LocalPlayer = BoundLocalPlayer.Get())
 	{
@@ -220,6 +234,14 @@ void UMiniHUDViewModel::RefreshSnapshot()
 	Current.LocalPlayer = BoundLocalPlayer.Get();
 	Current.World = BoundWorld.Get();
 	Current.Pawn = BoundPawn.Get();
+	if (UMiniGamePhaseSubsystem* Phases = BoundPhaseSubsystem.Get())
+	{
+		const FMiniGamePhaseState Phase = Phases->GetCurrentPhaseState();
+		Current.bHasPhaseData = Phases->HasArenaContext();
+		Current.PhaseTag = Phase.PhaseTag;
+		const double Remaining = Phases->GetRemainingSeconds();
+		Current.PhaseRemainingSeconds = Remaining < 0.0 ? -1 : FMath::CeilToInt32(Remaining);
+	}
 	UMiniAbilitySystemComponent* ASC = BoundASC.Get();
 	Current.bHealthReady = Current.Pawn && ASC && ASC->GetAvatarActor() == Current.Pawn;
 	if (Current.bHealthReady)
@@ -278,6 +300,29 @@ void UMiniHUDViewModel::HandleWorldCleanup(UWorld* World, bool bSessionEnded, bo
 	if (World == BoundWorld.Get()) { Stop(); }
 }
 
+void UMiniHUDViewModel::HandlePhaseStateChanged(const FMiniGamePhaseState& State)
+{
+	if (!bRunning) { return; }
+	if (UWorld* World = BoundWorld.Get())
+	{
+		if (State.PhaseTag.IsValid() && State.PhaseEndTimeServer > 0.0)
+		{
+			if (!World->GetTimerManager().IsTimerActive(PhaseCountdownTimer))
+			{
+				World->GetTimerManager().SetTimer(PhaseCountdownTimer, this, &ThisClass::RefreshSnapshot, 0.2f, true);
+			}
+		}
+		else { World->GetTimerManager().ClearTimer(PhaseCountdownTimer); }
+	}
+	RefreshSnapshot();
+}
+
+bool UMiniHUDViewModel::IsPhaseCountdownRunning() const
+{
+	const UWorld* World = BoundWorld.Get();
+	return bRunning && World && World->GetTimerManager().IsTimerActive(PhaseCountdownTimer);
+}
+
 void UMiniHUDViewModel::HandleHitConfirmed(int32 ShotSequence, float AppliedDamage, bool bKilled)
 {
 	AMiniCharacter* Pawn = BoundPawn.Get();
@@ -311,7 +356,7 @@ int32 UMiniHUDViewModel::GetBindingCount() const
 {
 	const FDelegateHandle Handles[] = { ControllerSetHandle, PlayerStateSetHandle, PawnSetHandle,
 		WorldCleanupHandle, PawnInitHandle, HealthHandle, MaxHealthHandle, ReloadHandle, DeathHandle,
-		InventoryHandle, QuickBarHandle, ItemHandle };
+		InventoryHandle, QuickBarHandle, ItemHandle, PhaseStateHandle };
 	int32 Count = (bHitDelegateBound ? 1 : 0) + (bEmptyDelegateBound ? 1 : 0);
 	for (const FDelegateHandle& Handle : Handles) { Count += Handle.IsValid() ? 1 : 0; }
 	return Count;

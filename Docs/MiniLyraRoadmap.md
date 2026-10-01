@@ -449,6 +449,7 @@ Mini 功能插件首版可采用内容插件，复用 `FPS` 中的通用原生�
 - **产物：** 三个阶段能力／配置与竞技 Experience 雏形；竞技规则组件由 Action 注入。
 - **验收：** 只有服务器切换阶段；阶段结束能取消该阶段工作；晚加入直接读到当前阶段与剩余时间；训练场不启动竞技阶段。
 - **边界：** 不实现任意嵌套阶段树，也不复用玩家 ASC 保存整场比赛状态。
+- **执行结果（2026-10-01）：** GameState 独立 Minimal ASC、固定服务器三阶段、来源／generation／单句柄生命周期及复制 Tag／deadline／revision 完成；MiniArena 经 World 作用域 stock AddComponents 注入 Rules，HUD 基于服务器时钟显示本地倒计时。独立三阶段资产、Editor／Game unity 构建、listen＋早期／Playing 晚加入客户端、修改拒绝、提前取消跨原 deadline、真实 Action 撤销和动态组件删除均通过，生产 URL 和媒体专项也通过，两张截图已复核。GFD 改为唯一 `MiniArena` 名，重复 Primary Asset ID ensure 已消除；任务 19 UI 与任务 20 训练旅行回归通过。详见 `Docs/Task21/GamePhases.md`。生产计分、两人门槛及 Playing 外伤害门控仍为任务 22。
 
 #### 任务 22：实现 FFA 计分、胜负与出生规则
 

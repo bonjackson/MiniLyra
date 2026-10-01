@@ -11,6 +11,7 @@
 #include "Input/Events.h"
 #include "Input/Reply.h"
 #include "UI/MiniHUDViewModel.h"
+#include "System/MiniGameplayTags.h"
 
 #define LOCTEXT_NAMESPACE "MiniHUDWidgets"
 
@@ -255,6 +256,16 @@ void UMiniHUDMatchWidget::RenderSnapshot(const FMiniHUDSnapshot& State)
 	if (!GetTextBlock()) { return; }
 	GetTextBlock()->SetFontSize(17.0f);
 	GetTextBlock()->SetJustification(ETextJustify::Center);
+	if (State.bHasPhaseData && !State.bHasMatchData)
+	{
+		FText PhaseName = LOCTEXT("PhaseEnded", "阶段结束");
+		if (State.PhaseTag == MiniGameplayTags::GamePhase_MiniArena_Warmup) { PhaseName = LOCTEXT("PhaseWarmup", "准备"); }
+		else if (State.PhaseTag == MiniGameplayTags::GamePhase_MiniArena_Playing) { PhaseName = LOCTEXT("PhasePlaying", "进行中"); }
+		else if (State.PhaseTag == MiniGameplayTags::GamePhase_MiniArena_PostMatch) { PhaseName = LOCTEXT("PhasePostMatch", "结束"); }
+		const FText Time = State.PhaseRemainingSeconds < 0 ? LOCTEXT("NoPhaseDeadline", "—") : FText::AsNumber(State.PhaseRemainingSeconds);
+		GetTextBlock()->SetText(FText::Format(LOCTEXT("PhaseFormat", "竞技场   {0}   时间 {1}"), PhaseName, Time));
+		return;
+	}
 	GetTextBlock()->SetText(State.bHasMatchData ?
 		FText::Format(LOCTEXT("MatchFormat", "比分 {0}   时间 {1}"), FText::AsNumber(State.Score), FText::AsNumber(State.RemainingSeconds)) :
 		LOCTEXT("PracticeMatch", "训练模式   比分 —   时间 —"));

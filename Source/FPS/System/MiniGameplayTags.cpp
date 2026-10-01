@@ -21,6 +21,9 @@ namespace MiniGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Ability_Jump, "Ability.Jump", "Jumping ability family.");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Ability_Aim, "Ability.Aim", "Aiming ability family.");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Data_Damage, "Data.Damage", "Server-authoritative damage magnitude for the instant damage effect.");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(GamePhase_MiniArena_Warmup, "GamePhase.MiniArena.Warmup", "Arena warmup phase.");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(GamePhase_MiniArena_Playing, "GamePhase.MiniArena.Playing", "Arena playing phase.");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(GamePhase_MiniArena_PostMatch, "GamePhase.MiniArena.PostMatch", "Arena post-match phase.");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(GameplayCue_Mini_RifleFire, "GameplayCue.Mini.RifleFire", "Accepted rifle shot presentation.");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(GameplayCue_Mini_PistolFire, "GameplayCue.Mini.PistolFire", "Accepted pistol shot presentation.");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(GameplayCue_Mini_Impact, "GameplayCue.Mini.Impact", "Authoritative hit surface presentation.");

@@ -61,6 +61,13 @@ struct FPS_API FMiniHUDSnapshot
 	int32 Score = 0;
 	UPROPERTY(BlueprintReadOnly)
 	int32 RemainingSeconds = -1;
+	/** Phase state is independent of scores; task 22 adds actual match results. */
+	UPROPERTY(BlueprintReadOnly)
+	bool bHasPhaseData = false;
+	UPROPERTY(BlueprintReadOnly)
+	FGameplayTag PhaseTag;
+	UPROPERTY(BlueprintReadOnly)
+	int32 PhaseRemainingSeconds = -1;
 	UPROPERTY(BlueprintReadOnly)
 	int32 Revision = 0;
 };

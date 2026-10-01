@@ -14,6 +14,8 @@
 #include "GameModes/MiniExperienceDefinition.h"
 #include "GameModes/MiniExperienceManagerComponent.h"
 #include "GameModes/MiniGameMode.h"
+#include "GameModes/MiniGamePhaseSubsystem.h"
+#include "Arena/MiniArenaRulesComponent.h"
 #include "Engine/World.h"
 #include "GameFramework/PlayerController.h"
 #include "Kismet/GameplayStatics.h"
@@ -56,6 +58,19 @@ AMiniGameState::AMiniGameState(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
 	ExperienceManagerComponent = CreateDefaultSubobject<UMiniExperienceManagerComponent>(TEXT("ExperienceManagerComponent"));
+	PhaseAbilitySystemComponent = CreateDefaultSubobject<UMiniAbilitySystemComponent>(TEXT("PhaseAbilitySystemComponent"));
+	PhaseAbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Minimal);
+}
+
+UAbilitySystemComponent* AMiniGameState::GetAbilitySystemComponent() const
+{
+	return PhaseAbilitySystemComponent;
+}
+
+void AMiniGameState::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+	PhaseAbilitySystemComponent->InitAbilityActorInfo(this, this);
 }
 
 void AMiniGameState::BeginPlay()
@@ -91,6 +106,12 @@ void AMiniGameState::BeginPlay()
 void AMiniGameState::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	GetWorldTimerManager().ClearTimer(PlayerSpawnProbeTimer);
+	if (UMiniArenaRulesComponent* Rules = FindComponentByClass<UMiniArenaRulesComponent>()) { Rules->StopArenaPhases(); }
+	if (UMiniGamePhaseSubsystem* Phases = GetWorld() ? GetWorld()->GetSubsystem<UMiniGamePhaseSubsystem>() : nullptr)
+	{
+		Phases->ShutdownPhases();
+	}
+	PhaseAbilitySystemComponent->ClearActorInfo();
 	Super::EndPlay(EndPlayReason);
 }
 

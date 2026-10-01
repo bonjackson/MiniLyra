@@ -1,6 +1,7 @@
 #pragma once
 
 #include "UI/MiniHUDMessages.h"
+#include "TimerManager.h"
 #include "MiniHUDViewModel.generated.h"
 
 class AMiniPlayerController;
@@ -14,6 +15,8 @@ class UMiniInventoryItemInstance;
 class UMiniInventoryManagerComponent;
 class UMiniQuickBarComponent;
 class UMiniRangedWeaponComponent;
+class UMiniGamePhaseSubsystem;
+struct FMiniGamePhaseState;
 struct FOnAttributeChangeData;
 struct FActorInitStateChangedParams;
 
@@ -34,6 +37,7 @@ public:
 	int32 GetStateRefreshCount() const { return StateRefreshCount; }
 	int32 GetHitMessageCount() const { return HitMessageCount; }
 	int32 GetEmptyMessageCount() const { return EmptyMessageCount; }
+	bool IsPhaseCountdownRunning() const;
 
 private:
 	void RebindSources();
@@ -49,6 +53,7 @@ private:
 	void HandleInventoryChanged();
 	void HandleItemChanged();
 	void HandleWorldCleanup(UWorld* World, bool bSessionEnded, bool bCleanupResources);
+	void HandlePhaseStateChanged(const FMiniGamePhaseState& State);
 	UFUNCTION()
 	void HandleHitConfirmed(int32 ShotSequence, float AppliedDamage, bool bKilled);
 	UFUNCTION()
@@ -66,6 +71,9 @@ private:
 	TWeakObjectPtr<UMiniInventoryItemInstance> BoundItem;
 	TWeakObjectPtr<UMiniCombatFeedbackComponent> BoundFeedback;
 	TWeakObjectPtr<UMiniRangedWeaponComponent> BoundWeapon;
+	TWeakObjectPtr<UMiniGamePhaseSubsystem> BoundPhaseSubsystem;
+	FDelegateHandle PhaseStateHandle;
+	FTimerHandle PhaseCountdownTimer;
 
 	FDelegateHandle ControllerSetHandle;
 	FDelegateHandle PlayerStateSetHandle;

@@ -64,6 +64,10 @@
 			"Enabled": true
 		},
 		{
+			"Name": "MiniArena",
+			"Enabled": true
+		},
+		{
 			"Name": "ModelingToolsEditorMode",
 			"Enabled": true,
 			"TargetAllowList": [

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ModularGameState.h"
+#include "AbilitySystemInterface.h"
 #include "TimerManager.h"
 #include "MiniGameState.generated.h"
 
@@ -12,7 +13,7 @@ class UMiniAbilitySystemComponent;
 
 // Replicated home for the Experience manager; match state and player data come later.
 UCLASS()
-class FPS_API AMiniGameState : public AModularGameStateBase
+class FPS_API AMiniGameState : public AModularGameStateBase, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 
@@ -20,7 +21,10 @@ public:
 	AMiniGameState(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
 	UMiniExperienceManagerComponent* GetExperienceManagerComponent() const { return ExperienceManagerComponent; }
+	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+	UMiniAbilitySystemComponent* GetPhaseAbilitySystemComponent() const { return PhaseAbilitySystemComponent; }
 
+	virtual void PostInitializeComponents() override;
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
@@ -33,6 +37,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Mini|Experience", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UMiniExperienceManagerComponent> ExperienceManagerComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Mini|Phases", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UMiniAbilitySystemComponent> PhaseAbilitySystemComponent;
 
 	bool bFlowProbeLateSubscriberCalled = false;
 	bool bProbeInitStates = false;
