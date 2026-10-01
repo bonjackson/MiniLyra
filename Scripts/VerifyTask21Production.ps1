@@ -5,6 +5,11 @@ param(
 )
 $ErrorActionPreference = 'Stop'
 $projectRoot = Split-Path -Parent $PSScriptRoot
+if (Test-Path -LiteralPath (Join-Path $projectRoot 'Plugins\GameFeatures\MiniArena\Content\Config\DA_MiniFFAMatchRules.uasset')) {
+    # Task22 replaces the production timed demo with a real two-player FFA.
+    & (Join-Path $PSScriptRoot 'VerifyTask22Production.ps1') -EngineRoot $EngineRoot -TimeoutSeconds $TimeoutSeconds
+    return
+}
 $runner = Join-Path $EngineRoot 'Engine\Binaries\Win64\UnrealEditor-Cmd.exe'
 $log = Join-Path $projectRoot 'Saved\Logs\Task21-Production.log'
 if (Test-Path -LiteralPath $log) { Remove-Item -LiteralPath $log }

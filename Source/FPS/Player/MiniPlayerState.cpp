@@ -40,6 +40,8 @@ void AMiniPlayerState::BeginPlay()
 
 void AMiniPlayerState::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
+	OnMatchStatsChanged.Clear();
+	CurrentLifePawn.Reset();
 	if (HasAuthority() && AbilitySystemComponent)
 	{
 		for (FMiniAbilitySetGrantedHandles& Handles : PawnDataGrantedHandles)
@@ -60,6 +62,63 @@ void AMiniPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AMiniPlayerState, PawnData);
+	DOREPLIFETIME(AMiniPlayerState, MatchStats);
+	DOREPLIFETIME(AMiniPlayerState, CurrentLifeId);
+}
+
+bool AMiniPlayerState::BeginLifeForPawn(AMiniCharacter* Pawn)
+{
+	if (!HasAuthority() || !IsValid(Pawn) || Pawn->GetWorld() != GetWorld() ||
+		Pawn->GetPlayerState<AMiniPlayerState>() != this || AbilitySystemComponent->GetAvatarActor() != Pawn) { return false; }
+	if (CurrentLifePawn.Get() == Pawn && CurrentLifeId != 0) { return true; }
+	CurrentLifePawn = Pawn;
+	if (++CurrentLifeId == 0) { ++CurrentLifeId; }
+	ForceNetUpdate();
+	return true;
+}
+
+AMiniCharacter* AMiniPlayerState::GetCurrentLifePawn() const
+{
+	return CurrentLifePawn.Get();
+}
+
+bool AMiniPlayerState::ResetMatchStats(int32 RoundId)
+{
+	if (!HasAuthority() || RoundId <= 0) { return false; }
+	if (MatchStats.RoundId == RoundId) { return true; }
+	MatchStats.RoundId = RoundId;
+	MatchStats.Kills = 0;
+	MatchStats.Deaths = 0;
+	CommitMatchStats();
+	return true;
+}
+
+bool AMiniPlayerState::RecordMatchKill(int32 RoundId)
+{
+	if (!HasAuthority() || RoundId <= 0 || MatchStats.RoundId != RoundId) { return false; }
+	++MatchStats.Kills;
+	CommitMatchStats();
+	return true;
+}
+
+bool AMiniPlayerState::RecordMatchDeath(int32 RoundId)
+{
+	if (!HasAuthority() || RoundId <= 0 || MatchStats.RoundId != RoundId) { return false; }
+	++MatchStats.Deaths;
+	CommitMatchStats();
+	return true;
+}
+
+void AMiniPlayerState::CommitMatchStats()
+{
+	++MatchStats.Revision;
+	ForceNetUpdate();
+	OnRep_MatchStats();
+}
+
+void AMiniPlayerState::OnRep_MatchStats()
+{
+	OnMatchStatsChanged.Broadcast(MatchStats);
 }
 
 bool AMiniPlayerState::SetPawnData(const UMiniPawnData* InPawnData)

@@ -114,8 +114,8 @@ bool UMiniGamePhaseSubsystem::NotifyPhaseBegan(FGameplayAbilitySpecHandle Handle
 	Request->Ability = Ability;
 	Request->bBegan = true;
 	Ability->StartPhaseTimer(Request->Duration);
-	UE_LOG(LogMiniExperience, Display, TEXT("MiniPhase BEGIN: World=%s Tag=%s Handle=%s Deadline=%.3f"),
-		*GetWorld()->GetName(), *Request->Tag.ToString(), *Handle.ToString(), Deadline);
+	UE_LOG(LogMiniExperience, Display, TEXT("MiniPhase BEGIN: World=%s Tag=%s Handle=%s Deadline=%.3f Start=%.3f"),
+		*GetWorld()->GetName(), *Request->Tag.ToString(), *Handle.ToString(), Deadline, Now);
 	Source->CommitPhaseState(Request->Tag, Now, Deadline);
 	return Request.IsSet() && Request->Handle == Handle && Request->bBegan && Ability->IsActive();
 }

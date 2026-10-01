@@ -71,6 +71,11 @@ if (practice.get_editor_property("default_pawn_data") != pawn or
 
 assemblies = []
 for diagnostic in (False, True):
+    if not diagnostic and unreal.EditorAssetLibrary.does_asset_exist("/MiniArena/Config/DA_MiniFFAMatchRules.DA_MiniFFAMatchRules"):
+        if not unreal.MiniTask22AssetSetupLibrary.verify_saved_assembly(False):
+            raise RuntimeError("Task22 production FFA assembly failed independent verification")
+        unreal.log("MINI_TASK21_PRODUCTION_MIGRATED_TO_FFA ReadOnly=1")
+        continue
     if diagnostic:
         config_path = f"{DIAGNOSTICS}/Arena/DA_MiniArenaDiagnosticsPhaseConfig.DA_MiniArenaDiagnosticsPhaseConfig"
         blueprint_path = f"{DIAGNOSTICS}/Arena/B_MiniArenaDiagnosticsRulesComponent.B_MiniArenaDiagnosticsRulesComponent"
@@ -101,7 +106,7 @@ for diagnostic in (False, True):
         raise RuntimeError(f"Fixed classes/durations, Rules CDO or server-only component entry failed native read-only verification: {experience_path}")
     assemblies.append((config, blueprint, action_set, experience))
 
-if any(production == diagnostic for production, diagnostic in zip(*assemblies)):
+if len(assemblies) == 2 and any(production == diagnostic for production, diagnostic in zip(*assemblies)):
     raise RuntimeError("Timing diagnostics must own four distinct assets")
 # Both roots are scanned for primary IDs. Check that each new selectable
 # Experience/ActionSet name occurs only once across the production/diagnostic roots.
@@ -114,4 +119,4 @@ for kind, index in (("Experiences", 3), ("ActionSets", 2)):
         matching = [asset for asset in assets if str(asset.asset_name) == name]
         if len(matching) != 1:
             raise RuntimeError(f"Primary asset name missing or duplicated: {name} count={len(matching)}")
-unreal.log("MINI_TASK21_ASSETS_VERIFIED Production=10/60/5 Diagnostics=8/20/3 FixedNativeClasses=1 ServerOnly=1 TrainingDefault=1")
+unreal.log("MINI_TASK21_ASSETS_VERIFIED LegacyProduction=10/60/5OrTask22FFA Diagnostics=8/20/3 FixedNativeClasses=1 ServerOnly=1 TrainingDefault=1")

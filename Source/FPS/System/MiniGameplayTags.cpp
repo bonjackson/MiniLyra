@@ -15,6 +15,7 @@ namespace MiniGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(InputTag_Aim, "InputTag.Ability.Aim", "Aim input routed to GAS.");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(State_Aiming, "State.Aiming", "An active aim ability owns this state.");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(State_Dead, "State.Dead", "The player cannot use regular abilities while dead.");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(State_SpawnProtected, "State.SpawnProtected", "This life has temporary server-authoritative spawn protection.");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(State_Reloading, "State.Reloading", "Reload interrupts firing and aiming.");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Gameplay_AbilityInputBlocked, "Gameplay.AbilityInputBlocked", "Gameplay ability input is blocked.");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Ability_Fire, "Ability.Fire", "Firing ability family.");

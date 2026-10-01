@@ -13,6 +13,7 @@
 #include "Feedback/MiniCombatFeedbackComponent.h"
 #include "GameFramework/GameplayMessageSubsystem.h"
 #include "GameModes/MiniGamePhaseSubsystem.h"
+#include "Arena/MiniMatchSubsystem.h"
 #include "Inventory/MiniInventoryItemInstance.h"
 #include "Inventory/MiniInventoryManagerComponent.h"
 #include "Player/MiniPlayerController.h"
@@ -42,7 +43,9 @@ bool SameSnapshot(const FMiniHUDSnapshot& A, const FMiniHUDSnapshot& B)
 		A.MagazineAmmo == B.MagazineAmmo && A.ReserveAmmo == B.ReserveAmmo &&
 		A.bHealthReady == B.bHealthReady && A.bAmmoReady == B.bAmmoReady &&
 		A.bDead == B.bDead && A.bReloading == B.bReloading &&
-		A.bHasMatchData == B.bHasMatchData && A.Score == B.Score && A.RemainingSeconds == B.RemainingSeconds &&
+		A.bHasMatchData == B.bHasMatchData && A.Score == B.Score && A.Deaths == B.Deaths &&
+		A.MatchState.RoundId == B.MatchState.RoundId && A.MatchState.Revision == B.MatchState.Revision &&
+		A.RemainingSeconds == B.RemainingSeconds &&
 		A.bHasPhaseData == B.bHasPhaseData && A.PhaseTag == B.PhaseTag && A.PhaseRemainingSeconds == B.PhaseRemainingSeconds;
 }
 }
@@ -72,6 +75,11 @@ void UMiniHUDViewModel::Start(ULocalPlayer* LocalPlayer, UWorld* World)
 	{
 		PhaseStateHandle = Phases->OnPhaseStateChanged.AddUObject(this, &ThisClass::HandlePhaseStateChanged);
 	}
+	BoundMatchSubsystem = World->GetSubsystem<UMiniMatchSubsystem>();
+	if (UMiniMatchSubsystem* Match = BoundMatchSubsystem.Get())
+	{
+		MatchStateHandle = Match->OnMatchStateChanged.AddUObject(this, &ThisClass::HandleMatchStateChanged);
+	}
 	// Phase listeners belong to this World, independently of Pawn rebindings.
 	HandlePhaseStateChanged(BoundPhaseSubsystem.IsValid() ? BoundPhaseSubsystem->GetCurrentPhaseState() : FMiniGamePhaseState());
 	// Read current objects after installing identity listeners; readiness never
@@ -87,6 +95,9 @@ void UMiniHUDViewModel::Stop()
 	if (UMiniGamePhaseSubsystem* Phases = BoundPhaseSubsystem.Get()) { Phases->OnPhaseStateChanged.Remove(PhaseStateHandle); }
 	PhaseStateHandle.Reset();
 	BoundPhaseSubsystem.Reset();
+	if (UMiniMatchSubsystem* Match = BoundMatchSubsystem.Get()) { Match->OnMatchStateChanged.Remove(MatchStateHandle); }
+	MatchStateHandle.Reset();
+	BoundMatchSubsystem.Reset();
 	UnbindSources();
 	if (UCommonLocalPlayer* LocalPlayer = BoundLocalPlayer.Get())
 	{
@@ -242,6 +253,24 @@ void UMiniHUDViewModel::RefreshSnapshot()
 		const double Remaining = Phases->GetRemainingSeconds();
 		Current.PhaseRemainingSeconds = Remaining < 0.0 ? -1 : FMath::CeilToInt32(Remaining);
 	}
+	if (UMiniMatchSubsystem* Match = BoundMatchSubsystem.Get())
+	{
+		Current.bHasMatchData = Match->HasMatchContext();
+		if (Current.bHasMatchData)
+		{
+			Current.MatchState = Match->GetCurrentMatchState();
+			Current.RemainingSeconds = Current.PhaseRemainingSeconds;
+			const AMiniPlayerState* LocalState = BoundController.IsValid()
+				? BoundController->GetPlayerState<AMiniPlayerState>() : nullptr;
+			if (LocalState)
+			{
+				for (const FMiniMatchPlayerRow& Row : Current.MatchState.Rows)
+				{
+					if (Row.PlayerId == LocalState->GetPlayerId()) { Current.Score = Row.Kills; Current.Deaths = Row.Deaths; break; }
+				}
+			}
+		}
+	}
 	UMiniAbilitySystemComponent* ASC = BoundASC.Get();
 	Current.bHealthReady = Current.Pawn && ASC && ASC->GetAvatarActor() == Current.Pawn;
 	if (Current.bHealthReady)
@@ -323,6 +352,11 @@ bool UMiniHUDViewModel::IsPhaseCountdownRunning() const
 	return bRunning && World && World->GetTimerManager().IsTimerActive(PhaseCountdownTimer);
 }
 
+void UMiniHUDViewModel::HandleMatchStateChanged(const FMiniMatchState& State)
+{
+	RefreshSnapshot();
+}
+
 void UMiniHUDViewModel::HandleHitConfirmed(int32 ShotSequence, float AppliedDamage, bool bKilled)
 {
 	AMiniCharacter* Pawn = BoundPawn.Get();
@@ -356,7 +390,7 @@ int32 UMiniHUDViewModel::GetBindingCount() const
 {
 	const FDelegateHandle Handles[] = { ControllerSetHandle, PlayerStateSetHandle, PawnSetHandle,
 		WorldCleanupHandle, PawnInitHandle, HealthHandle, MaxHealthHandle, ReloadHandle, DeathHandle,
-		InventoryHandle, QuickBarHandle, ItemHandle, PhaseStateHandle };
+		InventoryHandle, QuickBarHandle, ItemHandle, PhaseStateHandle, MatchStateHandle };
 	int32 Count = (bHitDelegateBound ? 1 : 0) + (bEmptyDelegateBound ? 1 : 0);
 	for (const FDelegateHandle& Handle : Handles) { Count += Handle.IsValid() ? 1 : 0; }
 	return Count;

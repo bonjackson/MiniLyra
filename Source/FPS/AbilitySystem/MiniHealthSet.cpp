@@ -1,7 +1,13 @@
 #include "MiniHealthSet.h"
 
+#include "Arena/MiniMatchRulesComponent.h"
+#include "Character/MiniCharacter.h"
+#include "Character/MiniHealthComponent.h"
+#include "Engine/World.h"
+#include "GameFramework/GameStateBase.h"
 #include "GameplayEffectExtension.h"
 #include "Net/UnrealNetwork.h"
+#include "System/MiniGameplayTags.h"
 
 UMiniHealthSet::UMiniHealthSet()
 {
@@ -31,6 +37,27 @@ void UMiniHealthSet::PostAttributeChange(const FGameplayAttribute& Attribute, fl
 	}
 }
 
+bool UMiniHealthSet::PreGameplayEffectExecute(FGameplayEffectModCallbackData& Data)
+{
+	if (!Super::PreGameplayEffectExecute(Data))
+	{
+		return false;
+	}
+	if (Data.EvaluatedData.Attribute == GetIncomingDamageAttribute())
+	{
+		// Training targets share this set. FFA policies only gate player avatars.
+		AMiniCharacter* Pawn = Cast<AMiniCharacter>(Data.Target.GetAvatarActor());
+		AGameStateBase* GameState = Pawn && Pawn->GetWorld() ? Pawn->GetWorld()->GetGameState() : nullptr;
+		UMiniMatchRulesComponent* Match = GameState ? GameState->FindComponentByClass<UMiniMatchRulesComponent>() : nullptr;
+		if (Match && Match->IsFFAConfigured() &&
+			(!Match->CanApplyPlayerDamage(Pawn) || Data.Target.HasMatchingGameplayTag(MiniGameplayTags::State_SpawnProtected)))
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
 void UMiniHealthSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
 {
 	Super::PostGameplayEffectExecute(Data);
@@ -41,7 +68,19 @@ void UMiniHealthSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackD
 		SetIncomingDamage(0.0f);
 		if (Damage > 0.0f)
 		{
+			AMiniCharacter* Pawn = Cast<AMiniCharacter>(Data.Target.GetAvatarActor());
+			UMiniHealthComponent* HealthComponent = Pawn ? Pawn->GetHealthComponent() : nullptr;
+			// SetHealth broadcasts after GAS has cleared CurrentModcallbackData.
+			// Copy the current GE source before converting this transient damage.
+			if (HealthComponent)
+			{
+				HealthComponent->BeginDamageContext(Data.EffectSpec.GetContext());
+			}
 			SetHealth(FMath::Clamp(GetHealth() - Damage, 0.0f, GetMaxHealth()));
+			if (HealthComponent)
+			{
+				HealthComponent->EndDamageContext();
+			}
 		}
 	}
 	else if (Data.EvaluatedData.Attribute == GetHealthAttribute())

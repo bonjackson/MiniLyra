@@ -3,6 +3,7 @@
 #include "ActiveGameplayEffectHandle.h"
 #include "Components/ActorComponent.h"
 #include "GameplayEffectTypes.h"
+#include "Arena/MiniMatchTypes.h"
 #include "MiniHealthComponent.generated.h"
 
 class UMiniAbilitySystemComponent;
@@ -23,13 +24,20 @@ public:
 	bool IsDead() const { return bDeathStarted; }
 	/** Authority-only: remove only this life's death effect before a replacement Pawn is bound. */
 	void RemoveDeathEffect();
+	/** Copies only this synchronous GE conversion's source; never retains callback pointers. */
+	void BeginDamageContext(const FGameplayEffectContextHandle& Context);
+	void EndDamageContext();
+	void TryApplySpawnProtectionForCurrentLife();
+	void RemoveSpawnProtectionForCurrentLife() { RemoveSpawnProtectionEffect(); }
 
 private:
 	UFUNCTION()
 	void OnRep_DeathStarted();
 	void HandleHealthChanged(const FOnAttributeChangeData& ChangeData);
-	void StartDeath();
+	FMiniPlayerDeathInfo ResolveDamageContext(const FGameplayEffectContextHandle& Context) const;
+	void StartDeath(const FMiniPlayerDeathInfo* DeathInfo = nullptr);
 	void ApplyDeathPresentation();
+	void RemoveSpawnProtectionEffect();
 
 	UPROPERTY(ReplicatedUsing = OnRep_DeathStarted, VisibleInstanceOnly, Category = "Mini|Health")
 	bool bDeathStarted = false;
@@ -37,4 +45,7 @@ private:
 	TWeakObjectPtr<UMiniAbilitySystemComponent> BoundAbilitySystem;
 	FDelegateHandle HealthChangedHandle;
 	FActiveGameplayEffectHandle DeathEffectHandle;
+	FActiveGameplayEffectHandle SpawnProtectionEffectHandle;
+	uint32 SpawnProtectionGrantedLifeId = 0;
+	TArray<FMiniPlayerDeathInfo> SynchronousDamageContexts;
 };

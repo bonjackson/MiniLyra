@@ -256,6 +256,59 @@ void UMiniHUDMatchWidget::RenderSnapshot(const FMiniHUDSnapshot& State)
 	if (!GetTextBlock()) { return; }
 	GetTextBlock()->SetFontSize(17.0f);
 	GetTextBlock()->SetJustification(ETextJustify::Center);
+	if (State.bHasMatchData)
+	{
+		const FMiniMatchState& Match = State.MatchState;
+		FText Status;
+		const bool bWaiting = State.PhaseTag == MiniGameplayTags::GamePhase_MiniArena_Warmup;
+		if (bWaiting)
+		{
+			Status = FText::Format(LOCTEXT("WaitingForPlayers", "等待玩家  {0} / {1}"),
+				FText::AsNumber(Match.ConnectedPlayerCount), FText::AsNumber(Match.MinPlayers));
+		}
+		else if (Match.bHasResult)
+		{
+			if (Match.EndReason == EMiniMatchEndReason::InsufficientPlayers)
+			{
+				Status = LOCTEXT("InsufficientPlayers", "玩家不足，本局结束");
+			}
+			else if (Match.bIsDraw) { Status = LOCTEXT("MatchDraw", "本局并列"); }
+			else
+			{
+				FString Winners;
+				for (const FMiniMatchPlayerRow& Row : Match.ResultRows)
+				{
+					if (Match.WinnerPlayerIds.Contains(Row.PlayerId))
+					{
+						if (!Winners.IsEmpty()) { Winners += TEXT("、"); }
+						Winners += Row.DisplayName;
+					}
+				}
+				Status = FText::Format(LOCTEXT("MatchWinner", "胜者：{0}"), FText::FromString(Winners));
+			}
+		}
+		else if (!Match.bAcceptingScores)
+		{
+			Status = FText::Format(LOCTEXT("WaitingForPlayers", "等待玩家  {0} / {1}"),
+				FText::AsNumber(Match.ConnectedPlayerCount), FText::AsNumber(Match.MinPlayers));
+		}
+		else
+		{
+			Status = FText::Format(LOCTEXT("FFARound", "第 {0} 局   目标 {1} 击杀   剩余 {2} 秒"),
+				FText::AsNumber(Match.RoundId), FText::AsNumber(Match.ScoreLimit),
+				FText::AsNumber(FMath::Max(0, State.PhaseRemainingSeconds)));
+		}
+		FString Board = Status.ToString();
+		const TArray<FMiniMatchPlayerRow>& Rows = Match.bHasResult && !bWaiting ? Match.ResultRows : Match.Rows;
+		for (const FMiniMatchPlayerRow& Row : Rows)
+		{
+			Board += TEXT("\n") + FText::Format(LOCTEXT("ScoreboardRow", "{0}   击杀 {1}   死亡 {2}{3}"),
+				FText::FromString(Row.DisplayName), FText::AsNumber(Row.Kills), FText::AsNumber(Row.Deaths),
+				Row.bConnected ? FText::GetEmpty() : LOCTEXT("PlayerLeft", "  已离开")).ToString();
+		}
+		GetTextBlock()->SetText(FText::FromString(Board));
+		return;
+	}
 	if (State.bHasPhaseData && !State.bHasMatchData)
 	{
 		FText PhaseName = LOCTEXT("PhaseEnded", "阶段结束");
@@ -266,9 +319,7 @@ void UMiniHUDMatchWidget::RenderSnapshot(const FMiniHUDSnapshot& State)
 		GetTextBlock()->SetText(FText::Format(LOCTEXT("PhaseFormat", "竞技场   {0}   时间 {1}"), PhaseName, Time));
 		return;
 	}
-	GetTextBlock()->SetText(State.bHasMatchData ?
-		FText::Format(LOCTEXT("MatchFormat", "比分 {0}   时间 {1}"), FText::AsNumber(State.Score), FText::AsNumber(State.RemainingSeconds)) :
-		LOCTEXT("PracticeMatch", "训练模式   比分 —   时间 —"));
+	GetTextBlock()->SetText(LOCTEXT("PracticeMatch", "训练模式   比分 —   时间 —"));
 }
 
 UMiniDebugMenuWidget::UMiniDebugMenuWidget(const FObjectInitializer& ObjectInitializer)

@@ -99,6 +99,13 @@ feature.set_editor_property("actions", [])
 save(feature)
 
 for diagnostic in (False, True):
+    if not diagnostic and unreal.EditorAssetLibrary.does_asset_exist("/MiniArena/Config/DA_MiniFFAMatchRules.DA_MiniFFAMatchRules"):
+        # Task22 owns the production ArenaSet now. Never downgrade it to a
+        # single phase component when replaying a historical asset author.
+        if not unreal.MiniTask22AssetSetupLibrary.verify_saved_assembly(False):
+            raise RuntimeError("Task22 production FFA assembly is invalid; refusing Task21 downgrade")
+        unreal.log("MINI_TASK21_PRODUCTION_MIGRATED_TO_FFA ReadOnly=1")
+        continue
     if diagnostic:
         config_folder = blueprint_folder = f"{DIAGNOSTICS}/Arena"
         config_name = "DA_MiniArenaDiagnosticsPhaseConfig"
@@ -132,4 +139,4 @@ for diagnostic in (False, True):
 
 if protected_hashes() != previous_shared_files:
     raise RuntimeError("Task 21 authoring changed a shared training asset or default entry")
-unreal.log("MINI_TASK21_ASSETS_CREATED Production=10/60/5 Diagnostics=8/20/3 AddComponents=ServerOnly TrainingPreserved=1")
+unreal.log("MINI_TASK21_ASSETS_CREATED LegacyProduction=10/60/5OrTask22FFA Diagnostics=8/20/3 AddComponents=ServerOnly TrainingPreserved=1")

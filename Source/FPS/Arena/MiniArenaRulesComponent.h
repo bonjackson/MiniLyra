@@ -10,6 +10,8 @@ class UMiniArenaPhaseConfig;
 class UMiniExperienceDefinition;
 class UMiniGamePhaseSubsystem;
 
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnMiniArenaPhaseCompleted, FGameplayTag, EMiniGamePhaseEndReason);
+
 /** Experience-injected, replicated phase sequencing only. FFA rules belong to task 22. */
 UCLASS(Blueprintable, ClassGroup = (Mini), meta = (BlueprintSpawnableComponent))
 class FPS_API UMiniArenaRulesComponent : public UGameStateComponent
@@ -28,7 +30,10 @@ public:
 	bool IsPhaseContextAvailable() const { return bPhaseContextAvailable; }
 	bool IsArenaPhasesEnabled() const { return bArenaRunning && bPhaseContextAvailable; }
 	bool StartArenaPhases();
+	/** Authority-only exact configured phase; no-op when already active. */
+	bool JumpToPhase(FGameplayTag ExactPhaseTag);
 	void StopArenaPhases();
+	FOnMiniArenaPhaseCompleted OnPhaseCompleted;
 
 private:
 	friend class UMiniGamePhaseSubsystem;
@@ -47,4 +52,5 @@ private:
 	int32 PhaseIndex = INDEX_NONE;
 	bool bPhaseContextAvailable = false;
 	bool bArenaRunning = false;
+	bool bManualTransitionInProgress = false;
 };

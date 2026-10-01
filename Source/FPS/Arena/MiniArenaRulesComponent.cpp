@@ -3,6 +3,7 @@
 #include "Arena/MiniArenaPhaseConfig.h"
 #include "GameModes/MiniExperienceManagerComponent.h"
 #include "GameModes/MiniGamePhaseSubsystem.h"
+#include "GameModes/MiniGamePhaseAbility.h"
 #include "GameModes/MiniGameState.h"
 #include "System/MiniLogChannels.h"
 #include "Engine/World.h"
@@ -52,6 +53,7 @@ void UMiniArenaRulesComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	}
 	StopArenaPhases();
 	if (GetWorld()) { GetWorld()->GetTimerManager().ClearTimer(AdvanceTimer); }
+	OnPhaseCompleted.Clear();
 	Super::EndPlay(EndPlayReason);
 }
 
@@ -98,6 +100,37 @@ void UMiniArenaRulesComponent::StopArenaPhases()
 	if (PhaseState.PhaseTag.IsValid()) { CommitPhaseState(FGameplayTag()); }
 }
 
+bool UMiniArenaRulesComponent::JumpToPhase(FGameplayTag ExactPhaseTag)
+{
+	AMiniGameState* State = Cast<AMiniGameState>(GetOwner());
+	UMiniGamePhaseSubsystem* Phases = GetWorld() ? GetWorld()->GetSubsystem<UMiniGamePhaseSubsystem>() : nullptr;
+	FString Error;
+	if (!State || !State->HasAuthority() || !bPhaseContextAvailable || bManualTransitionInProgress || !Phases ||
+		GetWorld()->bIsTearingDown || !State->GetExperienceManagerComponent()->IsExperienceLoaded() ||
+		!PhaseConfig || !PhaseConfig->ValidateConfig(Error)) { return false; }
+	int32 TargetIndex = INDEX_NONE;
+	for (int32 Index = 0; Index < PhaseConfig->Phases.Num(); ++Index)
+	{
+		if (PhaseConfig->Phases[Index].AbilityClass->GetDefaultObject<UMiniGamePhaseAbility>()->GetPhaseTag() == ExactPhaseTag)
+		{
+			TargetIndex = Index;
+			break;
+		}
+	}
+	if (TargetIndex == INDEX_NONE) { return false; }
+	if (PhaseState.PhaseTag == ExactPhaseTag && Phases->GetActiveSource() == this && Phases->GetActivePhaseHandle().IsValid()) { return true; }
+	const uint32 PreviousGeneration = SourceGeneration;
+	TGuardValue<bool> TransitionGuard(bManualTransitionInProgress, true);
+	// Keep the generation unchanged until normal cancellation succeeds. This must not force an uncancellable phase to end.
+	if (!Phases->CancelPhaseForSource(this)) { return false; }
+	if (!bPhaseContextAvailable || SourceGeneration != PreviousGeneration || GetWorld()->bIsTearingDown) { return false; }
+	GetWorld()->GetTimerManager().ClearTimer(AdvanceTimer);
+	++SourceGeneration;
+	PhaseIndex = TargetIndex;
+	bArenaRunning = true;
+	return StartConfiguredPhase();
+}
+
 bool UMiniArenaRulesComponent::StartConfiguredPhase()
 {
 	UMiniGamePhaseSubsystem* Phases = GetWorld() ? GetWorld()->GetSubsystem<UMiniGamePhaseSubsystem>() : nullptr;
@@ -119,14 +152,24 @@ void UMiniArenaRulesComponent::HandlePhaseCompleted(uint32 ExpectedGeneration, i
 	FGameplayAbilitySpecHandle Handle, EMiniGamePhaseEndReason Reason)
 {
 	if (!bArenaRunning || !bPhaseContextAvailable || SourceGeneration != ExpectedGeneration || PhaseIndex != ExpectedIndex) { return; }
+	const FGameplayTag CompletedTag = PhaseConfig && PhaseConfig->Phases.IsValidIndex(ExpectedIndex)
+		? PhaseConfig->Phases[ExpectedIndex].AbilityClass->GetDefaultObject<UMiniGamePhaseAbility>()->GetPhaseTag() : FGameplayTag();
+	if (bManualTransitionInProgress)
+	{
+		OnPhaseCompleted.Broadcast(CompletedTag, Reason);
+		return;
+	}
 	if (Reason != EMiniGamePhaseEndReason::Completed)
 	{
 		bArenaRunning = false;
 		GetWorld()->GetTimerManager().ClearTimer(AdvanceTimer);
 		LastRequestedHandle = FGameplayAbilitySpecHandle();
 		PhaseIndex = INDEX_NONE;
+		OnPhaseCompleted.Broadcast(CompletedTag, Reason);
 		return;
 	}
+	OnPhaseCompleted.Broadcast(CompletedTag, Reason);
+	if (!bArenaRunning || !bPhaseContextAvailable || SourceGeneration != ExpectedGeneration || PhaseIndex != ExpectedIndex) { return; }
 	const uint32 CompletedRevision = PhaseState.Revision;
 	// Never grant from inside GAS' activation/end scope. Recheck source, handle and snapshot when consuming the work.
 	AdvanceTimer = GetWorld()->GetTimerManager().SetTimerForNextTick(FTimerDelegate::CreateWeakLambda(this,

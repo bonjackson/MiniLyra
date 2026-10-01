@@ -4,11 +4,11 @@
 
 ## 当前启动链（更新至 2026-10-01）
 
-任务 01–21 已完成实现与验收。当前链路为权威旅行选项／地图／项目配置选择真实 Experience ID → GameState 复制 ID → 每端独立加载 Experience、PawnData、ActionSets 和 GameFeatures → 本地 Loaded → 服务器出生、PawnExtension／Hero 初始化、PlayerState ASC 绑定当前 Avatar → 数据 Loadout、输入与装备能力。下方旧实现的猜测 ID 兜底、网络加密测试和 CommonSession 反射绑定均不属于活动链路。
+任务 01–22 已完成实现与验收。当前链路为权威旅行选项／地图／项目配置选择真实 Experience ID → GameState 复制 ID → 每端独立加载 Experience、PawnData、ActionSets 和 GameFeatures → 本地 Loaded → 服务器出生、PawnExtension／Hero 初始化、PlayerState ASC 绑定当前 Avatar → 数据 Loadout、输入与装备能力。下方旧实现的猜测 ID 兜底、网络加密测试和 CommonSession 反射绑定均不属于活动链路。
 
 任务 19 已增加 CommonGame UI Policy 和每 LocalPlayer 的 Game／Menu／Modal 根层栈；MiniShooterCore 经 AddWidgets Action 和 UIExtension 注入战斗 HUD。HUD 从已复制属性／装备取初始快照，GameplayMessage 只发本地通知；根布局的加载／失败界面在玩法 HUD 未创建或撤销后仍可存在。菜单、HUD 监听与异步句柄按对应生命周期回收，主机与客户端独立显示自己的数据。
 
-任务 20 已完成共享 Combat／Practice ActionSet、PawnData Loadout、真实训练靶和服务器弹药补给，地图使用动态光照。任务 21 另由 Arena ActionSet 激活 MiniArena 并在 GameState 注入 Rules，独立 ASC 在服务器驱动三阶段，客户端从复制 deadline 显示倒计时，训练装配不启动阶段。构建、资产、真实三进程晚加入／取消／撤销、生产 URL 和媒体专项均通过；见 [任务 20](Task20/PracticeExperience.md) 与 [任务 21](Task21/GamePhases.md)。下一入口是任务 22 的人数、FFA 计分、胜负与出生规则；生产 cook 与 Cue 路径提示留任务 28 收敛。
+任务 20 完成训练内容，任务 21 完成独立 GameState 阶段 ASC／MiniArena 注入。任务 22 在生产 ArenaSet 增加 MatchRules，使用人数门槛、PlayerState 统计、复制冻结结果和共同 GE 伤害门控，生命保护与重生工作按局和生命释放；HUD 独立读取 World 比赛快照。构建、资产、普通生产 URL、达分／超时／并列／晚加入／真实断开再加入／撤销和媒体专项均通过，旧训练及阶段回归保留；见 [任务 20](Task20/PracticeExperience.md)、[任务 21](Task21/GamePhases.md) 与 [任务 22](Task22/FFAMatchRules.md)。下一入口为任务 23 竞技地图；生产 cook 与 Cue 路径提示留任务 28 收敛。
 
 ## 归档实现的目标
 

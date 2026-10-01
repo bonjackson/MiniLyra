@@ -16,6 +16,7 @@ class UMiniInventoryManagerComponent;
 class UMiniQuickBarComponent;
 class UMiniRangedWeaponComponent;
 class UMiniGamePhaseSubsystem;
+class UMiniMatchSubsystem;
 struct FMiniGamePhaseState;
 struct FOnAttributeChangeData;
 struct FActorInitStateChangedParams;
@@ -54,6 +55,7 @@ private:
 	void HandleItemChanged();
 	void HandleWorldCleanup(UWorld* World, bool bSessionEnded, bool bCleanupResources);
 	void HandlePhaseStateChanged(const FMiniGamePhaseState& State);
+	void HandleMatchStateChanged(const FMiniMatchState& State);
 	UFUNCTION()
 	void HandleHitConfirmed(int32 ShotSequence, float AppliedDamage, bool bKilled);
 	UFUNCTION()
@@ -73,6 +75,8 @@ private:
 	TWeakObjectPtr<UMiniRangedWeaponComponent> BoundWeapon;
 	TWeakObjectPtr<UMiniGamePhaseSubsystem> BoundPhaseSubsystem;
 	FDelegateHandle PhaseStateHandle;
+	TWeakObjectPtr<UMiniMatchSubsystem> BoundMatchSubsystem;
+	FDelegateHandle MatchStateHandle;
 	FTimerHandle PhaseCountdownTimer;
 
 	FDelegateHandle ControllerSetHandle;

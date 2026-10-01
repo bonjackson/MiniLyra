@@ -166,6 +166,16 @@ bool UMiniTask21AssetSetupLibrary::EnsureArenaActionSet(UMiniExperienceActionSet
 	if (!Paths || !Task21IsPath(ArenaSet, Paths->ActionSet) || !CDO ||
 		!Task21VerifyBlueprint(RulesBlueprint, CDO->PhaseConfig)) { return false; }
 	if (Task21VerifyActionSet(ArenaSet, RulesBlueprint)) { return true; }
+	// Production Task22 adds a Match component. Historical authors cannot
+	// replace that complete assembly with the phase-only Task21 configuration.
+	if (Paths == &Task21ProductionPaths)
+	{
+		for (UGameFeatureAction* ExistingAction : ArenaSet->Actions)
+		{
+			const UGameFeatureAction_AddComponents* Components = Cast<UGameFeatureAction_AddComponents>(ExistingAction);
+			if (Components && Components->ComponentList.Num() > 1) { return false; }
+		}
+	}
 	UGameFeatureAction_AddComponents* Action = nullptr;
 	for (UGameFeatureAction* Candidate : ArenaSet->Actions)
 	{

@@ -48,7 +48,7 @@ void UMiniHUDLayout::BuildHUDLayout()
 	AddSlot(MiniHUDTags::CrosshairSlot, TEXT("CrosshairSlot"), FVector2D(0.5f, 0.5f),
 		FVector2D(0.5f, 0.5f), FVector2D::ZeroVector, FVector2D(120.0f, 60.0f));
 	AddSlot(MiniHUDTags::MatchSlot, TEXT("MatchSlot"), FVector2D(0.5f, 0.0f),
-		FVector2D(0.5f, 0.0f), FVector2D(0.0f, 24.0f), FVector2D(500.0f, 50.0f));
+		FVector2D(0.5f, 0.0f), FVector2D(0.0f, 24.0f), FVector2D(640.0f, 150.0f));
 }
 
 void UMiniHUDLayout::NativeOnActivated()

@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "NativeGameplayTags.h"
+#include "Arena/MiniMatchTypes.h"
 #include "MiniHUDMessages.generated.h"
 
 class AMiniCharacter;
@@ -54,14 +55,18 @@ struct FPS_API FMiniHUDSnapshot
 	bool bDead = false;
 	UPROPERTY(BlueprintReadOnly)
 	bool bReloading = false;
-	/** Tasks 21/22 will provide replicated match data. Dashes until then. */
+	/** Server-authored round snapshot, independent of the current Pawn. */
 	UPROPERTY(BlueprintReadOnly)
 	bool bHasMatchData = false;
 	UPROPERTY(BlueprintReadOnly)
 	int32 Score = 0;
 	UPROPERTY(BlueprintReadOnly)
+	int32 Deaths = 0;
+	UPROPERTY(BlueprintReadOnly)
+	FMiniMatchState MatchState;
+	UPROPERTY(BlueprintReadOnly)
 	int32 RemainingSeconds = -1;
-	/** Phase state is independent of scores; task 22 adds actual match results. */
+	/** Phase countdown uses the synchronized server clock. */
 	UPROPERTY(BlueprintReadOnly)
 	bool bHasPhaseData = false;
 	UPROPERTY(BlueprintReadOnly)

@@ -16,6 +16,7 @@
 #include "GameModes/MiniGameMode.h"
 #include "GameModes/MiniGamePhaseSubsystem.h"
 #include "Arena/MiniArenaRulesComponent.h"
+#include "Arena/MiniMatchRulesComponent.h"
 #include "Engine/World.h"
 #include "GameFramework/PlayerController.h"
 #include "Kismet/GameplayStatics.h"
@@ -106,6 +107,7 @@ void AMiniGameState::BeginPlay()
 void AMiniGameState::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	GetWorldTimerManager().ClearTimer(PlayerSpawnProbeTimer);
+	if (UMiniMatchRulesComponent* Match = FindComponentByClass<UMiniMatchRulesComponent>()) { Match->StopMatchRules(); }
 	if (UMiniArenaRulesComponent* Rules = FindComponentByClass<UMiniArenaRulesComponent>()) { Rules->StopArenaPhases(); }
 	if (UMiniGamePhaseSubsystem* Phases = GetWorld() ? GetWorld()->GetSubsystem<UMiniGamePhaseSubsystem>() : nullptr)
 	{

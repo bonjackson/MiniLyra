@@ -3,9 +3,12 @@
 #include "AbilitySystem/MiniAbilitySystemComponent.h"
 #include "AbilitySystem/MiniDamageGameplayEffect.h"
 #include "AbilitySystem/MiniHealthSet.h"
+#include "Arena/MiniMatchRulesComponent.h"
 #include "Character/MiniCharacter.h"
 #include "Character/MiniHealthComponent.h"
 #include "Character/MiniPawnData.h"
+#include "CollisionShape.h"
+#include "Components/CapsuleComponent.h"
 #include "EngineUtils.h"
 #include "GameModes/MiniExperienceManagerComponent.h"
 #include "GameModes/MiniExperienceDefinition.h"
@@ -13,6 +16,7 @@
 #include "GameModes/MiniWorldSettings.h"
 #include "Engine/World.h"
 #include "GameFramework/PlayerController.h"
+#include "GameFramework/PlayerStart.h"
 #include "Kismet/GameplayStatics.h"
 #include "Misc/CommandLine.h"
 #include "Misc/Parse.h"
@@ -62,6 +66,42 @@ void AMiniGameMode::InitGameState()
 	{
 		UE_LOG(LogMiniExperience, Error, TEXT("MiniSpawn cannot register Experience gate: manager missing"));
 	}
+}
+
+void AMiniGameMode::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	CancelPendingRespawnsForMatch();
+	Super::EndPlay(EndPlayReason);
+}
+
+UMiniMatchRulesComponent* AMiniGameMode::GetMatchRules() const
+{
+	const AGameStateBase* State = GetGameState<AGameStateBase>();
+	return State ? State->FindComponentByClass<UMiniMatchRulesComponent>() : nullptr;
+}
+
+void AMiniGameMode::PostLogin(APlayerController* NewPlayer)
+{
+	Super::PostLogin(NewPlayer);
+	if (UMiniMatchRulesComponent* Match = GetMatchRules())
+	{
+		Match->NotifyRosterChanged();
+		if (NewPlayer && !NewPlayer->GetPawn() && Match->IsFFAConfigured() && Match->CanRespawnPlayer(NewPlayer))
+		{
+			RestartPlayer(NewPlayer);
+		}
+	}
+}
+
+void AMiniGameMode::Logout(AController* Exiting)
+{
+	CancelPendingRespawn(Exiting);
+	if (UMiniMatchRulesComponent* Match = GetMatchRules())
+	{
+		// Notify while the leaving Controller and PlayerState are still available.
+		Match->NotifyPlayerLogout(Exiting);
+	}
+	Super::Logout(Exiting);
 }
 
 UMiniExperienceManagerComponent* AMiniGameMode::GetExperienceManager() const
@@ -125,6 +165,12 @@ void AMiniGameMode::RestartPlayer(AController* NewPlayer)
 	{
 		return;
 	}
+	UMiniMatchRulesComponent* Match = GetMatchRules();
+	const bool bFFA = Match && Match->IsFFAConfigured();
+	if (bFFA && !Match->CanRespawnPlayer(NewPlayer))
+	{
+		return;
+	}
 	AMiniPlayerState* PlayerState = NewPlayer->GetPlayerState<AMiniPlayerState>();
 	const UMiniPawnData* PawnData = GetPawnDataForController(NewPlayer);
 	if (!PlayerState || !PawnData || !PawnData->PawnClass || !PawnData->PawnClass->IsChildOf(AMiniCharacter::StaticClass()) ||
@@ -149,7 +195,26 @@ void AMiniGameMode::RestartPlayer(AController* NewPlayer)
 		PlayerState->GetMiniAbilitySystemComponent()->SetNumericAttributeBase(
 			UMiniHealthSet::GetIncomingDamageAttribute(), 0.0f);
 	}
-	Super::RestartPlayer(NewPlayer);
+	if (bFFA)
+	{
+		// The engine's FindPlayerStart/RestartPlayer fallbacks can reuse a blocked
+		// StartSpot or spawn at WorldSettings. FFA commits only a checked start.
+		AActor* Start = ChoosePlayerStart(NewPlayer);
+		if (!Start)
+		{
+			QueueSpawnRetry(NewPlayer);
+			return;
+		}
+		RestartPlayerAtPlayerStart(NewPlayer, Start);
+		if (!NewPlayer->GetPawn())
+		{
+			QueueSpawnRetry(NewPlayer);
+		}
+	}
+	else
+	{
+		Super::RestartPlayer(NewPlayer);
+	}
 	if (const APawn* Pawn = NewPlayer->GetPawn())
 	{
 		if (AMiniCharacter* MiniPawn = Cast<AMiniCharacter>(NewPlayer->GetPawn()))
@@ -196,13 +261,35 @@ bool AMiniGameMode::TryApplyDamage(AMiniCharacter* SourcePawn, AMiniCharacter* T
 	{
 		return false;
 	}
+	return ApplyPlayerDamageEffect(SourceState, SourcePawn, Target, Amount);
+}
 
-	FGameplayEffectContextHandle Context = SourceASC->MakeEffectContext();
+bool AMiniGameMode::ApplyPlayerDamageEffect(AMiniPlayerState* SourceState, AMiniCharacter* SourcePawn,
+	AMiniCharacter* Target, float Amount, AActor* EnvironmentCauser)
+{
+	if (!HasAuthority() || !IsValid(Target) || Target->GetWorld() != GetWorld() ||
+		!FMath::IsFinite(Amount) || Amount <= 0.0f)
+	{
+		return false;
+	}
+	AMiniPlayerState* TargetState = Target->GetPlayerState<AMiniPlayerState>();
+	UMiniAbilitySystemComponent* TargetASC = TargetState ? TargetState->GetMiniAbilitySystemComponent() : nullptr;
+	const UMiniHealthSet* HealthSet = TargetState ? TargetState->GetHealthSet() : nullptr;
+	const UMiniHealthComponent* Health = Target->GetHealthComponent();
+	if (!TargetASC || TargetASC->GetAvatarActor() != Target || !HealthSet || HealthSet->GetHealth() <= 0.0f ||
+		!Health || Health->IsDead() || TargetASC->HasMatchingGameplayTag(MiniGameplayTags::State_Dead))
+	{
+		return false;
+	}
+	UMiniAbilitySystemComponent* SourceASC = SourceState ? SourceState->GetMiniAbilitySystemComponent() : nullptr;
+	UMiniAbilitySystemComponent* ApplyingASC = SourceASC ? SourceASC : TargetASC;
+	FGameplayEffectContextHandle Context = ApplyingASC->MakeEffectContext();
 	// PlayerState implements IAbilitySystemInterface. Keeping it as instigator
-	// preserves the source ASC in the effect context; the Pawn is effect causer.
-	Context.AddInstigator(SourceState, SourcePawn);
-	Context.AddSourceObject(SourcePawn);
-	FGameplayEffectSpecHandle Spec = SourceASC->MakeOutgoingSpec(
+	// preserves the source ASC. Environment explicitly clears MakeEffectContext's
+	// default victim instigator instead of accidentally crediting a suicide.
+	Context.AddInstigator(SourceState, SourceState ? SourcePawn : EnvironmentCauser);
+	Context.AddSourceObject(SourceState ? static_cast<UObject*>(SourcePawn) : static_cast<UObject*>(EnvironmentCauser));
+	FGameplayEffectSpecHandle Spec = ApplyingASC->MakeOutgoingSpec(
 		UMiniDamageGameplayEffect::StaticClass(), 1.0f, Context);
 	if (!Spec.IsValid())
 	{
@@ -210,7 +297,7 @@ bool AMiniGameMode::TryApplyDamage(AMiniCharacter* SourcePawn, AMiniCharacter* T
 	}
 	Spec.Data->SetSetByCallerMagnitude(MiniGameplayTags::Data_Damage, Amount);
 	const float OldHealth = HealthSet->GetHealth();
-	SourceASC->ApplyGameplayEffectSpecToTarget(*Spec.Data.Get(), TargetASC);
+	ApplyingASC->ApplyGameplayEffectSpecToTarget(*Spec.Data.Get(), TargetASC);
 	const float NewHealth = HealthSet->GetHealth();
 	if (NewHealth >= OldHealth)
 	{
@@ -218,8 +305,34 @@ bool AMiniGameMode::TryApplyDamage(AMiniCharacter* SourcePawn, AMiniCharacter* T
 	}
 	UE_LOG(LogMiniInit, Display,
 		TEXT("MiniHealth DAMAGE_APPLIED: Source=%s Target=%s Amount=%.1f Health=%.1f/%.1f"),
-		*SourcePawn->GetPathName(), *Target->GetPathName(), Amount, NewHealth, HealthSet->GetMaxHealth());
+		*GetPathNameSafe(SourcePawn), *Target->GetPathName(), Amount, NewHealth, HealthSet->GetMaxHealth());
 	return true;
+}
+
+bool AMiniGameMode::TryApplySuicideDamage(AMiniCharacter* Target, float Amount)
+{
+	AMiniPlayerState* State = IsValid(Target) ? Target->GetPlayerState<AMiniPlayerState>() : nullptr;
+	return State && ApplyPlayerDamageEffect(State, Target, Target, Amount);
+}
+
+bool AMiniGameMode::TryApplyEnvironmentDamage(AMiniCharacter* Target, float Amount, AActor* EffectCauser)
+{
+	if (EffectCauser && (!IsValid(EffectCauser) || EffectCauser->GetWorld() != GetWorld()))
+	{
+		return false;
+	}
+	return ApplyPlayerDamageEffect(nullptr, nullptr, Target, Amount, EffectCauser);
+}
+
+void AMiniGameMode::NotifyPlayerDeath(const FMiniPlayerDeathInfo& DeathInfo)
+{
+	if (HasAuthority())
+	{
+		if (UMiniMatchRulesComponent* Match = GetMatchRules())
+		{
+			Match->NotifyPlayerDeath(DeathInfo);
+		}
+	}
 }
 
 bool AMiniGameMode::TryApplyDamageToActor(AMiniCharacter* SourcePawn, AActor* Target, float Amount,
@@ -284,118 +397,255 @@ bool AMiniGameMode::TryApplyDamageToActor(AMiniCharacter* SourcePawn, AActor* Ta
 void AMiniGameMode::ScheduleRespawn(AMiniCharacter* DeadPawn)
 {
 	if (!HasAuthority() || !IsValid(DeadPawn) || !DeadPawn->GetHealthComponent() ||
-		!DeadPawn->GetHealthComponent()->IsDead() || PendingRespawns.Contains(DeadPawn))
+		!DeadPawn->GetHealthComponent()->IsDead())
 	{
 		return;
 	}
 	AController* Controller = DeadPawn->GetController();
-	if (!IsValid(Controller) || Controller->GetPawn() != DeadPawn)
+	AMiniPlayerState* PlayerState = Controller ? Controller->GetPlayerState<AMiniPlayerState>() : nullptr;
+	UMiniMatchRulesComponent* Match = GetMatchRules();
+	if (!IsValid(Controller) || !PlayerState || Controller->GetPawn() != DeadPawn ||
+		(Match && Match->IsFFAConfigured() && !Match->CanRespawnPlayer(Controller)))
 	{
 		return;
 	}
-	PendingRespawns.Add(DeadPawn);
-	FTimerHandle Timer;
-	GetWorldTimerManager().SetTimer(Timer,
-		FTimerDelegate::CreateUObject(this, &ThisClass::FinishRespawn,
-			TWeakObjectPtr<AController>(Controller), TWeakObjectPtr<AMiniCharacter>(DeadPawn)),
-		3.0f, false);
-	UE_LOG(LogMiniInit, Display, TEXT("MiniHealth RESPAWN_SCHEDULED: Pawn=%s Delay=3.0"),
-		*DeadPawn->GetPathName());
+	if (const FPendingRespawn* Previous = PendingRespawns.Find(Controller))
+	{
+		if (Previous->DeadPawn.Get() == DeadPawn)
+		{
+			return;
+		}
+		// A new life can die before an older Avatar-binding retry has run.
+		CancelPendingRespawn(Controller);
+	}
+	FPendingRespawn& Work = PendingRespawns.Add(Controller);
+	Work.DeadPawn = DeadPawn;
+	Work.PlayerState = PlayerState;
+	Work.WorkSerial = ++NextRespawnWorkSerial;
+	Work.VictimLifeId = PlayerState->GetCurrentLifeId();
+	Work.bFFA = Match && Match->IsFFAConfigured();
+	Work.Match = Work.bFFA ? Match : nullptr;
+	Work.RoundId = Work.bFFA ? Match->GetRoundId() : 0;
+	Work.RulesGeneration = Work.bFFA ? Match->GetRulesGeneration() : 0;
+	const float Delay = Work.bFFA ? Match->GetRespawnDelaySeconds() : 3.0f;
+	QueueRespawnRetry(Controller, Work.WorkSerial, Delay);
+	UE_LOG(LogMiniInit, Display, TEXT("MiniHealth RESPAWN_SCHEDULED: Pawn=%s Delay=%.2f Round=%d Life=%u"),
+		*DeadPawn->GetPathName(), Delay, Work.RoundId, Work.VictimLifeId);
 }
 
-void AMiniGameMode::FinishRespawn(TWeakObjectPtr<AController> DeadController,
-	TWeakObjectPtr<AMiniCharacter> DeadPawn)
+void AMiniGameMode::CancelPendingRespawn(AController* Controller)
 {
-	PendingRespawns.Remove(DeadPawn);
+	if (FPendingRespawn* Work = PendingRespawns.Find(Controller))
+	{
+		GetWorldTimerManager().ClearTimer(Work->Timer);
+		PendingRespawns.Remove(Controller);
+	}
+}
+
+void AMiniGameMode::CancelPendingRespawnsForMatch()
+{
+	for (TPair<TWeakObjectPtr<AController>, FPendingRespawn>& Entry : PendingRespawns)
+	{
+		GetWorldTimerManager().ClearTimer(Entry.Value.Timer);
+	}
+	PendingRespawns.Reset();
+	++NextRespawnWorkSerial;
+}
+
+void AMiniGameMode::DestroyPawnForRestart(AController* Controller)
+{
+	if (!Controller)
+	{
+		return;
+	}
+	APawn* OldPawn = Controller->GetPawn();
+	// UnPossessed already owns equipment removal, Health cleanup and ASC unbinding.
+	// Reuse that lifecycle instead of recreating weapon or init-state behavior.
+	if (OldPawn)
+	{
+		Controller->UnPossess();
+		OldPawn->Destroy();
+	}
+	if (AMiniPlayerState* State = Controller->GetPlayerState<AMiniPlayerState>())
+	{
+		UMiniAbilitySystemComponent* ASC = State->GetMiniAbilitySystemComponent();
+		const UMiniHealthSet* Health = State->GetHealthSet();
+		if (ASC && Health && !ASC->GetAvatarActor())
+		{
+			ASC->SetNumericAttributeBase(UMiniHealthSet::GetHealthAttribute(), Health->GetMaxHealth());
+			ASC->SetNumericAttributeBase(UMiniHealthSet::GetIncomingDamageAttribute(), 0.0f);
+		}
+	}
+}
+
+void AMiniGameMode::ResetPlayersForRound()
+{
+	UMiniMatchRulesComponent* Match = GetMatchRules();
+	if (!HasAuthority() || !Match || !Match->IsFFAConfigured())
+	{
+		return;
+	}
+	CancelPendingRespawnsForMatch();
+	TArray<APlayerController*> Players;
+	for (TActorIterator<APlayerController> It(GetWorld()); It; ++It)
+	{
+		if (Match->CanRespawnPlayer(*It))
+		{
+			Players.Add(*It);
+		}
+	}
+	// Release all old capsules before selecting any new starts.
+	for (APlayerController* Controller : Players)
+	{
+		DestroyPawnForRestart(Controller);
+	}
+	for (APlayerController* Controller : Players)
+	{
+		RestartPlayer(Controller);
+	}
+}
+
+void AMiniGameMode::QueueSpawnRetry(AController* Controller)
+{
+	if (!IsValid(Controller) || PendingRespawns.Contains(Controller))
+	{
+		return;
+	}
+	AMiniPlayerState* State = Controller->GetPlayerState<AMiniPlayerState>();
+	UMiniMatchRulesComponent* Match = GetMatchRules();
+	if (!State || !Match || !Match->IsFFAConfigured() || !Match->CanRespawnPlayer(Controller))
+	{
+		return;
+	}
+	FPendingRespawn& Work = PendingRespawns.Add(Controller);
+	Work.PlayerState = State;
+	Work.Match = Match;
+	Work.WorkSerial = ++NextRespawnWorkSerial;
+	Work.VictimLifeId = State->GetCurrentLifeId();
+	Work.RoundId = Match->GetRoundId();
+	Work.RulesGeneration = Match->GetRulesGeneration();
+	Work.bFFA = true;
+	QueueRespawnRetry(Controller, Work.WorkSerial, 0.5f);
+	UE_LOG(LogMiniInit, Display, TEXT("MiniSpawn RETRY_BLOCKED: Controller=%s Round=%d Life=%u"),
+		*Controller->GetPathName(), Work.RoundId, Work.VictimLifeId);
+}
+
+void AMiniGameMode::FinishRespawn(TWeakObjectPtr<AController> DeadController, uint32 WorkSerial)
+{
+	FPendingRespawn* Work = PendingRespawns.Find(DeadController);
+	if (!Work || Work->WorkSerial != WorkSerial)
+	{
+		return;
+	}
 	AController* Controller = DeadController.Get();
-	AMiniCharacter* OldPawn = DeadPawn.Get();
+	AMiniCharacter* OldPawn = Work->DeadPawn.Get();
 	AMiniPlayerState* PlayerState = Controller ? Controller->GetPlayerState<AMiniPlayerState>() : nullptr;
 	UMiniAbilitySystemComponent* ASC = PlayerState ? PlayerState->GetMiniAbilitySystemComponent() : nullptr;
 	UMiniHealthSet* HealthSet = PlayerState ? PlayerState->GetHealthSet() : nullptr;
-	if (!IsValid(Controller) || !ASC || !HealthSet)
+	UMiniMatchRulesComponent* Match = GetMatchRules();
+	if (!IsValid(Controller) || Controller->GetWorld() != GetWorld() || !ASC || !HealthSet ||
+		PlayerState != Work->PlayerState.Get() || PlayerState->IsOnlyASpectator() || PlayerState->IsInactive() ||
+		(Work->bFFA && (Match != Work->Match.Get() || !Match || !Match->IsFFAConfigured() ||
+			Match->GetRoundId() != Work->RoundId || Match->GetRulesGeneration() != Work->RulesGeneration ||
+			!Match->CanRespawnPlayer(Controller))) ||
+		(!Work->bFFA && Match && Match->IsFFAConfigured()))
 	{
+		PendingRespawns.Remove(DeadController);
 		return;
 	}
-	if (IsValid(OldPawn) &&
-		(!OldPawn->GetHealthComponent() || !OldPawn->GetHealthComponent()->IsDead()))
+	AMiniCharacter* Replacement = Work->ReplacementPawn.Get();
+	if (Replacement)
 	{
-		return;
-	}
-	if (AMiniCharacter* Replacement = Cast<AMiniCharacter>(Controller->GetPawn()))
-	{
-		if (Replacement != OldPawn)
+		if (Controller->GetPawn() != Replacement ||
+			(PlayerState->GetCurrentLifeId() != Work->VictimLifeId && PlayerState->GetCurrentLifePawn() != Replacement))
 		{
-			Replacement->NotifyInitDependenciesChanged();
-			if (ASC->GetAvatarActor() == Replacement)
-			{
-				PendingAvatarBindingChecks.Remove(DeadPawn);
-				UE_LOG(LogMiniInit, Display,
-					TEXT("MiniHealth RESPAWNED: OldPawn=%s NewPawn=%s Health=%.1f"),
-					*GetPathNameSafe(OldPawn), *Replacement->GetPathName(), HealthSet->GetHealth());
-				if (IsValid(OldPawn))
-				{
-					OldPawn->Destroy();
-				}
-			}
-			else
-			{
-				int32& Checks = PendingAvatarBindingChecks.FindOrAdd(DeadPawn);
-				if (++Checks > 20)
-				{
-					UE_LOG(LogMiniInit, Error,
-						TEXT("MiniHealth AVATAR_BIND_TIMEOUT: Pawn=%s Replacement=%s"),
-						*GetPathNameSafe(OldPawn), *Replacement->GetPathName());
-					PendingAvatarBindingChecks.Remove(DeadPawn);
-					Replacement->Destroy();
-					QueueRespawnRetry(DeadController, DeadPawn, 1.0f);
-				}
-				else
-				{
-					QueueRespawnRetry(DeadController, DeadPawn, 0.25f);
-				}
-			}
+			PendingRespawns.Remove(DeadController);
 			return;
 		}
-	}
-	if (IsValid(OldPawn) && Controller->GetPawn() == OldPawn && ASC->GetAvatarActor() == OldPawn)
-	{
-		OldPawn->GetHealthComponent()->RemoveDeathEffect();
-		Controller->UnPossess();
-		ASC->SetNumericAttributeBase(UMiniHealthSet::GetHealthAttribute(), HealthSet->GetMaxHealth());
-		ASC->SetNumericAttributeBase(UMiniHealthSet::GetIncomingDamageAttribute(), 0.0f);
-	}
-	else if (!IsValid(OldPawn) && !Controller->GetPawn() && !ASC->GetAvatarActor())
-	{
-		// The corpse was destroyed before the timer fired. Its EndPlay has
-		// already removed the death effect and unbound the old Avatar.
-		ASC->SetNumericAttributeBase(UMiniHealthSet::GetHealthAttribute(), HealthSet->GetMaxHealth());
-		ASC->SetNumericAttributeBase(UMiniHealthSet::GetIncomingDamageAttribute(), 0.0f);
-	}
-	else if (Controller->GetPawn() || ASC->GetAvatarActor())
-	{
-		// Another server flow already possessed a replacement.
+		Replacement->NotifyInitDependenciesChanged();
+		Work = PendingRespawns.Find(DeadController);
+		if (!Work || Work->WorkSerial != WorkSerial)
+		{
+			return;
+		}
+		if (ASC->GetAvatarActor() == Replacement && PlayerState->GetCurrentLifePawn() == Replacement)
+		{
+			UE_LOG(LogMiniInit, Display, TEXT("MiniHealth RESPAWNED: OldPawn=%s NewPawn=%s Health=%.1f"),
+				*GetPathNameSafe(OldPawn), *Replacement->GetPathName(), HealthSet->GetHealth());
+			PendingRespawns.Remove(DeadController);
+		}
+		else if (++Work->AvatarBindingChecks > 20)
+		{
+			UE_LOG(LogMiniInit, Error, TEXT("MiniHealth AVATAR_BIND_TIMEOUT: Replacement=%s"), *Replacement->GetPathName());
+			DestroyPawnForRestart(Controller);
+			Work = PendingRespawns.Find(DeadController);
+			if (!Work || Work->WorkSerial != WorkSerial)
+			{
+				return;
+			}
+			Work->ReplacementPawn.Reset();
+			Work->AvatarBindingChecks = 0;
+			Work->VictimLifeId = PlayerState->GetCurrentLifeId();
+			QueueRespawnRetry(DeadController, WorkSerial, 1.0f);
+		}
+		else
+		{
+			QueueRespawnRetry(DeadController, WorkSerial, 0.25f);
+		}
 		return;
 	}
-	RestartPlayer(Controller);
-	if (!Controller->GetPawn())
+	if (PlayerState->GetCurrentLifeId() != Work->VictimLifeId ||
+		(IsValid(OldPawn) && (!OldPawn->GetHealthComponent() || !OldPawn->GetHealthComponent()->IsDead())) ||
+		(Controller->GetPawn() && Controller->GetPawn() != OldPawn) ||
+		(ASC->GetAvatarActor() && ASC->GetAvatarActor() != OldPawn))
 	{
-		UE_LOG(LogMiniInit, Error, TEXT("MiniHealth RESPAWN_FAILED: OldPawn=%s Controller=%s"),
-			*GetPathNameSafe(OldPawn), *GetPathNameSafe(Controller));
-		QueueRespawnRetry(DeadController, DeadPawn, 1.0f);
+		PendingRespawns.Remove(DeadController);
+		return;
+	}
+	if (Controller->GetPawn() == OldPawn && OldPawn)
+	{
+		DestroyPawnForRestart(Controller);
+	}
+	else if (!Controller->GetPawn() && !ASC->GetAvatarActor())
+	{
+		ASC->SetNumericAttributeBase(UMiniHealthSet::GetHealthAttribute(), HealthSet->GetMaxHealth());
+		ASC->SetNumericAttributeBase(UMiniHealthSet::GetIncomingDamageAttribute(), 0.0f);
+	}
+	RestartPlayer(Controller);
+	// Restart may invoke external hooks. Reacquire our entry before using it.
+	Work = PendingRespawns.Find(DeadController);
+	if (!Work || Work->WorkSerial != WorkSerial)
+	{
+		return;
+	}
+	Work->ReplacementPawn = Cast<AMiniCharacter>(Controller->GetPawn());
+	if (!Work->ReplacementPawn.IsValid())
+	{
+		QueueRespawnRetry(DeadController, WorkSerial, 0.5f);
+		return;
+	}
+	if (ASC->GetAvatarActor() == Work->ReplacementPawn.Get() && PlayerState->GetCurrentLifePawn() == Work->ReplacementPawn.Get())
+	{
+		UE_LOG(LogMiniInit, Display, TEXT("MiniHealth RESPAWNED: OldPawn=%s NewPawn=%s Health=%.1f"),
+			*GetPathNameSafe(OldPawn), *Work->ReplacementPawn->GetPathName(), HealthSet->GetHealth());
+		PendingRespawns.Remove(DeadController);
 		return;
 	}
 	// Possession may finish ASC initialization in a later dependency callback.
-	QueueRespawnRetry(DeadController, DeadPawn, 0.25f);
+	QueueRespawnRetry(DeadController, WorkSerial, 0.25f);
 }
 
-void AMiniGameMode::QueueRespawnRetry(TWeakObjectPtr<AController> DeadController,
-	TWeakObjectPtr<AMiniCharacter> DeadPawn, float Delay)
+void AMiniGameMode::QueueRespawnRetry(TWeakObjectPtr<AController> DeadController, uint32 WorkSerial, float Delay)
 {
-	PendingRespawns.Add(DeadPawn);
-	FTimerHandle RetryTimer;
-	GetWorldTimerManager().SetTimer(RetryTimer,
-		FTimerDelegate::CreateUObject(this, &ThisClass::FinishRespawn, DeadController, DeadPawn),
-		Delay, false);
+	if (FPendingRespawn* Work = PendingRespawns.Find(DeadController))
+	{
+		if (Work->WorkSerial == WorkSerial)
+		{
+			GetWorldTimerManager().SetTimer(Work->Timer,
+				FTimerDelegate::CreateUObject(this, &ThisClass::FinishRespawn, DeadController, WorkSerial),
+				FMath::Max(Delay, 0.01f), false);
+		}
+	}
 }
 
 UClass* AMiniGameMode::GetDefaultPawnClassForController_Implementation(AController* InController)
@@ -410,6 +660,103 @@ UClass* AMiniGameMode::GetDefaultPawnClassForController_Implementation(AControll
 		? PawnData->PawnClass.Get() : nullptr;
 }
 
+bool AMiniGameMode::ShouldSpawnAtStartSpot(AController* Player)
+{
+	const UMiniMatchRulesComponent* Match = GetMatchRules();
+	return Match && Match->IsFFAConfigured() ? false : Super::ShouldSpawnAtStartSpot(Player);
+}
+
+AActor* AMiniGameMode::FindPlayerStart_Implementation(AController* Player, const FString& IncomingName)
+{
+	const UMiniMatchRulesComponent* Match = GetMatchRules();
+	if (!Match || !Match->IsFFAConfigured()) { return Super::FindPlayerStart_Implementation(Player, IncomingName); }
+	if (AActor* Start = ChoosePlayerStart(Player)) { return Start; }
+	if (!Match->CanRespawnPlayer(Player))
+	{
+		// Login only requires a named map start. Occupied starts must not reject a
+		// connection before the roster exists. RestartPlayer later selects a clear
+		// point or saves a retry, and never uses this admission fallback to spawn.
+		APlayerStart* AdmissionStart = nullptr;
+		for (TActorIterator<APlayerStart> It(GetWorld()); It; ++It)
+		{
+			if (!AdmissionStart || It->GetPathName() < AdmissionStart->GetPathName()) { AdmissionStart = *It; }
+		}
+		return AdmissionStart;
+	}
+	return nullptr;
+}
+
+bool AMiniGameMode::IsSpawnLocationClear(AController* Player, const FVector& Location, const FQuat& Rotation,
+	const AActor* IgnoreActor) const
+{
+	const UMiniPawnData* Data = GetPawnDataForController(Player);
+	const AMiniCharacter* DefaultPawn = Data && Data->PawnClass ? Cast<AMiniCharacter>(Data->PawnClass->GetDefaultObject()) : nullptr;
+	const UCapsuleComponent* Capsule = DefaultPawn ? DefaultPawn->GetCapsuleComponent() : nullptr;
+	if (!GetWorld() || !Capsule)
+	{
+		return false;
+	}
+	FCollisionQueryParams Query(SCENE_QUERY_STAT(MiniFFASpawn), false);
+	Query.AddIgnoredActor(IgnoreActor);
+	if (Player)
+	{
+		Query.AddIgnoredActor(Player->GetPawn());
+	}
+	return !GetWorld()->OverlapBlockingTestByProfile(Location, Rotation, Capsule->GetCollisionProfileName(),
+		FCollisionShape::MakeCapsule(Capsule->GetScaledCapsuleRadius(), Capsule->GetScaledCapsuleHalfHeight()), Query);
+}
+
+AActor* AMiniGameMode::ChoosePlayerStart_Implementation(AController* Player)
+{
+	UMiniMatchRulesComponent* Match = GetMatchRules();
+	if (!Match || !Match->IsFFAConfigured())
+	{
+		return Super::ChoosePlayerStart_Implementation(Player);
+	}
+	// InitNewPlayer resolves a start before PostLogin adds this Controller to
+	// the match roster. Actual Pawn creation is separately gated in RestartPlayer
+	// and SpawnDefaultPawnAtTransform; selecting a login start cannot require it.
+	TArray<APlayerStart*> Starts;
+	for (TActorIterator<APlayerStart> It(GetWorld()); It; ++It)
+	{
+		Starts.Add(*It);
+	}
+	Starts.Sort([](const APlayerStart& A, const APlayerStart& B) { return A.GetPathName() < B.GetPathName(); });
+	APlayerStart* Best = nullptr;
+	double BestDistanceSquared = -1.0;
+	const int32 Offset = Starts.IsEmpty() ? 0 : NextSpawnSelectionIndex % Starts.Num();
+	for (int32 Index = 0; Index < Starts.Num(); ++Index)
+	{
+		APlayerStart* Start = Starts[(Index + Offset) % Starts.Num()];
+		const FQuat Rotation(FRotator(0.0f, Start->GetActorRotation().Yaw, 0.0f));
+		if (!IsSpawnLocationClear(Player, Start->GetActorLocation(), Rotation))
+		{
+			continue;
+		}
+		double ClosestPlayerSquared = TNumericLimits<double>::Max();
+		for (TActorIterator<AMiniCharacter> PawnIt(GetWorld()); PawnIt; ++PawnIt)
+		{
+			const AMiniCharacter* OtherPawn = *PawnIt;
+			if (OtherPawn != (Player ? Player->GetPawn() : nullptr) && OtherPawn->GetController() &&
+				OtherPawn->GetHealthComponent() && !OtherPawn->GetHealthComponent()->IsDead())
+			{
+				ClosestPlayerSquared = FMath::Min(ClosestPlayerSquared,
+					FVector::DistSquared(Start->GetActorLocation(), OtherPawn->GetActorLocation()));
+			}
+		}
+		if (!Best || ClosestPlayerSquared > BestDistanceSquared + 1.0)
+		{
+			Best = Start;
+			BestDistanceSquared = ClosestPlayerSquared;
+		}
+	}
+	if (Best)
+	{
+		NextSpawnSelectionIndex = (Starts.IndexOfByKey(Best) + 1) % Starts.Num();
+	}
+	return Best;
+}
+
 APawn* AMiniGameMode::SpawnDefaultPawnAtTransform_Implementation(AController* NewPlayer, const FTransform& SpawnTransform)
 {
 	const UMiniPawnData* PawnData = GetPawnDataForController(NewPlayer);
@@ -419,11 +766,19 @@ APawn* AMiniGameMode::SpawnDefaultPawnAtTransform_Implementation(AController* Ne
 	{
 		return nullptr;
 	}
+	UMiniMatchRulesComponent* Match = GetMatchRules();
+	const bool bFFA = Match && Match->IsFFAConfigured();
+	if (bFFA && (!Match->CanRespawnPlayer(NewPlayer) ||
+		!IsSpawnLocationClear(NewPlayer, SpawnTransform.GetLocation(), SpawnTransform.GetRotation())))
+	{
+		return nullptr;
+	}
 
 	FActorSpawnParameters SpawnInfo;
 	SpawnInfo.Instigator = GetInstigator();
 	SpawnInfo.ObjectFlags |= RF_Transient;
-	SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+	SpawnInfo.SpawnCollisionHandlingOverride = bFFA ? ESpawnActorCollisionHandlingMethod::DontSpawnIfColliding
+		: ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 	SpawnInfo.bDeferConstruction = true;
 	AMiniCharacter* Pawn = World->SpawnActor<AMiniCharacter>(PawnClass, SpawnTransform, SpawnInfo);
 	if (!Pawn)
@@ -438,6 +793,11 @@ APawn* AMiniGameMode::SpawnDefaultPawnAtTransform_Implementation(AController* Ne
 		return nullptr;
 	}
 	Pawn->FinishSpawning(SpawnTransform);
+	if (bFFA && !IsSpawnLocationClear(NewPlayer, Pawn->GetActorLocation(), Pawn->GetActorQuat(), Pawn))
+	{
+		Pawn->Destroy();
+		return nullptr;
+	}
 	return Pawn;
 }
 
