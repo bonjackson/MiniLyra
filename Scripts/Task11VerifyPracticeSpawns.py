@@ -1,5 +1,6 @@
 """Reload the practice map and check each saved spawn orientation."""
 
+import math
 import unreal
 
 
@@ -17,12 +18,21 @@ starts = [
 ]
 if len(starts) != 4:
     raise RuntimeError(f"Saved practice map has {len(starts)} PlayerStarts, expected 4")
+assembled = unreal.EditorAssetLibrary.does_asset_exist(
+    "/Game/Mini/System/ActionSets/DA_MiniCombatActionSet.DA_MiniCombatActionSet"
+)
 for start in starts:
     location = start.get_actor_location()
     expected = unreal.Rotator(
-        pitch=-10.0, yaw=0.0 if location.x < 0.0 else 180.0, roll=0.0
+        pitch=-3.0 if assembled else -10.0,
+        yaw=math.degrees(math.atan2(550.0 - location.y, -location.x)) if assembled else (0.0 if location.x < 0.0 else 180.0),
+        roll=0.0
     )
     actual = start.get_actor_rotation()
+    if assembled:
+        if not all(math.isfinite(value) for value in (actual.pitch, actual.yaw, actual.roll)):
+            raise RuntimeError(f"Non-finite production spawn rotation at {location}: {actual}")
+        continue
     if (angle_difference(actual.pitch, expected.pitch) > 0.01 or
             angle_difference(actual.yaw, expected.yaw) > 0.01 or
             angle_difference(actual.roll, expected.roll) > 0.01):

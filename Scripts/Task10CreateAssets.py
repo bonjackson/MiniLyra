@@ -3,10 +3,10 @@
 import unreal
 
 
-INPUT_FOLDER = "/Game/Mini/System/Input"
-PAWN_DATA_PATH = "/Game/Mini/System/PawnData/DA_MiniPracticePawnData.DA_MiniPracticePawnData"
-PAWN_SET_PATH = "/Game/Mini/System/AbilitySets/DA_MiniPawnAbilitySet.DA_MiniPawnAbilitySet"
-EXPERIENCE_PATH = "/Game/Mini/System/Experiences/DA_MiniPracticeExperience.DA_MiniPracticeExperience"
+INPUT_FOLDER = "/Game/Mini/Diagnostics/Input"
+PAWN_DATA_PATH = "/Game/Mini/Diagnostics/PawnData/DA_MiniDiagnosticsPawnData.DA_MiniDiagnosticsPawnData"
+PAWN_SET_PATH = "/Game/Mini/Diagnostics/AbilitySets/DA_MiniPawnAbilitySet.DA_MiniPawnAbilitySet"
+EXPERIENCE_PATH = "/Game/Mini/Diagnostics/Experiences/DA_MiniDiagnosticsExperience.DA_MiniDiagnosticsExperience"
 ACTION_NAMES = (
     "Move",
     "Look",

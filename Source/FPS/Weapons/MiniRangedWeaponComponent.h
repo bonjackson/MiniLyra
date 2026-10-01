@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Components/ActorComponent.h"
+#include "Combat/MiniDamageResult.h"
 #include "Engine/NetSerialization.h"
 #include "Misc/Guid.h"
 #include "MiniRangedWeaponComponent.generated.h"
@@ -45,6 +46,8 @@ public:
 	uint32 GetAcceptedShotCount() const { return AcceptedShotCount; }
 	uint32 GetLastProcessedSequence() const { return LastProcessedSequence; }
 	AMiniCharacter* GetLastHitCharacter() const { return LastHitCharacter.Get(); }
+	AActor* GetLastHitActor() const { return LastHitActor.Get(); }
+	const FMiniDamageResult& GetLastDamageResult() const { return LastDamageResult; }
 	FVector GetLastAcceptedCameraOrigin() const { return LastAcceptedCameraOrigin; }
 	FVector GetLastAcceptedAimDirection() const { return LastAcceptedAimDirection; }
 	uint32 GetEmptyMagazineRejectionCount() const { return EmptyMagazineRejectionCount; }
@@ -65,7 +68,8 @@ private:
 	void ClientNotifyEmptyMagazine(UMiniEquipmentInstance* SourceEquipment);
 
 	UFUNCTION(Client, Reliable)
-	void ClientNotifyHitConfirmed(uint32 ShotSequence, float AppliedDamage, bool bKilled);
+	void ClientNotifyHitConfirmed(uint32 ShotSequence, float AppliedDamage,
+		bool bTargetDefeated, EMiniDamageTargetKind TargetKind);
 
 	bool IsPlausibleView(const AMiniCharacter* Pawn, const FVector& CameraOrigin,
 		const FVector& AimDirection) const;
@@ -84,6 +88,8 @@ private:
 	EMiniFireRejectionReason LastFireRejectionReason = EMiniFireRejectionReason::None;
 	TMap<FGuid, double> LastAcceptedFireTimeByItem;
 	TWeakObjectPtr<AMiniCharacter> LastHitCharacter;
+	TWeakObjectPtr<AActor> LastHitActor;
+	FMiniDamageResult LastDamageResult;
 	FVector LastAcceptedCameraOrigin = FVector::ZeroVector;
 	FVector LastAcceptedAimDirection = FVector::ZeroVector;
 };

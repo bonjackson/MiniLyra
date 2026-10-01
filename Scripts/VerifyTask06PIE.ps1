@@ -24,7 +24,7 @@ if (Test-Path -LiteralPath $logPath) {
 $arguments = @(
     ('"{0}"' -f $projectFile),
     ('-ExecutePythonScript="{0}"' -f $pythonScript),
-    '-MiniProbeExperienceFlow', '-unattended', '-nosplash', '-nosound', '-nop4',
+    '-MiniProbeExperienceFlow', '-MiniProbeLegacyExperience', '-unattended', '-nosplash', '-nosound', '-nop4',
     '-ddc=InstalledNoZenLocalFallback',
     ('"-LocalDataCachePath={0}"' -f $cacheDirectory),
     ('"-abslog={0}"' -f $logPath)
@@ -79,11 +79,19 @@ try {
             throw "PIE cycle $index has an invalid start/end order. See $logPath"
         }
         $playLog = $logText.Substring($begin, $endRequest - $begin)
-        $teardownLog = $logText.Substring($endRequest, $ended - $endRequest)
+        # Plugin deactivation can finish on the ticks following PIE's end.
+        # Include the quiet gap, stopping before the next world's activation.
+        $teardownEnd = if ($index -lt 3) {
+            $logText.IndexOf("MINI_TASK06_PIE_REQUEST_BEGIN Index=$($index + 1)")
+        } else {
+            $logText.IndexOf('MINI_TASK06_PIE_SCRIPT_DONE Cycles=3')
+        }
+        if ($teardownEnd -le $ended) { throw "PIE cycle $index has no complete teardown boundary. See $logPath" }
+        $teardownLog = $logText.Substring($endRequest, $teardownEnd - $endRequest)
         if ($playLog -notmatch 'Owner=/Game/Mini/Maps/UEDPIE_\d+_L_MiniPractice') {
             throw "PIE cycle $index did not create a UEDPIE world. See $logPath"
         }
-        if (-not $playLog.Contains('MiniFlowProbe PASS: NetMode=Standalone ID=MiniExperienceDefinition:DA_MiniPracticeExperience LateSubscriber=1')) {
+        if (-not $playLog.Contains('MiniFlowProbe PASS: NetMode=Standalone ID=MiniExperienceDefinition:DA_MiniDiagnosticsExperience LateSubscriber=1')) {
             throw "PIE cycle $index did not load the Experience. See $logPath"
         }
         foreach ($type in $markerTypes) {
@@ -93,8 +101,9 @@ try {
                 throw "PIE cycle $index marker $type was added $added times and removed $removed times. See $logPath"
             }
         }
-        if (-not $teardownLog.Contains('MiniAction Deactivated') -or
-            -not $teardownLog.Contains('MiniFeature Release')) {
+        if ($teardownLog -notmatch 'MiniAction Deactivated .*Action=/Game/Mini/Diagnostics/Experiences/DA_MiniDiagnosticsExperience.*MiniTask06_ExperienceAddComponents' -or
+            $teardownLog -notmatch 'MiniFeature Release .*FinalUser=1 Activated=1' -or
+            -not $teardownLog.Contains('MiniCuePath UNREGISTERED:')) {
             throw "PIE cycle $index did not release actions and feature lease. See $logPath"
         }
         Write-Host "PIE cycle ${index}: Loaded; two markers added once and removed once."

@@ -13,6 +13,7 @@
 #include "GameModes/MiniWorldSettings.h"
 #include "Engine/World.h"
 #include "GameFramework/PlayerController.h"
+#include "Kismet/GameplayStatics.h"
 #include "Misc/CommandLine.h"
 #include "Misc/Parse.h"
 #include "Player/MiniHUD.h"
@@ -22,6 +23,7 @@
 #include "System/MiniLogChannels.h"
 #include "System/MiniGameplayTags.h"
 #include "TimerManager.h"
+#include "Training/MiniPracticeTarget.h"
 
 AMiniGameMode::AMiniGameMode(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -220,6 +222,65 @@ bool AMiniGameMode::TryApplyDamage(AMiniCharacter* SourcePawn, AMiniCharacter* T
 	return true;
 }
 
+bool AMiniGameMode::TryApplyDamageToActor(AMiniCharacter* SourcePawn, AActor* Target, float Amount,
+	FMiniDamageResult& OutResult)
+{
+	OutResult = FMiniDamageResult();
+	if (!HasAuthority() || !IsValid(SourcePawn) || !IsValid(Target) || SourcePawn == Target ||
+		SourcePawn->GetWorld() != GetWorld() || Target->GetWorld() != GetWorld() ||
+		!FMath::IsFinite(Amount) || Amount <= 0.0f)
+	{
+		return false;
+	}
+	if (AMiniCharacter* PlayerTarget = Cast<AMiniCharacter>(Target))
+	{
+		const AMiniPlayerState* TargetState = PlayerTarget->GetPlayerState<AMiniPlayerState>();
+		const UMiniHealthSet* TargetHealth = TargetState ? TargetState->GetHealthSet() : nullptr;
+		if (!TargetHealth) { return false; }
+		const float OldHealth = TargetHealth->GetHealth();
+		// All existing player-state/avatar/death/filtering rules remain centralized
+		// in this established entry. Future team/FFA rules belong there as well.
+		if (!TryApplyDamage(SourcePawn, PlayerTarget, Amount)) { return false; }
+		OutResult.TargetKind = EMiniDamageTargetKind::Player;
+		OutResult.AppliedDamage = FMath::Max(0.0f, OldHealth - TargetHealth->GetHealth());
+		OutResult.bTargetDefeated = PlayerTarget->GetHealthComponent() && PlayerTarget->GetHealthComponent()->IsDead();
+		return OutResult.AppliedDamage > 0.0f;
+	}
+	AMiniPracticeTarget* PracticeTarget = Cast<AMiniPracticeTarget>(Target);
+	if (!PracticeTarget || !PracticeTarget->CanReceiveDamage()) { return false; }
+	AController* InstigatorController = SourcePawn->GetController();
+	AMiniPlayerState* SourceState = InstigatorController ? InstigatorController->GetPlayerState<AMiniPlayerState>() : nullptr;
+	UMiniAbilitySystemComponent* SourceASC = SourceState ? SourceState->GetMiniAbilitySystemComponent() : nullptr;
+	const UMiniHealthComponent* SourceHealth = SourcePawn->GetHealthComponent();
+	const UMiniHealthSet* SourceHealthSet = SourceState ? SourceState->GetHealthSet() : nullptr;
+	UMiniAbilitySystemComponent* TargetASC = PracticeTarget->GetMiniAbilitySystemComponent();
+	const UMiniHealthSet* TargetHealth = PracticeTarget->GetHealthSet();
+	if (!SourcePawn->HasAuthority() || !InstigatorController || InstigatorController->GetPawn() != SourcePawn ||
+		!SourceASC || SourceASC->GetOwnerActor() != SourceState || SourceASC->GetAvatarActor() != SourcePawn ||
+		!SourceHealth || SourceHealth->IsDead() || !SourceHealthSet || SourceHealthSet->GetHealth() <= 0.0f ||
+		SourceASC->HasMatchingGameplayTag(MiniGameplayTags::State_Dead) || !TargetASC || !TargetHealth)
+	{
+		return false;
+	}
+	FGameplayEffectContextHandle Context = SourceASC->MakeEffectContext();
+	Context.AddInstigator(SourceState, SourcePawn);
+	Context.AddSourceObject(SourcePawn);
+	FGameplayEffectSpecHandle Spec = SourceASC->MakeOutgoingSpec(UMiniDamageGameplayEffect::StaticClass(), 1.0f, Context);
+	if (!Spec.IsValid()) { return false; }
+	Spec.Data->SetSetByCallerMagnitude(MiniGameplayTags::Data_Damage, Amount);
+	const float OldHealth = TargetHealth->GetHealth();
+	SourceASC->ApplyGameplayEffectSpecToTarget(*Spec.Data.Get(), TargetASC);
+	const float NewHealth = TargetHealth->GetHealth();
+	if (NewHealth >= OldHealth) { return false; }
+	OutResult.TargetKind = EMiniDamageTargetKind::PracticeTarget;
+	OutResult.AppliedDamage = FMath::Max(0.0f, OldHealth - NewHealth);
+	OutResult.bTargetDefeated = NewHealth <= 0.0f && !PracticeTarget->IsTargetEnabled();
+	UE_LOG(LogMiniInit, Display,
+		TEXT("MiniDamage APPLIED: Source=%s Target=%s Kind=PracticeTarget Damage=%.1f Health=%.1f Defeated=%d PlayerKill=0"),
+		*SourcePawn->GetPathName(), *Target->GetPathName(), OutResult.AppliedDamage, NewHealth, OutResult.bTargetDefeated ? 1 : 0);
+	return OutResult.AppliedDamage > 0.0f;
+}
+
 void AMiniGameMode::ScheduleRespawn(AMiniCharacter* DeadPawn)
 {
 	if (!HasAuthority() || !IsValid(DeadPawn) || !DeadPawn->GetHealthComponent() ||
@@ -400,6 +461,7 @@ void AMiniGameMode::HandleMatchAssignmentIfNotExpectingOne()
 		return;
 	}
 
+#if !UE_BUILD_SHIPPING
 	// An isolated negative probe exercises the manager's invalid-ID failure path.
 	if (FParse::Param(FCommandLine::Get(), TEXT("MiniProbeInvalidExperience")))
 	{
@@ -415,6 +477,19 @@ void AMiniGameMode::HandleMatchAssignmentIfNotExpectingOne()
 		ExperienceManager->SetCurrentExperience(ProbeId);
 		return;
 	}
+	int32 Task20LegacyCycles = 0;
+	if (FParse::Param(FCommandLine::Get(), TEXT("MiniProbeLegacyExperience")) ||
+		FParse::Param(FCommandLine::Get(), TEXT("MiniProbeAbilities")) ||
+		FParse::Param(FCommandLine::Get(), TEXT("MiniProbeTask10")) ||
+		FParse::Param(FCommandLine::Get(), TEXT("MiniProbePlayerSpawns")) ||
+		FParse::Param(FCommandLine::Get(), TEXT("MiniProbeInitStates")) ||
+		FParse::Value(FCommandLine::Get(), TEXT("MiniProbeFeatureCycles="), Task20LegacyCycles))
+	{
+		const FPrimaryAssetId DiagnosticsId(FMiniPrimaryAssetTypes::Experience, TEXT("DA_MiniDiagnosticsExperience"));
+		ExperienceManager->SetCurrentExperience(DiagnosticsId);
+		return;
+	}
+#endif
 
 	UMiniAssetManager* AssetManager = UMiniAssetManager::GetMiniAssetManager();
 	if (!AssetManager)
@@ -425,6 +500,21 @@ void AMiniGameMode::HandleMatchAssignmentIfNotExpectingOne()
 
 	FPrimaryAssetId ExperienceId;
 	FString Error;
+	// A host selects an assembled mode through travel options. Only the
+	// authority chooses; clients receive the selected ID from the GameState.
+	const FString RequestedExperience = UGameplayStatics::ParseOption(OptionsString, TEXT("Experience"));
+	if (!RequestedExperience.IsEmpty())
+	{
+		ExperienceId = FPrimaryAssetId(FMiniPrimaryAssetTypes::Experience, FName(*RequestedExperience));
+		if (!AssetManager->TryValidateExperienceId(ExperienceId, Error))
+		{
+			ExperienceManager->FailExperienceSelection(FString::Printf(TEXT("Travel Experience is invalid: %s"), *Error));
+			return;
+		}
+		UE_LOG(LogMiniExperience, Display, TEXT("MiniGameMode selected travel Experience %s"), *ExperienceId.ToString());
+		ExperienceManager->SetCurrentExperience(ExperienceId);
+		return;
+	}
 	const AMiniWorldSettings* WorldSettings =
 		GetWorld() ? Cast<AMiniWorldSettings>(GetWorld()->GetWorldSettings()) : nullptr;
 	if (WorldSettings && !WorldSettings->DefaultGameplayExperience.IsNull())

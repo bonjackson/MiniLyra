@@ -14,10 +14,10 @@ MESH_PATH = (
     "SKM_Manny_Simple.SKM_Manny_Simple"
 )
 PAWN_DATA_PATH = (
-    "/Game/Mini/System/PawnData/"
-    "DA_MiniPracticePawnData.DA_MiniPracticePawnData"
+    "/Game/Mini/Diagnostics/PawnData/"
+    "DA_MiniDiagnosticsPawnData.DA_MiniDiagnosticsPawnData"
 )
-FEATURE_DATA_PATH = "/MiniShooterCore/GameFeatureData.GameFeatureData"
+FEATURE_DATA_PATH = "/Game/Mini/Diagnostics/Experiences/DA_MiniDiagnosticsExperience.DA_MiniDiagnosticsExperience"
 ACTION_CLASS_PATH = "/Script/GameFeatures.GameFeatureAction_AddComponents"
 EXPECTED_ACTIONS = (
     "MiniTask06_FeatureAddComponents",
@@ -73,7 +73,7 @@ selected_pawn_class = pawn_data.get_editor_property("pawn_class")
 if selected_pawn_class != generated_class:
     raise RuntimeError(f"Saved PawnData points to wrong PawnClass: {selected_pawn_class}")
 
-feature_data = require_asset(FEATURE_DATA_PATH, "/Script/GameFeatures.GameFeatureData")
+feature_data = require_asset(FEATURE_DATA_PATH, "/Script/FPS.MiniExperienceDefinition")
 actions = list(feature_data.get_editor_property("actions"))
 for name in EXPECTED_ACTIONS:
     matching = [action for action in actions if action and action.get_name() == name]

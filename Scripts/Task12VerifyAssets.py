@@ -11,15 +11,15 @@ def require(path, class_path):
 
 
 pawn_set = require(
-    "/Game/Mini/System/AbilitySets/DA_MiniPawnAbilitySet.DA_MiniPawnAbilitySet",
+    "/Game/Mini/Diagnostics/AbilitySets/DA_MiniPawnAbilitySet.DA_MiniPawnAbilitySet",
     "/Script/FPS.MiniAbilitySet",
 )
 relationships = require(
-    "/Game/Mini/System/AbilitySets/DA_MiniTagRelationships.DA_MiniTagRelationships",
+    "/Game/Mini/Diagnostics/AbilitySets/DA_MiniTagRelationships.DA_MiniTagRelationships",
     "/Script/FPS.MiniAbilityTagRelationshipMapping",
 )
 pawn_data = require(
-    "/Game/Mini/System/PawnData/DA_MiniPracticePawnData.DA_MiniPracticePawnData",
+    "/Game/Mini/Diagnostics/PawnData/DA_MiniDiagnosticsPawnData.DA_MiniDiagnosticsPawnData",
     "/Script/FPS.MiniPawnData",
 )
 

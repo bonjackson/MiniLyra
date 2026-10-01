@@ -32,7 +32,7 @@ function Start-Probe([string]$Url, [string]$Role, [string]$LogPath, [string[]]$E
         Remove-Item -LiteralPath $LogPath
     }
     $arguments = @(
-        ('"{0}"' -f $projectFile), $Url, '-game', '-MiniProbeTask12',
+        ('"{0}"' -f $projectFile), $Url, '-game', '-MiniProbeTask12', '-MiniProbeLegacyExperience',
         '-unattended', '-nosplash', '-nullrhi', '-nosound', '-nop4',
         '-ddc=InstalledNoZenLocalFallback',
         ('"-LocalDataCachePath={0}"' -f $cacheDirectory),

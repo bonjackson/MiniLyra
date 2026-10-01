@@ -3,11 +3,11 @@
 import unreal
 
 
-SET_FOLDER = "/Game/Mini/System/AbilitySets"
+SET_FOLDER = "/Game/Mini/Diagnostics/AbilitySets"
 PAWN_SET_NAME = "DA_MiniPawnAbilitySet"
 FEATURE_SET_NAME = "DA_MiniFeatureAbilitySet"
-PAWN_DATA_PATH = "/Game/Mini/System/PawnData/DA_MiniPracticePawnData.DA_MiniPracticePawnData"
-EXPERIENCE_PATH = "/Game/Mini/System/Experiences/DA_MiniPracticeExperience.DA_MiniPracticeExperience"
+PAWN_DATA_PATH = "/Game/Mini/Diagnostics/PawnData/DA_MiniDiagnosticsPawnData.DA_MiniDiagnosticsPawnData"
+EXPERIENCE_PATH = "/Game/Mini/Diagnostics/Experiences/DA_MiniDiagnosticsExperience.DA_MiniDiagnosticsExperience"
 ACTION_NAME = "MiniTask09_AddAbilities"
 
 

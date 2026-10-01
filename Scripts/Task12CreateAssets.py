@@ -3,9 +3,9 @@
 import unreal
 
 
-SET_PATH = "/Game/Mini/System/AbilitySets/DA_MiniPawnAbilitySet.DA_MiniPawnAbilitySet"
-PAWN_DATA_PATH = "/Game/Mini/System/PawnData/DA_MiniPracticePawnData.DA_MiniPracticePawnData"
-RELATIONSHIP_FOLDER = "/Game/Mini/System/AbilitySets"
+SET_PATH = "/Game/Mini/Diagnostics/AbilitySets/DA_MiniPawnAbilitySet.DA_MiniPawnAbilitySet"
+PAWN_DATA_PATH = "/Game/Mini/Diagnostics/PawnData/DA_MiniDiagnosticsPawnData.DA_MiniDiagnosticsPawnData"
+RELATIONSHIP_FOLDER = "/Game/Mini/Diagnostics/AbilitySets"
 RELATIONSHIP_NAME = "DA_MiniTagRelationships"
 RELATIONSHIP_PATH = (
     f"{RELATIONSHIP_FOLDER}/{RELATIONSHIP_NAME}.{RELATIONSHIP_NAME}"

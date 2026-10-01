@@ -11,7 +11,7 @@ $projectFile = Join-Path $projectRoot 'FPS.uproject'
 $editor = Join-Path $EngineRoot 'Engine\Binaries\Win64\UnrealEditor-Cmd.exe'
 $logDirectory = Join-Path $projectRoot 'Saved\Logs'
 $cacheDirectory = Join-Path $projectRoot 'DerivedDataCache'
-$experienceId = 'MiniExperienceDefinition:DA_MiniPracticeExperience'
+$experienceId = 'MiniExperienceDefinition:DA_MiniDiagnosticsExperience'
 $missingId = 'MiniExperienceDefinition:DA_MiniMissingFeatureExperience'
 $markerTypes = @('MiniFeatureMarkerComponent', 'MiniExperienceActionMarkerComponent')
 
@@ -97,15 +97,50 @@ function Assert-ValidWorldLog {
     }
 }
 
-# Task 05's real two-process probe also checks the new feature's normal path
-# and ensures an invalid Experience ID still fails after feature support lands.
+# Task 05 keeps exercising the production default and invalid ID. Marker
+# ownership is now in Diagnostics; verify it with its own real two processes.
 & (Join-Path $PSScriptRoot 'VerifyTask05.ps1') -EngineRoot $EngineRoot `
     -TimeoutSeconds $TimeoutSeconds -Port $Port
 if ($LASTEXITCODE -and $LASTEXITCODE -ne 0) {
     throw "Task 05 regression returned code $LASTEXITCODE"
 }
-Assert-ValidWorldLog -LogPath (Join-Path $logDirectory 'Task05-Valid-Server.log') -NetMode 'ListenServer'
-Assert-ValidWorldLog -LogPath (Join-Path $logDirectory 'Task05-Valid-Client.log') -NetMode 'Client'
+$validServerLog = Join-Path $logDirectory 'Task06-Valid-Server.log'
+$validClientLog = Join-Path $logDirectory 'Task06-Valid-Client.log'
+$server = $null
+$client = $null
+$startedAt = [DateTime]::UtcNow
+try {
+    $server = Start-ProbeProcess -Url '/Game/Mini/Maps/L_MiniPractice?listen' `
+        -LogPath $validServerLog -ExtraArguments @("-port=$Port", '-MiniProbeLegacyExperience')
+    $listenerPattern = '(?im)\bLogNet:.*\blistening on port\s+' + $Port + '\b'
+    while ($true) {
+        Assert-Running -Process $server -Role 'diagnostics server' -LogPath $validServerLog
+        if ((Read-LogText -Path $validServerLog) -match $listenerPattern) { break }
+        if (([DateTime]::UtcNow - $startedAt).TotalSeconds -ge $TimeoutSeconds) {
+            throw "Diagnostics server failed to listen. See $validServerLog"
+        }
+        Start-Sleep -Milliseconds 250
+    }
+    $client = Start-ProbeProcess -Url "127.0.0.1:$Port" -LogPath $validClientLog `
+        -ExtraArguments @('-MiniProbeLegacyExperience')
+    while ($true) {
+        Assert-Running -Process $server -Role 'diagnostics server' -LogPath $validServerLog
+        Assert-Running -Process $client -Role 'diagnostics client' -LogPath $validClientLog
+        $serverText = Read-LogText -Path $validServerLog
+        $clientText = Read-LogText -Path $validClientLog
+        if ($serverText.Contains("MiniFlowProbe PASS: NetMode=ListenServer ID=$experienceId LateSubscriber=1") -and
+            $clientText.Contains("MiniFlowProbe PASS: NetMode=Client ID=$experienceId LateSubscriber=1")) { break }
+        if (([DateTime]::UtcNow - $startedAt).TotalSeconds -ge $TimeoutSeconds) {
+            throw "Diagnostics activation timed out. Logs: $validServerLog; $validClientLog"
+        }
+        Start-Sleep -Milliseconds 250
+    }
+    Assert-ValidWorldLog -LogPath $validServerLog -NetMode 'ListenServer'
+    Assert-ValidWorldLog -LogPath $validClientLog -NetMode 'Client'
+}
+finally {
+    Stop-ProbeProcesses -Processes @($client, $server)
+}
 Write-Host 'Task 06 two-process activation and deduplication passed.'
 
 # A scanned Experience that asks for a nonexistent required plugin must never
@@ -174,14 +209,16 @@ try {
             throw "Three-world-cycle probe reported a duplicate or failed Experience. See $cycleLog"
         }
         $cycles = [regex]::Matches($logText, 'MiniFeatureCycle LOADED: Index=\d+ Total=3').Count
-        $released = [regex]::Matches($logText, 'MiniFeature Release NetMode=Standalone ').Count
+        $released = [regex]::Matches($logText, 'MiniFeature Release NetMode=Standalone .* FinalUser=1 Activated=1').Count
+        $actionsRemoved = [regex]::Matches($logText, 'MiniAction Deactivated .* Action=/Game/Mini/Diagnostics/Experiences/DA_MiniDiagnosticsExperience.*MiniTask06_ExperienceAddComponents').Count
+        $cuePathsRemoved = [regex]::Matches($logText, 'MiniCuePath UNREGISTERED: .*MiniTask18_AddGameplayCuePath').Count
         $markersComplete = $true
         foreach ($type in $markerTypes) {
             $added = [regex]::Matches($logText, "MiniFeatureMarker ADDED: Type=$type NetMode=Standalone .* Count=1").Count
             $removed = [regex]::Matches($logText, "MiniFeatureMarker REMOVED: Type=$type NetMode=Standalone .* Count=0").Count
             if ($added -ne 3 -or $removed -ne 3) { $markersComplete = $false }
         }
-        if ($cycles -eq 3 -and $released -ge 3 -and $markersComplete -and
+        if ($cycles -eq 3 -and $released -eq 3 -and $actionsRemoved -eq 3 -and $cuePathsRemoved -eq 3 -and $markersComplete -and
             $logText.Contains('MiniFeatureCycle TRAVEL: Index=3 Final=1')) {
             Write-Host "Task 06 three-world activation/removal cycle passed. Log: $cycleLog"
             break

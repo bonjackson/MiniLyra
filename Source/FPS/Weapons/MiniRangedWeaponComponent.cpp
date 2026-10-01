@@ -139,14 +139,14 @@ void UMiniRangedWeaponComponent::ClientNotifyEmptyMagazine_Implementation(
 }
 
 void UMiniRangedWeaponComponent::ClientNotifyHitConfirmed_Implementation(
-	uint32 ShotSequence, float AppliedDamage, bool bKilled)
+	uint32 ShotSequence, float AppliedDamage, bool bTargetDefeated, EMiniDamageTargetKind TargetKind)
 {
 	AMiniCharacter* Pawn = Cast<AMiniCharacter>(GetOwner());
 	if (Pawn && Pawn->IsLocallyControlled())
 	{
 		if (UMiniCombatFeedbackComponent* Feedback = Pawn->GetCombatFeedbackComponent())
 		{
-			Feedback->NotifyConfirmedHit(ShotSequence, AppliedDamage, bKilled);
+			Feedback->NotifyConfirmedDamage(ShotSequence, AppliedDamage, TargetKind, bTargetDefeated);
 		}
 	}
 }
@@ -407,6 +407,8 @@ bool UMiniRangedWeaponComponent::TryFireOnServer(const FVector& CameraOrigin,
 	LastFireRejectionReason = EMiniFireRejectionReason::None;
 	++AcceptedShotCount;
 	LastHitCharacter.Reset();
+	LastHitActor.Reset();
+	LastDamageResult = FMiniDamageResult();
 	LastAcceptedCameraOrigin = CameraOrigin;
 	LastAcceptedAimDirection = AimDirection.GetSafeNormal();
 	AMiniPlayerState* ShooterState = Pawn->GetPlayerState<AMiniPlayerState>();
@@ -453,29 +455,30 @@ bool UMiniRangedWeaponComponent::TryFireOnServer(const FVector& CameraOrigin,
 			false, 2.0f, 0, 2.0f);
 	}
 
-	// Both the crosshair ray and physical muzzle path must see the same character.
+	// Both the crosshair ray and physical muzzle path must see the same Actor.
 	// A shoulder camera that sees around a corner cannot shoot through the wall.
-	AMiniCharacter* Target = bCameraHit ? Cast<AMiniCharacter>(CameraHit.GetActor()) : nullptr;
+	AActor* Target = bCameraHit ? CameraHit.GetActor() : nullptr;
 	if (Target && Target != Pawn && bMuzzleHit && MuzzleHit.GetActor() == Target)
 	{
 		AMiniGameMode* GameMode = GetWorld()->GetAuthGameMode<AMiniGameMode>();
-		const AMiniPlayerState* TargetState = Target->GetPlayerState<AMiniPlayerState>();
-		const UMiniHealthSet* TargetHealthSet = TargetState ? TargetState->GetHealthSet() : nullptr;
-		const float OldHealth = TargetHealthSet ? TargetHealthSet->GetHealth() : 0.0f;
-		if (GameMode && GameMode->TryApplyDamage(Pawn, Target, WeaponDefinition->GetFireDamage()))
+		FMiniDamageResult DamageResult;
+		if (GameMode && GameMode->TryApplyDamageToActor(Pawn, Target, WeaponDefinition->GetFireDamage(), DamageResult))
 		{
-			LastHitCharacter = Target;
-			const float AppliedDamage = TargetHealthSet
-				? FMath::Max(0.0f, OldHealth - TargetHealthSet->GetHealth())
-				: WeaponDefinition->GetFireDamage();
-			ClientNotifyHitConfirmed(ShotSequence, AppliedDamage,
-				Target->GetHealthComponent() && Target->GetHealthComponent()->IsDead());
+			LastHitActor = Target;
+			AMiniCharacter* PlayerTarget = Cast<AMiniCharacter>(Target);
+			LastHitCharacter = PlayerTarget;
+			LastDamageResult = DamageResult;
+			ClientNotifyHitConfirmed(ShotSequence, DamageResult.AppliedDamage,
+				DamageResult.bTargetDefeated, DamageResult.TargetKind);
+			// Player damage Cue presentation remains unchanged. A practice target
+			// renders its own replicated health/disable state and never enters death.
+			const AMiniPlayerState* TargetState = PlayerTarget ? PlayerTarget->GetPlayerState<AMiniPlayerState>() : nullptr;
 			if (UMiniAbilitySystemComponent* TargetASC = TargetState
 				? TargetState->GetMiniAbilitySystemComponent() : nullptr)
 			{
 				FGameplayCueParameters DamageCue;
 				DamageCue.Location = MuzzleHit.ImpactPoint;
-				DamageCue.RawMagnitude = AppliedDamage;
+				DamageCue.RawMagnitude = DamageResult.AppliedDamage;
 				DamageCue.Instigator = Pawn;
 				DamageCue.EffectCauser = Pawn;
 				TargetASC->ExecuteGameplayCue(MiniGameplayTags::GameplayCue_Mini_Damage, DamageCue);
@@ -493,7 +496,7 @@ bool UMiniRangedWeaponComponent::TryFireOnServer(const FVector& CameraOrigin,
 	}
 	UE_LOG(LogMiniInit, Display,
 		TEXT("MiniWeapon FIRE_ACCEPTED: Pawn=%s Sequence=%u Ammo=%d Hit=%s CameraHit=%s MuzzleHit=%s"),
-		*Pawn->GetPathName(), ShotSequence, Ammo - 1, *GetNameSafe(LastHitCharacter.Get()),
+		*Pawn->GetPathName(), ShotSequence, Ammo - 1, *GetNameSafe(LastHitActor.Get()),
 		*GetNameSafe(CameraHit.GetActor()), *GetNameSafe(MuzzleHit.GetActor()));
 	return true;
 }

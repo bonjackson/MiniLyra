@@ -19,7 +19,8 @@
 - [x] 任务 17：独立弹药、服务器装填、步枪连发／手枪单发及装备实例校验；构建、三进程专项、任务 10–16 回归通过，已提交推送 `04887b1`。
 - [x] 任务 18：GameplayCue、战斗反馈与武器动画完成；最终 Editor／Game 构建、增强三进程、缺失媒体、有声渲染、资产及 Cue 生命周期专项、任务 11／15／16／17 回归通过，观察者截图已复核。
 - [x] 任务 19：GameplayMessage 本地 HUD 桥接、CommonUI 层栈和 UIExtension 注入完成；最终 Editor／Game 统一编译、资产三阶段、默认／媒体三进程与加载失败双端专项、任务 10／15／17／18 回归通过，十张截图已复核。
-- [ ] 任务 20–30：下一入口为完整训练 Experience；任务 20 的设计／Loadout 草稿尚未整合到活动代码。
+- [x] 任务 20：完整训练 Experience、共享 Combat／Practice ActionSet、PawnData 数据 Loadout、真实复制训练靶与弹药补给完成；Editor／Game 构建、18 阶段资产验收、三进程核心／媒体／配置／旅行与新 Development 包对应专项通过，六张图片已复核，详见 `Docs/Task20/PracticeExperience.md`。
+- [ ] 任务 21–30：下一入口为独立 GameState ASC、简化 GamePhase 与 MiniArena 功能插件。
 
 用户已确认第三人称、2–4 人竞技场，并明确允许忽略旧实现、从空项目开始。任务 01 据此重置活动源码和配置，保留旧工程文件作为本地备份；任务 02 在该空基线上建立独立的 Mini 内容入口。之前的 MiniExperience 启动壳不计作已完成框架。
 

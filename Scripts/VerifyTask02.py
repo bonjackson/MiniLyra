@@ -80,8 +80,18 @@ if len(starts) != 4:
     raise RuntimeError(f"Expected four PlayerStart actors, got {len(starts)}")
 if len([label for label in labels if label.startswith("Cover_")]) != 6:
     raise RuntimeError("Expected six cover pieces")
-if len([label for label in labels if label.endswith("_Board")]) != 3:
-    raise RuntimeError("Expected three visible target boards")
+assembled = unreal.EditorAssetLibrary.does_asset_exist(
+    "/Game/Mini/System/ActionSets/DA_MiniCombatActionSet.DA_MiniCombatActionSet"
+)
+board_count = len([label for label in labels if label.endswith("_Board")])
+if assembled:
+    if board_count != 0 or any(label.endswith("_Bullseye") for label in labels):
+        raise RuntimeError("Obsolete static boards still block Experience-owned targets")
+    if len([label for label in labels if label.endswith("_Stand")]) != 3:
+        raise RuntimeError("Expected the three retained practice target stands")
+else:
+    if board_count != 3:
+        raise RuntimeError("Expected three visible target boards")
 
 floor = next(actor for actor in actors if actor.get_actor_label() == "Arena_Floor_40x30m")
 scale = floor.get_actor_scale3d()
@@ -95,7 +105,8 @@ report = {
     "approved_assets_loaded": sorted(ASSETS),
     "player_starts": len(starts),
     "cover_pieces": 6,
-    "visible_target_boards": 3,
+    "visible_target_boards": board_count,
+    "targets_owned_by_experience": assembled,
     "arena_size_cm": [4000, 3000],
     "unexpected_project_dependencies": bad_references,
 }

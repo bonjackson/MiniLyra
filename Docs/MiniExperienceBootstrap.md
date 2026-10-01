@@ -4,11 +4,11 @@
 
 ## 当前启动链（更新至 2026-10-01）
 
-任务 01–19 已完成实现与验收。当前链路为地图／项目配置选择真实 Experience ID → GameState 复制 ID → 每端独立加载 Experience、PawnData、ActionSets 和 GameFeatures → 本地 Loaded → 服务器出生、PawnExtension／Hero 初始化、PlayerState ASC 绑定当前 Avatar → 输入与装备能力。下方旧实现的猜测 ID 兜底、网络加密测试和 CommonSession 反射绑定均不属于活动链路。
+任务 01–20 已完成实现与验收。当前链路为权威旅行选项／地图／项目配置选择真实 Experience ID → GameState 复制 ID → 每端独立加载 Experience、PawnData、ActionSets 和 GameFeatures → 本地 Loaded → 服务器出生、PawnExtension／Hero 初始化、PlayerState ASC 绑定当前 Avatar → 数据 Loadout、输入与装备能力。下方旧实现的猜测 ID 兜底、网络加密测试和 CommonSession 反射绑定均不属于活动链路。
 
 任务 19 已增加 CommonGame UI Policy 和每 LocalPlayer 的 Game／Menu／Modal 根层栈；MiniShooterCore 经 AddWidgets Action 和 UIExtension 注入战斗 HUD。HUD 从已复制属性／装备取初始快照，GameplayMessage 只发本地通知；根布局的加载／失败界面在玩法 HUD 未创建或撤销后仍可存在。菜单、HUD 监听与异步句柄按对应生命周期回收，主机与客户端独立显示自己的数据。
 
-最终 Editor／Game 统一编译、资产三阶段、三进程默认／媒体 UI 专项、有效／未知 ID 的双端加载专项及任务 10／15／17／18 回归均通过，十张图已复核；见 [任务 19 文档](Task19/ModularHUD.md)。下一入口是任务 20 的训练靶、数据装配与当前包烟测，训练灰盒光照和比分／计时占位仍需后续完成。
+任务 20 已完成共享 Combat／Practice ActionSet、PawnData Loadout、真实训练靶和服务器弹药补给，地图使用动态光照。Editor／Game 构建、18 阶段资产验证、三进程与配置／旅行专项及新 Development 包的对应运行检查通过，编辑器／包共六张训练图已复核；见 [任务 20 文档](Task20/PracticeExperience.md)。单独停用 Core 撤销 HUD／Cue，Experience 所有的训练 Actor 在退出 World 时撤销。下一入口是任务 21 的简化 GamePhase 与 MiniArena；比分／时间仍为训练占位，生产 cook 与 Cue 路径提示留任务 28 收敛。
 
 ## 归档实现的目标
 

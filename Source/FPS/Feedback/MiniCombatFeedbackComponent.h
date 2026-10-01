@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Components/ActorComponent.h"
+#include "Combat/MiniDamageResult.h"
 #include "GameplayCueInterface.h"
 #include "TimerManager.h"
 #include "MiniCombatFeedbackComponent.generated.h"
@@ -13,6 +14,8 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FMiniCombatFeedbackEvent,
 	FGameplayTag, EventTag, FVector, Location, float, Magnitude);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FMiniHitConfirmedEvent,
 	int32, ShotSequence, float, AppliedDamage, bool, bKilled);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FMiniDamageConfirmedEvent,
+	int32, ShotSequence, float, AppliedDamage, EMiniDamageTargetKind, TargetKind, bool, bTargetDefeated);
 
 /** Local presentation and UI event bridge. No gameplay decision is made here. */
 UCLASS(ClassGroup = (Mini), meta = (BlueprintSpawnableComponent))
@@ -28,6 +31,8 @@ public:
 	void HandleCombatCue(FGameplayTag CueTag, EGameplayCueEvent::Type EventType,
 		const FGameplayCueParameters& Parameters);
 	void NotifyConfirmedHit(uint32 ShotSequence, float AppliedDamage, bool bKilled);
+	void NotifyConfirmedDamage(uint32 ShotSequence, float AppliedDamage,
+		EMiniDamageTargetKind TargetKind, bool bTargetDefeated);
 	/** Replicated death state also restores presentation for late or lost Cue RPCs. */
 	void NotifyDeathState();
 	void HandleEquipmentChanged();
@@ -38,6 +43,9 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category = "Mini|Feedback")
 	FMiniHitConfirmedEvent OnHitConfirmed;
+	/** Explicit target kind; practice target defeat is never a player-kill event. */
+	UPROPERTY(BlueprintAssignable, Category = "Mini|Feedback")
+	FMiniDamageConfirmedEvent OnDamageConfirmed;
 
 	uint32 GetFirePresentationCount() const { return FirePresentationCount; }
 	uint32 GetPredictedFireCount() const { return PredictedFireCount; }

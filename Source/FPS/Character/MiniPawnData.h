@@ -8,6 +8,7 @@ class UMiniAbilitySet;
 class UMiniInputConfig;
 class UMiniCameraMode;
 class UMiniAbilityTagRelationshipMapping;
+class UMiniLoadoutDefinition;
 
 UCLASS(BlueprintType, NotBlueprintable, Const)
 class FPS_API UMiniPawnData : public UPrimaryDataAsset
@@ -23,6 +24,10 @@ public:
 	/** Server grants these once to the PlayerState ASC. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Mini|Abilities")
 	TArray<TObjectPtr<UMiniAbilitySet>> AbilitySets;
+
+	/** Optional starting inventory shared by training/arena; null means unarmed. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Mini|Equipment")
+	TObjectPtr<UMiniLoadoutDefinition> DefaultLoadout;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Mini|Abilities")
 	TObjectPtr<UMiniAbilityTagRelationshipMapping> TagRelationshipMapping;

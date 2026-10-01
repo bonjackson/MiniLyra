@@ -37,8 +37,11 @@ if pawn_class is None or pawn_class.get_path_name() not in valid_pawn_classes:
 if experience.get_editor_property("default_pawn_data") != pawn_data:
     raise RuntimeError("Saved Experience does not reference the expected PawnData")
 action_sets = experience.get_editor_property("action_sets")
-if len(action_sets) != 1 or action_sets[0] != action_set:
-    raise RuntimeError("Saved Experience must reference exactly the Task 04 ActionSet")
+combat_path = "/Game/Mini/System/ActionSets/DA_MiniCombatActionSet.DA_MiniCombatActionSet"
+combat_set = unreal.load_asset(combat_path)
+expected_sets = [combat_set, action_set] if combat_set is not None else [action_set]
+if list(action_sets) != expected_sets:
+    raise RuntimeError("Saved Experience must preserve the current Combat/Practice composition")
 # Later tasks populate Actions and GameFeatures. Preserve Task 04's stable
 # asset, class and map-link checks without rejecting the later configuration.
 
@@ -57,8 +60,10 @@ settings = world.get_world_settings()
 if settings.get_class().get_path_name() != "/Script/FPS.MiniWorldSettings":
     raise RuntimeError(f"Saved practice map has wrong WorldSettings: {settings.get_class().get_path_name()}")
 reference = str(settings.get_editor_property("default_gameplay_experience"))
-if EXPERIENCE_PACKAGE not in reference:
+if combat_set is None and EXPERIENCE_PACKAGE not in reference:
     raise RuntimeError(f"Saved map lost the practice Experience override: {reference}")
+# After production assembly, the current map author owns its default selection
+# (including a later front-end Experience or intentionally unset override).
 
 actors = unreal.get_editor_subsystem(unreal.EditorActorSubsystem).get_all_level_actors()
 labels = [actor.get_actor_label() for actor in actors]

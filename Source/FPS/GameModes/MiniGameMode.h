@@ -1,9 +1,11 @@
 #pragma once
 
 #include "ModularGameMode.h"
+#include "Combat/MiniDamageResult.h"
 #include "MiniGameMode.generated.h"
 
 class AController;
+class AActor;
 class APlayerController;
 class APawn;
 class UMiniExperienceDefinition;
@@ -28,6 +30,9 @@ public:
 	virtual APawn* SpawnDefaultPawnAtTransform_Implementation(AController* NewPlayer, const FTransform& SpawnTransform) override;
 	/** Server-only combat damage. Source and target must be live, distinct player avatars. */
 	bool TryApplyDamage(AMiniCharacter* SourcePawn, AMiniCharacter* Target, float Amount);
+	/** Actor receiver for ranged combat; preserves player rules and target classification. */
+	bool TryApplyDamageToActor(AMiniCharacter* SourcePawn, AActor* Target, float Amount,
+		FMiniDamageResult& OutResult);
 	/** Server-only training damage entry; callers never modify Health directly. */
 	bool TryApplyTestDamage(AController* InstigatorController, AMiniCharacter* Target, float Amount);
 	/** Called once by a dead Pawn's HealthComponent. */

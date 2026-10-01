@@ -8,6 +8,7 @@
 #include "Character/MiniPawnData.h"
 #include "GameFeatures/MiniGameFeatureAction_AddAbilities.h"
 #include "GameModes/MiniExperienceDefinition.h"
+#include "MiniLegacyAssetAuthoringGuard.h"
 #endif
 
 bool UMiniTask09AssetSetupLibrary::ConfigurePracticeAbilities(
@@ -15,7 +16,8 @@ bool UMiniTask09AssetSetupLibrary::ConfigurePracticeAbilities(
 	UMiniPawnData* PawnData, UMiniExperienceDefinition* Experience)
 {
 #if WITH_EDITOR
-	if (!PawnSet || !FeatureSet || PawnSet == FeatureSet || !PawnData || !Experience ||
+	if (!MiniIsDiagnosticsAuthoringAsset(PawnSet) || !MiniIsDiagnosticsAuthoringAsset(FeatureSet) ||
+		!MiniIsDiagnosticsAuthoringAsset(PawnData) || !MiniIsDiagnosticsAuthoringAsset(Experience) || PawnSet == FeatureSet ||
 		Experience->DefaultPawnData.Get() != PawnData ||
 		(!PawnSet->Abilities.IsEmpty() &&
 			PawnSet->Abilities[0].Ability != UMiniPawnProbeAbility::StaticClass()))

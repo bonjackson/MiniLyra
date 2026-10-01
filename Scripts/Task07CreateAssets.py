@@ -15,17 +15,20 @@ CHARACTER_MESH_PATH = (
     "SKM_Manny_Simple.SKM_Manny_Simple"
 )
 PAWN_DATA_PATH = (
-    "/Game/Mini/System/PawnData/"
-    "DA_MiniPracticePawnData.DA_MiniPracticePawnData"
+    "/Game/Mini/Diagnostics/PawnData/"
+    "DA_MiniDiagnosticsPawnData.DA_MiniDiagnosticsPawnData"
 )
 EXPERIENCE_PATH = (
-    "/Game/Mini/System/Experiences/"
-    "DA_MiniPracticeExperience.DA_MiniPracticeExperience"
+    "/Game/Mini/Diagnostics/Experiences/"
+    "DA_MiniDiagnosticsExperience.DA_MiniDiagnosticsExperience"
 )
-GAME_FEATURE_DATA_PATH = "/MiniShooterCore/GameFeatureData.GameFeatureData"
+GAME_FEATURE_DATA_PATH = "/Game/Mini/Diagnostics/Experiences/DA_MiniDiagnosticsExperience.DA_MiniDiagnosticsExperience"
 MARKER_CLASS_PATH = "/Script/FPS.MiniCharacterFeatureMarkerComponent"
 ADD_COMPONENTS_CLASS_PATH = "/Script/GameFeatures.GameFeatureAction_AddComponents"
 CHARACTER_FEATURE_ACTION_NAME = "MiniTask07_CharacterAddComponents"
+production_assembled = unreal.EditorAssetLibrary.does_asset_exist(
+    "/Game/Mini/System/ActionSets/DA_MiniCombatActionSet.DA_MiniCombatActionSet"
+)
 
 
 def require_class(path):
@@ -52,6 +55,8 @@ def ensure_character_blueprint(native_character_class):
     if unreal.EditorAssetLibrary.does_asset_exist(asset_path):
         blueprint = require_asset(asset_path, unreal.Blueprint.static_class())
     else:
+        if production_assembled:
+            raise RuntimeError("The shared production character is missing; repair it through production authoring")
         factory = unreal.BlueprintFactory()
         factory.set_editor_property("parent_class", native_character_class)
         blueprint = unreal.AssetToolsHelpers.get_asset_tools().create_asset(
@@ -65,8 +70,10 @@ def ensure_character_blueprint(native_character_class):
             f"Refusing to reparent {asset_path}: expected {native_character_class.get_path_name()}, "
             f"found {blueprint.get_blueprint_parent_class().get_path_name()}"
         )
-    if not unreal.BlueprintEditorLibrary.compile_blueprint(blueprint):
+    if not production_assembled and not unreal.BlueprintEditorLibrary.compile_blueprint(blueprint):
         raise RuntimeError(f"Could not compile {asset_path}")
+    if production_assembled and "UP_TO_DATE" not in str(blueprint.get_editor_property("status")):
+        raise RuntimeError("The shared production character must be compiled by its current author")
     generated_class = blueprint.generated_class()
     if generated_class is None:
         raise RuntimeError(f"No generated class for {asset_path}")
@@ -78,7 +85,7 @@ marker_class = require_class(MARKER_CLASS_PATH)
 add_components_class = require_class(ADD_COMPONENTS_CLASS_PATH)
 pawn_data_class = require_class("/Script/FPS.MiniPawnData")
 experience_class = require_class("/Script/FPS.MiniExperienceDefinition")
-feature_data_class = require_class("/Script/GameFeatures.GameFeatureData")
+feature_data_class = require_class("/Script/FPS.MiniExperienceDefinition")
 
 # Validate the existing links before making any asset changes.
 pawn_data = require_asset(PAWN_DATA_PATH, pawn_data_class)
@@ -97,15 +104,16 @@ mesh_component = character_default.get_component_by_class(unreal.SkeletalMeshCom
 if mesh_component is None:
     raise RuntimeError(f"{blueprint.get_path_name()} has no inherited skeletal mesh component")
 
-# A static mesh pose is enough to make the task's spawn visible. Animation,
-# camera, movement input and appearance can be assembled in later tasks.
-blueprint.modify()
-mesh_component.modify()
-mesh_component.set_editor_property("skeletal_mesh_asset", mesh_asset)
-mesh_component.set_editor_property("relative_location", unreal.Vector(0.0, 0.0, -90.0))
-mesh_component.set_editor_property(
-    "relative_rotation", unreal.Rotator(pitch=0.0, yaw=-90.0, roll=0.0)
-)
+# The character Blueprint is shared with production. After Task 20 assembly,
+# a legacy rerun may repair diagnostic links but must preserve its appearance.
+if not production_assembled:
+    blueprint.modify()
+    mesh_component.modify()
+    mesh_component.set_editor_property("skeletal_mesh_asset", mesh_asset)
+    mesh_component.set_editor_property("relative_location", unreal.Vector(0.0, 0.0, -90.0))
+    mesh_component.set_editor_property(
+        "relative_rotation", unreal.Rotator(pitch=0.0, yaw=-90.0, roll=0.0)
+    )
 
 pawn_data.set_editor_property("pawn_class", blueprint_class)
 
@@ -128,7 +136,8 @@ if not unreal.MiniTask06AssetSetupLibrary.ensure_add_components_action(
 ):
     raise RuntimeError(f"Could not configure {CHARACTER_FEATURE_ACTION_NAME}")
 
-for asset in (blueprint, pawn_data, feature_data):
+assets_to_save = (pawn_data, feature_data) if production_assembled else (blueprint, pawn_data, feature_data)
+for asset in assets_to_save:
     if not unreal.EditorAssetLibrary.save_loaded_asset(asset, only_if_is_dirty=False):
         raise RuntimeError(f"Could not save {asset.get_path_name()}")
 

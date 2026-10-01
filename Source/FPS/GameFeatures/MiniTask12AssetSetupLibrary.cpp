@@ -8,6 +8,7 @@
 #include "AbilitySystem/MiniAbilityTagRelationshipMapping.h"
 #include "AbilitySystem/MiniProbeAbility.h"
 #include "Character/MiniPawnData.h"
+#include "MiniLegacyAssetAuthoringGuard.h"
 #include "System/MiniGameplayTags.h"
 #include "UObject/UObjectGlobals.h"
 
@@ -80,7 +81,8 @@ bool UMiniTask12AssetSetupLibrary::ConfigurePracticeAbilities(UMiniAbilitySet* P
 	const FPracticeTags Tags;
 	UClass* JumpClass = LoadAbilityClass(TEXT("/Script/FPS.MiniGameplayAbility_Jump"));
 	UClass* AimClass = LoadAbilityClass(TEXT("/Script/FPS.MiniGameplayAbility_Aim"));
-	if (!PawnSet || !Relationships || !PawnData || !Tags.IsValid() || !JumpClass || !AimClass ||
+	if (!MiniIsDiagnosticsAuthoringAsset(PawnSet) || !MiniIsDiagnosticsAuthoringAsset(Relationships) ||
+		!MiniIsDiagnosticsAuthoringAsset(PawnData) || !Tags.IsValid() || !JumpClass || !AimClass ||
 		PawnData->AbilitySets.Num() != 1 || PawnData->AbilitySets[0] != PawnSet ||
 		PawnSet->Abilities.IsEmpty() ||
 		PawnSet->Abilities[0].Ability != UMiniPawnProbeAbility::StaticClass() ||

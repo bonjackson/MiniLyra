@@ -31,6 +31,7 @@ public:
 	FString GetDebugSnapshot() const;
 
 private:
+	bool SelectNextAvailableSlot();
 	UFUNCTION(Server, Reliable)
 	void ServerSelectSlot(int32 SlotIndex);
 	UFUNCTION(Server, Reliable)
@@ -45,4 +46,5 @@ private:
 	UPROPERTY(ReplicatedUsing=OnRep_ActiveSlotIndex)
 	int32 ActiveSlotIndex = INDEX_NONE;
 	TWeakObjectPtr<AMiniCharacter> BoundPawn;
+	bool bApplyingLoadout = false;
 };

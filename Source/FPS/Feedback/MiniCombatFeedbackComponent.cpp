@@ -340,13 +340,24 @@ void UMiniCombatFeedbackComponent::HandleCombatCue(FGameplayTag CueTag,
 void UMiniCombatFeedbackComponent::NotifyConfirmedHit(uint32 ShotSequence,
 	float AppliedDamage, bool bKilled)
 {
+	NotifyConfirmedDamage(ShotSequence, AppliedDamage, EMiniDamageTargetKind::Player, bKilled);
+}
+
+void UMiniCombatFeedbackComponent::NotifyConfirmedDamage(uint32 ShotSequence,
+	float AppliedDamage, EMiniDamageTargetKind TargetKind, bool bTargetDefeated)
+{
 	AMiniCharacter* Pawn = Cast<AMiniCharacter>(GetOwner());
-	if (!Pawn || !Pawn->IsLocallyControlled() || !ShotSequence || AppliedDamage <= 0.0f)
+	if (!Pawn || !Pawn->IsLocallyControlled() || !ShotSequence || !FMath::IsFinite(AppliedDamage) || AppliedDamage <= 0.0f ||
+		(TargetKind != EMiniDamageTargetKind::Player && TargetKind != EMiniDamageTargetKind::PracticeTarget))
 	{
 		return;
 	}
 	++HitConfirmCount;
-	OnHitConfirmed.Broadcast(static_cast<int32>(ShotSequence), AppliedDamage, bKilled);
+	OnDamageConfirmed.Broadcast(static_cast<int32>(ShotSequence), AppliedDamage, TargetKind, bTargetDefeated);
+	// This compatibility delegate feeds the current HUD and old probes. Its
+	// bKilled value remains strictly a player kill, even when a target hits zero.
+	OnHitConfirmed.Broadcast(static_cast<int32>(ShotSequence), AppliedDamage,
+		TargetKind == EMiniDamageTargetKind::Player && bTargetDefeated);
 	EmitLocalEvent(MiniGameplayTags::GameplayCue_Mini_HitConfirmed,
 		Pawn->GetActorLocation(), AppliedDamage);
 }

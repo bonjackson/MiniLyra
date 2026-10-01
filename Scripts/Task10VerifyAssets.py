@@ -3,7 +3,7 @@
 import unreal
 
 
-INPUT_FOLDER = "/Game/Mini/System/Input"
+INPUT_FOLDER = "/Game/Mini/Diagnostics/Input"
 ACTION_NAMES = (
     "Move",
     "Look",
@@ -37,15 +37,15 @@ actions = tuple(
     for name in ACTION_NAMES
 )
 pawn_set = require(
-    "/Game/Mini/System/AbilitySets/DA_MiniPawnAbilitySet.DA_MiniPawnAbilitySet",
+    "/Game/Mini/Diagnostics/AbilitySets/DA_MiniPawnAbilitySet.DA_MiniPawnAbilitySet",
     "/Script/FPS.MiniAbilitySet",
 )
 pawn_data = require(
-    "/Game/Mini/System/PawnData/DA_MiniPracticePawnData.DA_MiniPracticePawnData",
+    "/Game/Mini/Diagnostics/PawnData/DA_MiniDiagnosticsPawnData.DA_MiniDiagnosticsPawnData",
     "/Script/FPS.MiniPawnData",
 )
 experience = require(
-    "/Game/Mini/System/Experiences/DA_MiniPracticeExperience.DA_MiniPracticeExperience",
+    "/Game/Mini/Diagnostics/Experiences/DA_MiniDiagnosticsExperience.DA_MiniDiagnosticsExperience",
     "/Script/FPS.MiniExperienceDefinition",
 )
 

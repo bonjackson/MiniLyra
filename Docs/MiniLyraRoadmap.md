@@ -438,6 +438,7 @@ Mini 功能插件首版可采用内容插件，复用 `FPS` 中的通用原生�
 - **产物：** 可以独立进入的 `L_MiniPractice`，共享战斗装配数据；再做一次打包烟雾检查。
 - **验收：** 单人能练习射击／换弹／切枪；双端能观察正确动作；退出重进无多重 UI 和能力；改变 Experience 配置即可增减测试功能，核心角色代码不用分地图判断。
 - **里程碑：** 到这里应有“可运行的 Mini Lyra 框架 + 可玩训练场”，即使后面的竞技规则尚未完成。
+- **执行结果（2026-10-01）：** 训练 Experience 经共享 Combat／Practice ActionSet 装配数据 Loadout、三块真实复制训练靶、服务器补给区及 HUD；生产角色只持有 Jump／Aim，Fire／Reload 由装备授予。旧 marker／Probe 配置迁入 Diagnostics，作者桥限制写入范围。Editor／Game 构建、六组资产各三阶段、默认／媒体三进程、单枪／无武器配置和三轮 OpenLevel＋ServerTravel 均通过；新 Development Pak 的对应运行专项也通过，六张截图已复核。Cook 618 包、0 errors／1 warning，运行 Cue 路径提示和生产 cook 排除留任务 28 收敛；详见 `Docs/Task20/PracticeExperience.md`。竞技阶段与计分尚未启用，下一入口是任务 21。
 
 ### 阶段 E：竞技玩法与进入退出（21–25）
 

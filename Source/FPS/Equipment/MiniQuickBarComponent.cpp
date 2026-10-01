@@ -3,6 +3,8 @@
 #include "AbilitySystem/MiniAbilitySystemComponent.h"
 #include "Character/MiniCharacter.h"
 #include "Character/MiniHealthComponent.h"
+#include "Character/MiniPawnData.h"
+#include "Equipment/MiniLoadoutDefinition.h"
 #include "Equipment/MiniEquipmentManagerComponent.h"
 #include "Inventory/MiniInventoryItemDefinition.h"
 #include "Inventory/MiniInventoryItemInstance.h"
@@ -18,7 +20,7 @@ UMiniQuickBarComponent::UMiniQuickBarComponent(const FObjectInitializer& ObjectI
 	: Super(ObjectInitializer)
 {
 	SetIsReplicatedByDefault(true);
-	Slots.SetNum(2);
+	Slots.SetNum(UMiniLoadoutDefinition::NumQuickBarSlots);
 }
 
 void UMiniQuickBarComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -60,22 +62,35 @@ bool UMiniQuickBarComponent::InitializeForPawn(AMiniCharacter* Pawn)
 	UMiniInventoryManagerComponent* Inventory = Controller ? Controller->GetInventoryManager() : nullptr;
 	if (!Controller || !Controller->HasAuthority() || !IsValid(Pawn) || Controller->GetPawn() != Pawn ||
 		!Inventory || !Pawn->GetEquipmentManager() || !ASC || ASC->GetAvatarActor() != Pawn ||
-		(Pawn->GetHealthComponent() && Pawn->GetHealthComponent()->IsDead()))
+		bApplyingLoadout || (Pawn->GetHealthComponent() && Pawn->GetHealthComponent()->IsDead()))
 	{
 		return false;
 	}
 	// Older isolated probes own their inventory or expect the pre-equipment ASC count.
+#if !UE_BUILD_SHIPPING
 	if (FParse::Param(FCommandLine::Get(), TEXT("MiniProbeTask13")) ||
 		FParse::Param(FCommandLine::Get(), TEXT("MiniProbeTask14")))
 	{
 		return false;
 	}
+#endif
 	// Repeated init notifications during one life must not refill a deliberately
 	// emptied slot or reset ammo. A failed first setup clears BoundPawn below.
 	if (BoundPawn.Get() == Pawn)
 	{
 		return true;
 	}
+	const UMiniPawnData* PawnData = Pawn->GetPawnData();
+	const UMiniLoadoutDefinition* Loadout = PawnData ? PawnData->DefaultLoadout.Get() : nullptr;
+	FString LoadoutError;
+	if (!PawnData || (Loadout && !Loadout->ValidateLoadout(LoadoutError)))
+	{
+		UE_LOG(LogMiniEquipment, Error, TEXT("MiniQuickBar INVALID_LOADOUT: Controller=%s Pawn=%s Reason=%s"),
+			*Controller->GetPathName(), *Pawn->GetPathName(),
+			PawnData ? *LoadoutError : TEXT("PawnData missing"));
+		return false;
+	}
+	TGuardValue<bool> ApplyGuard(bApplyingLoadout, true);
 	if (AMiniCharacter* PreviousPawn = BoundPawn.Get())
 	{
 		if (PreviousPawn != Pawn && PreviousPawn->GetEquipmentManager())
@@ -83,11 +98,13 @@ bool UMiniQuickBarComponent::InitializeForPawn(AMiniCharacter* Pawn)
 			PreviousPawn->GetEquipmentManager()->UnequipItem();
 		}
 	}
-	BoundPawn = Pawn;
+	// Revoke grants before deleting their source inventory. Reset the old slots
+	// before inventory callbacks so a removed item cannot refer to stale equipment.
+	Pawn->GetEquipmentManager()->UnequipItem();
+	BoundPawn.Reset();
 	ActiveSlotIndex = INDEX_NONE;
-	Slots.SetNum(2);
-	Slots[0].Invalidate();
-	Slots[1].Invalidate();
+	Slots.SetNum(UMiniLoadoutDefinition::NumQuickBarSlots);
+	for (FGuid& Slot : Slots) { Slot.Invalidate(); }
 	OnChanged.Broadcast();
 	// The controller survives respawns, so old item objects cannot be reused.
 	TArray<TObjectPtr<UMiniInventoryItemInstance>> OldItems;
@@ -102,35 +119,51 @@ bool UMiniQuickBarComponent::InitializeForPawn(AMiniCharacter* Pawn)
 	{
 		Inventory->RemoveItem(Item);
 	}
-	UMiniInventoryItemInstance* Rifle = Inventory->AddItem(UMiniRifleItemDefinition::StaticClass());
-	UMiniInventoryItemInstance* Pistol = Inventory->AddItem(UMiniPistolItemDefinition::StaticClass());
-	if (!Rifle || !Pistol)
+	TArray<TObjectPtr<UMiniInventoryItemInstance>> CreatedItems;
+	TArray<FGuid> NewSlots;
+	NewSlots.SetNum(UMiniLoadoutDefinition::NumQuickBarSlots);
+	const auto Rollback = [this, Pawn, Controller, Inventory, &CreatedItems]()
 	{
-		if (Rifle) { Inventory->RemoveItem(Rifle); }
-		if (Pistol) { Inventory->RemoveItem(Pistol); }
+		// No grant or partially created item is kept on an unsuccessful setup.
+		Pawn->GetEquipmentManager()->UnequipItem();
 		BoundPawn.Reset();
+		ActiveSlotIndex = INDEX_NONE;
+		for (FGuid& Slot : Slots) { Slot.Invalidate(); }
+		for (UMiniInventoryItemInstance* Item : CreatedItems)
+		{
+			if (IsValid(Item)) { Inventory->RemoveItem(Item); }
+		}
+		OnChanged.Broadcast();
 		Controller->ForceNetUpdate();
+	};
+	if (Loadout)
+	{
+		for (const FMiniLoadoutEntry& Entry : Loadout->Items)
+		{
+			UMiniInventoryItemInstance* Item = Inventory->AddItem(Entry.ItemDefinition);
+			if (!Item)
+			{
+				Rollback();
+				return false;
+			}
+			CreatedItems.Add(Item);
+			NewSlots[Entry.SlotIndex] = Item->GetInstanceId();
+		}
+	}
+	Slots = MoveTemp(NewSlots);
+	BoundPawn = Pawn;
+	OnChanged.Broadcast();
+	Controller->ForceNetUpdate();
+	if (!CreatedItems.IsEmpty() && !SelectSlot(Loadout->InitiallySelectedSlot))
+	{
+		Rollback();
 		return false;
 	}
-	Slots[0] = Rifle->GetInstanceId();
-	Slots[1] = Pistol->GetInstanceId();
-	OnChanged.Broadcast();
-	Controller->ForceNetUpdate();
 	UE_LOG(LogMiniEquipment, Display,
-		TEXT("MiniQuickBar DEFAULTS: Controller=%s Pawn=%s Rifle=%s Pistol=%s"),
-		*Controller->GetPathName(), *Pawn->GetPathName(), *Slots[0].ToString(), *Slots[1].ToString());
-	if (SelectSlot(0))
-	{
-		return true;
-	}
-	Inventory->RemoveItem(Rifle);
-	Inventory->RemoveItem(Pistol);
-	Slots[0].Invalidate();
-	Slots[1].Invalidate();
-	BoundPawn.Reset();
-	OnChanged.Broadcast();
-	Controller->ForceNetUpdate();
-	return false;
+		TEXT("MiniQuickBar LOADOUT_APPLIED: Controller=%s Pawn=%s Loadout=%s Items=%d Active=%d"),
+		*Controller->GetPathName(), *Pawn->GetPathName(), *GetNameSafe(Loadout),
+		CreatedItems.Num(), ActiveSlotIndex);
+	return true;
 }
 
 void UMiniQuickBarComponent::HandlePawnLost(AMiniCharacter* Pawn)
@@ -212,7 +245,7 @@ void UMiniQuickBarComponent::RequestNextSlot()
 {
 	if (GetOwner() && GetOwner()->HasAuthority())
 	{
-		SelectSlot(ActiveSlotIndex == 0 ? 1 : 0);
+		SelectNextAvailableSlot();
 	}
 	else
 	{
@@ -227,7 +260,24 @@ void UMiniQuickBarComponent::ServerSelectSlot_Implementation(int32 SlotIndex)
 
 void UMiniQuickBarComponent::ServerSelectNextSlot_Implementation()
 {
-	SelectSlot(ActiveSlotIndex == 0 ? 1 : 0);
+	SelectNextAvailableSlot();
+}
+
+bool UMiniQuickBarComponent::SelectNextAvailableSlot()
+{
+	if (!GetOwner() || !GetOwner()->HasAuthority() || Slots.IsEmpty())
+	{
+		return false;
+	}
+	for (int32 Offset = 1; Offset <= Slots.Num(); ++Offset)
+	{
+		const int32 SlotIndex = (ActiveSlotIndex + Offset + Slots.Num()) % Slots.Num();
+		if (GetSlotItemId(SlotIndex).IsValid() && SelectSlot(SlotIndex))
+		{
+			return true;
+		}
+	}
+	return false;
 }
 
 void UMiniQuickBarComponent::OnRep_Slots()

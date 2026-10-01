@@ -4,13 +4,14 @@
 #include "GameFeatureAction_AddComponents.h"
 #include "GameFeatureData.h"
 #include "GameModes/MiniExperienceDefinition.h"
+#include "MiniLegacyAssetAuthoringGuard.h"
 #endif
 
 bool UMiniTask06AssetSetupLibrary::EnsureAddComponentsAction(UObject* Owner, FName ActionName,
 	TSubclassOf<AActor> ActorClass, TSubclassOf<UActorComponent> ComponentClass)
 {
 #if WITH_EDITOR
-	if (!Owner || ActionName.IsNone() || !ActorClass || !ComponentClass)
+	if (!MiniIsDiagnosticsAuthoringAsset(Owner) || ActionName.IsNone() || !ActorClass || !ComponentClass)
 	{
 		return false;
 	}

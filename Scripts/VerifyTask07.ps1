@@ -11,7 +11,7 @@ $projectFile = Join-Path $projectRoot 'FPS.uproject'
 $editor = Join-Path $EngineRoot 'Engine\Binaries\Win64\UnrealEditor-Cmd.exe'
 $logDirectory = Join-Path $projectRoot 'Saved\Logs'
 $cacheDirectory = Join-Path $projectRoot 'DerivedDataCache'
-$experienceId = 'MiniExperienceDefinition:DA_MiniPracticeExperience'
+$experienceId = 'MiniExperienceDefinition:DA_MiniDiagnosticsExperience'
 $invalidExperienceId = 'MiniExperienceDefinition:DA_MiniDefinitelyMissing'
 
 if (-not (Test-Path -LiteralPath $editor -PathType Leaf)) {

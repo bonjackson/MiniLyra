@@ -2,6 +2,7 @@
 
 #include "AbilitySystem/MiniAbilitySet.h"
 #include "Character/MiniCharacter.h"
+#include "Equipment/MiniLoadoutDefinition.h"
 #include "System/MiniAssetManager.h"
 
 #if WITH_EDITOR
@@ -38,6 +39,11 @@ bool UMiniPawnData::ValidatePawnData(FString& OutError) const
 			return false;
 		}
 		SeenSets.Add(Set);
+	}
+	if (DefaultLoadout && !DefaultLoadout->ValidateLoadout(OutError))
+	{
+		OutError = FString::Printf(TEXT("PawnData '%s': %s"), *GetPathName(), *OutError);
+		return false;
 	}
 	return true;
 }

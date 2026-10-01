@@ -11,19 +11,19 @@ def require(path, expected_class):
 
 
 pawn_set = require(
-    "/Game/Mini/System/AbilitySets/DA_MiniPawnAbilitySet.DA_MiniPawnAbilitySet",
+    "/Game/Mini/Diagnostics/AbilitySets/DA_MiniPawnAbilitySet.DA_MiniPawnAbilitySet",
     "/Script/FPS.MiniAbilitySet",
 )
 feature_set = require(
-    "/Game/Mini/System/AbilitySets/DA_MiniFeatureAbilitySet.DA_MiniFeatureAbilitySet",
+    "/Game/Mini/Diagnostics/AbilitySets/DA_MiniFeatureAbilitySet.DA_MiniFeatureAbilitySet",
     "/Script/FPS.MiniAbilitySet",
 )
 pawn_data = require(
-    "/Game/Mini/System/PawnData/DA_MiniPracticePawnData.DA_MiniPracticePawnData",
+    "/Game/Mini/Diagnostics/PawnData/DA_MiniDiagnosticsPawnData.DA_MiniDiagnosticsPawnData",
     "/Script/FPS.MiniPawnData",
 )
 experience = require(
-    "/Game/Mini/System/Experiences/DA_MiniPracticeExperience.DA_MiniPracticeExperience",
+    "/Game/Mini/Diagnostics/Experiences/DA_MiniDiagnosticsExperience.DA_MiniDiagnosticsExperience",
     "/Script/FPS.MiniExperienceDefinition",
 )
 if not unreal.MiniTask09AssetSetupLibrary.verify_practice_abilities(

@@ -4,6 +4,7 @@
 #include "AbilitySystem/MiniAbilitySet.h"
 #include "AbilitySystem/MiniProbeAbility.h"
 #include "Character/MiniPawnData.h"
+#include "MiniLegacyAssetAuthoringGuard.h"
 #include "EnhancedActionKeyMapping.h"
 #include "GameFeatures/MiniGameFeatureAction_AddInput.h"
 #include "GameModes/MiniExperienceDefinition.h"
@@ -96,6 +97,15 @@ bool UMiniTask10AssetSetupLibrary::ConfigurePracticeInput(
 	UMiniPawnData* PawnData, UMiniExperienceDefinition* Experience)
 {
 #if WITH_EDITOR
+	const TArray<const UObject*> DiagnosticAssets = {InputConfig, MappingContext, PawnAbilitySet,
+		Move, Look, Jump, Fire, Reload, SwitchWeapon, Aim, PawnData, Experience};
+	for (const UObject* Asset : DiagnosticAssets)
+	{
+		if (!MiniIsDiagnosticsAuthoringAsset(Asset))
+		{
+			return false;
+		}
+	}
 	if (!InputConfig || !MappingContext || !PawnAbilitySet || !Move || !Look || !Jump || !Fire || !Reload || !SwitchWeapon || !Aim ||
 		!PawnData || !Experience || Experience->DefaultPawnData.Get() != PawnData ||
 		PawnData->AbilitySets.Num() != 1 || PawnData->AbilitySets[0] != PawnAbilitySet ||
