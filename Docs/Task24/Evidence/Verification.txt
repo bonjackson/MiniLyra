@@ -1,0 +1,119 @@
+Task 24 final verification evidence (2026-10-03)
+UE 5.8.2; uncooked independent Editor -game processes; same-machine IPv4 loopback.
+Runner: Scripts/VerifyTask24.ps1 -Mode All -WithMedia -TimeoutSeconds 420
+Recorded runner outcome: ExitCode=0; Flow, Failures, Capacity, HostLoss, Quit, HostFailureListen, HostFailureCreate all PASS.
+Quit runner observed actual Client, Server and FrontEndExit graceful process ExitCode=0.
+Other scenario processes were cleaned up after successful checkpoints; this is not evidence of product Quit.
+Final regression runners: VerifyTask19.ps1 -WithMedia and VerifyTask19Loading.ps1 -WithMedia both ExitCode=0.
+Final FPSEditor/FPS Development builds ExitCode=0; asset validation and protected hashes passed.
+Raw selected log lines below; original filenames and UTC log timestamps retained. No command-line or full engine logs included.
+
+=== Task24-WithMedia-Flow-Server.log ===
+[2026.10.03-10.51.37:174][  5]LogMiniInit: Display: MiniTask24Probe FRONT_END_PASS: Peer=Server DefaultMap=1 NoPawn=1 NoCombat=1 Menu=1 InputGate=1
+[2026.10.03-10.51.37:179][  5]LogMiniInit: Display: MiniTask24Probe UI_CLICK: Peer=Server Action=HostArenaButton MouseDown=1 MouseUp=1 X=853.5 Y=448.5 Window=1 MouseMove=1 TargetHover=1 TargetPressed=1 TargetCapture=1 AppActive=1 ProbeBackgroundCapture=1
+[2026.10.03-10.51.39:592][ 68]LogMiniInit: Display: MiniTask24Probe NEW_WORLD_PASS: Peer=Server NewWorld=1 NewPlayerState=1 NewASC=1 OldUIReleased=1
+[2026.10.03-10.52.37:517][802]LogMiniInit: Display: MiniTask24Probe ORDINARY_RESTART_PASS: ServerNewWorld=1 NewPlayerStates=1 NewASCs=1 PriorScoreCleared=1 ClientsReconnected=1 HUD=1
+[2026.10.03-10.52.38:131][818]LogMiniInit: Display: MiniTask24Probe PRACTICE_BUTTON_PASS: Peer=Server RealSlateClick=1 DefaultPracticeExperience=1 Targets=3 Arena=0 RealGE=1
+[2026.10.03-10.52.38:522][828]LogMiniInit: Display: MiniTask24Probe FLOW_SERVER_PASS: Peer=Server RealSlateHostJoinMenu=1 OrdinaryTravel=1 NewWorldPSASC=1 TrainingAndReturn=1 OldUIListeners=0 ActiveFrontGate=1
+
+=== Task24-WithMedia-Flow-Client.log ===
+[2026.10.03-10.52.11:625][  5]LogMiniInit: Display: MiniTask24Probe ADDRESS_TYPED: Peer=Client Address=127.0.0.1:18924 FocusMouse=1 SelectAllKey=1 CharacterEvents=15 ExactText=1
+[2026.10.03-10.52.11:822][ 11]LogMiniInit: Display: MiniTask24Probe OLD_WORLD_RELEASED: Peer=Client World=L_MiniFrontEnd FrontListeners=0 ModalListeners=0 HUD=0 Menu=0 UIGates=0 Cleanup=1
+[2026.10.03-10.52.37:811][776]LogMiniInit: Display: MiniTask24Probe ERROR_UI: Peer=Client Code=MINI_HOST_LEFT Title=对局已结束 Detail=主机已结束对局。 FrontEnd=1 Modal=1 Gates=2 Listeners=1
+[2026.10.03-10.52.38:631][798]LogMiniInit: Display: MiniTask24Probe FLOW_CLIENT_PASS: Peer=Client RealSlateHostJoinMenu=1 OrdinaryTravel=1 NewWorldPSASC=1 TrainingAndReturn=1 OldUIListeners=0 ActiveFrontGate=1
+
+=== Task24-WithMedia-Failures-Client.log ===
+[2026.10.03-10.52.59:073][  7]LogMiniInit: Display: MiniTask24Probe ERROR_UI: Peer=Client Code=MINI_INVALID_ADDRESS Title=地址格式无效 Detail=请输入 IPv4 地址与可选端口，例如 192.168.1.20:7777。 FrontEnd=1 Modal=1 Gates=2 Listeners=1
+[2026.10.03-10.52.59:107][  8]LogMiniInit: Display: MiniTask24Probe KEYBOARD_ERROR_CLOSE_PASS: Peer=Client FocusedCloseButton=1 ActualEnter=1 ErrorCleared=1
+[2026.10.03-10.52.59:245][ 12]LogMiniInit: Display: MiniTask24Probe PENDING_UI_PASS: Peer=Client RealPendingDriver=1 ButtonsDisabled=1 CancelVisible=1 Gates=2 DuplicateAPIsRejected=1
+[2026.10.03-10.52.59:408][ 15]LogMiniInit: Display: MiniTask24Probe CANCEL_PENDING_PASS: Peer=Client ActualSlateCancel=1 PendingDriverRemoved=1 NewFrontEndWorldPSASC=1 FrontGate=1 ButtonsEnabled=1
+[2026.10.03-10.52.59:510][ 18]LogMiniInit: Display: MiniTask24Probe PENDING_RETRY_PASS: Peer=Client ActualAddressRetyped=1 NewPendingDriver=1 PreviousCancelDidNotBlockRetry=1
+[2026.10.03-10.53.19:542][619]LogMiniInit: Display: MiniTask24Probe REAL_NETWORK_FAILURE: Peer=Client Type=4 Driver=IpNetDriver_1 Reason=UNetConnection::Tick: Connection TIMED OUT. Closing connection.. Elapsed: 20.03, Real: 20.00, Good: 20.00, DriverTime: 20.03, Threshold: 20.00, [UNetConnection] RemoteAddr: 127.0.0.1:18925, Name: IpConnection_1, Driver: Name:PendingNetDriver Def:GameNetDriver IpNetDriver_1, IsServer: NO, PC: NULL, Owner: NULL, UniqueId: INVALID Count=1
+[2026.10.03-10.53.20:451][636]LogMiniInit: Display: MiniTask24Probe CLIENT_AUTHORITY_GATE_PASS: RestartRejected=1 FrontEndOnlyAPIsRejected=1 GenerationUnchanged=1
+[2026.10.03-10.53.20:780][643]LogMiniInit: Display: MiniTask24Probe FAILURES_CLIENT_PASS: Peer=Client InvalidAddressUI=1 ErrorFocusedKeyboardClose=1 ActualPendingCancel=1 RetryAfterCancel=1 RealUnreachableDriverFailure=1 PendingGates=1 RecoveredUIJoin=1 ActualMenuReturn=1 FrontEnd=1
+
+=== Task24-WithMedia-Failures-Server.log ===
+[2026.10.03-10.53.20:484][954]LogMiniInit: Display: MiniTask24Probe FAILURES_SERVER_PASS: Peer=Server RealUIHost=1 RecoveredClientJoined=1 ProductionArena=1 ClientHUD=1
+
+=== Task24-WithMedia-Capacity-Server.log ===
+[2026.10.03-10.54.09:410][152]LogMiniExperience: Display: MiniLogin REJECTED: Code=MINI_SERVER_FULL Limit=4
+[2026.10.03-10.54.09:848][165]LogMiniInit: Display: MiniTask24Probe CAPACITY_SLOT_RELEASED: ActualLogout=1 Remaining=3 OverflowMayRejoin=1
+[2026.10.03-10.54.10:645][189]LogMiniInit: Display: MiniTask24Probe CAPACITY_SERVER_PASS: Peer=Server RealFourLogins=1 ActualFifthRejected=1 ActualMenuLeave=1 OverflowRejoined=1 RemainingPSASCUnchanged=3 SameWorld=1 ClientHUD=3
+
+=== Task24-WithMedia-Capacity-Overflow.log ===
+[2026.10.03-10.54.09:426][ 11]LogMiniInit: Display: MiniTask24Probe ERROR_UI: Peer=Overflow Code=MINI_SERVER_FULL Title=服务器已满 Detail=这场对局最多支持 4 名玩家，请稍后重试。 FrontEnd=1 Modal=1 Gates=2 Listeners=1
+[2026.10.03-10.54.10:614][ 35]LogMiniInit: Display: MiniTask24Probe CAPACITY_OVERFLOW_PASS: Peer=Overflow ActualFifthLoginRejected=1 Code=MINI_SERVER_FULL UserReason=1 ActualClose=1 ActualRejoinAfterSlotReleased=1 HUD=1
+
+=== Task24-WithMedia-Capacity-ClientA.log ===
+[2026.10.03-10.54.10:043][666]LogMiniInit: Display: MiniTask24Probe CAPACITY_RELEASE_CLIENT_PASS: Peer=ClientA ActualEscapeMenu=1 ActualReturnClick=1 Disconnected=1 FrontEnd=1 Gate=1
+
+=== Task24-WithMedia-Capacity-ClientB.log ===
+[2026.10.03-10.54.10:226][621]LogMiniInit: Display: MiniTask24Probe CAPACITY_RETAINED_CLIENT_PASS: Peer=ClientB ActualCapacityFour=1 FifthRejected=1 Refilled=1 SameWorld=1 SamePlayerState=1 SameASC=1 HUD=1
+
+=== Task24-WithMedia-Capacity-ClientC.log ===
+[2026.10.03-10.54.10:217][675]LogMiniInit: Display: MiniTask24Probe CAPACITY_RETAINED_CLIENT_PASS: Peer=ClientC ActualCapacityFour=1 FifthRejected=1 Refilled=1 SameWorld=1 SamePlayerState=1 SameASC=1 HUD=1
+
+=== Task24-WithMedia-HostLoss-Server.log ===
+[2026.10.03-10.54.35:741][336]LogMiniInit: Display: MiniTask24Probe HOST_LOSS_ARMED: Peer=Server Listen=1 ClientHUD=1 ExternalHostTerminationMayProceed=1
+
+=== Task24-WithMedia-HostLoss-Client.log ===
+[2026.10.03-10.55.36:279][835]LogMiniInit: Display: MiniTask24Probe REAL_NETWORK_FAILURE: Peer=Client Type=4 Driver=IpNetDriver_0 Reason=UNetConnection::Tick: Connection TIMED OUT. Closing connection.. Elapsed: 60.00, Real: 60.00, Good: 60.00, DriverTime: 61.22, Threshold: 60.00, [UNetConnection] RemoteAddr: 127.0.0.1:18924, Name: IpConnection_0, Driver: Name:GameNetDriver Def:GameNetDriver IpNetDriver_0, IsServer: NO, PC: MiniPlayerController_0, Owner: MiniPlayerController_0, UniqueId: NULL:RINGO-FA89C4BD41994A2C9FB629A8604DD15B Count=1
+[2026.10.03-10.55.36:422][837]LogMiniInit: Display: MiniTask24Probe ERROR_UI: Peer=Client Code=MINI_CONNECTION_TIMEOUT Title=连接超时 Detail=服务器没有响应，请检查 IP、端口和网络后重试。 FrontEnd=1 Modal=1 Gates=2 Listeners=1
+[2026.10.03-10.55.36:490][839]LogMiniInit: Display: MiniTask24Probe HOSTLOSS_CLIENT_PASS: Peer=Client ActualDriverFailure=1 HostLossReason=1 NewFrontEndWorld=1 ErrorModal=1 RealCloseClick=1 InteractiveFrontEnd=1
+
+=== Task24-WithMedia-Quit-Client.log ===
+[2026.10.03-10.55.57:073][ 27]LogMiniInit: Display: MiniTask24Probe UI_CLICK: Peer=Client Action=QuitButton MouseDown=1 MouseUp=1 X=853.5 Y=524.5 Window=1 MouseMove=1 TargetHover=1 TargetPressed=1 TargetCapture=1 AppActive=1 ProbeBackgroundCapture=1
+[2026.10.03-10.55.57:073][ 27]LogMiniInit: Display: MiniTask24Probe QUIT_CLIENT_REQUESTED: Peer=Client ActualSlateGameplayQuit=1 ProductionDeferredReturnAndExit=1
+[2026.10.03-10.55.57:210][ 28]LogMiniExperience: Display: MiniTravel READY: Operation=6 Generation=2 World=L_MiniFrontEnd NetMode=0 FrontEnd=1
+[2026.10.03-10.55.57:210][ 28]LogMiniExperience: Display: MiniTravel QUIT: FrontEnd=1 PendingRequest=0
+[2026.10.03-10.55.57:210][ 28]LogWindows: FPlatformMisc::RequestExitWithStatus(0, 0, MiniFrontEndQuit)
+[2026.10.03-10.55.58:987][ 29]LogExit: Exiting.
+
+=== Task24-WithMedia-Quit-Server.log ===
+[2026.10.03-10.55.57:131][345]LogMiniInit: Display: MiniTask24Probe QUIT_SERVER_READY_AFTER_CLIENT_EXIT: Peer=Server ActualLogout=1 Remaining=1 Listen=1 HUD=1
+[2026.10.03-10.55.59:506][415]LogMiniInit: Display: MiniTask24Probe UI_CLICK: Peer=Server Action=QuitButton MouseDown=1 MouseUp=1 X=853.5 Y=538.2 Window=1 MouseMove=1 TargetHover=1 TargetPressed=1 TargetCapture=1 AppActive=1 ProbeBackgroundCapture=1
+[2026.10.03-10.55.59:506][415]LogMiniInit: Display: MiniTask24Probe QUIT_SERVER_REQUESTED: Peer=Server ActualSlateGameplayQuit=1 ProductionDeferredReturnAndExit=1
+[2026.10.03-10.55.59:641][416]LogMiniExperience: Display: MiniTravel READY: Operation=6 Generation=2 World=L_MiniFrontEnd NetMode=0 FrontEnd=1
+[2026.10.03-10.55.59:641][416]LogMiniExperience: Display: MiniTravel QUIT: FrontEnd=1 PendingRequest=0
+[2026.10.03-10.55.59:641][416]LogWindows: FPlatformMisc::RequestExitWithStatus(0, 0, MiniFrontEndQuit)
+[2026.10.03-10.56.01:195][417]LogExit: Exiting.
+
+=== Task24-WithMedia-Quit-FrontEndExit.log ===
+[2026.10.03-10.56.10:900][  5]LogMiniInit: Display: MiniTask24Probe UI_CLICK: Peer=FrontEndExit Action=QuitButton MouseDown=1 MouseUp=1 X=853.5 Y=602.4 Window=1 MouseMove=1 TargetHover=1 TargetPressed=1 TargetCapture=1 AppActive=1 ProbeBackgroundCapture=1
+[2026.10.03-10.56.10:900][  5]LogMiniInit: Display: MiniTask24Probe QUIT_FRONTEND_REQUESTED: Peer=FrontEndExit ActualSlateFrontEndQuit=1 ProductionDirectExit=1
+[2026.10.03-10.56.10:900][  5]LogMiniExperience: Display: MiniTravel QUIT: FrontEnd=1 PendingRequest=0
+[2026.10.03-10.56.10:900][  5]LogWindows: FPlatformMisc::RequestExitWithStatus(0, 0, MiniFrontEndQuit)
+[2026.10.03-10.56.12:210][  6]LogExit: Exiting.
+
+=== Task24-WithMedia-HostFailureListen-Server.log ===
+[2026.10.03-10.56.20:762][  6]LogMiniExperience: Display: MiniTravel HOST_FAILURE_DETAIL: Type=2 Driver=IpNetDriver_0 Reason=
+[2026.10.03-10.56.21:080][  9]LogMiniInit: Display: MiniTask24Probe HOST_FAILURE_MODAL: Mode=HostFailureListen RealDriverFailure=1 FrontEnd=1 FriendlyReason=1 Gates=2
+[2026.10.03-10.56.21:586][ 22]LogMiniInit: Display: MiniTask24Probe HOST_RETRY_READY: ActualSlateRetry=1 Listen=1 PreviousFailureDidNotBlockRetry=1
+[2026.10.03-10.56.22:187][ 37]LogMiniInit: Display: MiniTask24Probe HOST_FAILURE_LISTEN_PASS: Peer=Server ActualBindFailure=1 FriendlyError=1 ActualCloseAndHostRetry=1 Listen=1 MenuReturn=1 FrontEnd=1 OldUIReleased=1
+
+=== Task24-WithMedia-HostFailureCreate-Server.log ===
+[2026.10.03-10.56.31:130][  6]LogMiniExperience: Display: MiniTravel HOST_FAILURE_DETAIL: Type=1 Driver=None Reason=
+[2026.10.03-10.56.31:416][  9]LogMiniInit: Display: MiniTask24Probe HOST_FAILURE_MODAL: Mode=HostFailureCreate RealDriverFailure=1 FrontEnd=1 FriendlyReason=1 Gates=2
+[2026.10.03-10.56.32:234][ 30]LogMiniInit: Display: MiniTask24Probe HOST_FAILURE_CREATE_PASS: Peer=Server ActualNullDriverHostFailure=1 FriendlyError=1 ActualClosePracticeAndReturn=1 NewWorldPSASC=1 OldUIListeners=0 ActiveFrontGate=1
+
+=== Task19-WithMedia-Server.log ===
+[2026.10.03-10.58.10:097][413]LogMiniInit: Display: MiniTask19Probe HOST_AUTHORITY_PASS: LocalRefresh=1 RemoteIsolation=1
+[2026.10.03-10.58.18:040][647]LogMiniInit: Display: MiniTask19Probe SERVER_PASS: OwnSnapshots=1 HostAuthorityRefresh=1 LateHUD=1 MenuStack=1 RootLifecycle=1 RespawnRebind=1 ObserverHit=0 FeatureDeactivated=1 Cleanup=1
+
+=== Task19-WithMedia-ClientA.log ===
+[2026.10.03-10.58.17:468][220]LogMiniInit: Display: MiniTask19Probe CLIENT_FEATURE_REAL_CLEANUP: Owner=2
+
+=== Task19-WithMedia-ClientB.log ===
+[2026.10.03-10.58.17:497][220]LogMiniInit: Display: MiniTask19Probe CLIENT_FEATURE_REAL_CLEANUP: Owner=1
+
+=== Task19-Loading-WithMedia-Valid-Server.log ===
+[2026.10.03-10.59.45:505][ 17]LogMiniInit: Display: MiniTask19Loading PASS: NetMode=ListenServer State=Loaded Visible=0 Failure=0 TitleEmpty=1 DetailEmpty=1 UIBlocks=0 ControllerBlocked=0 TickerStopped=1 PendingObserved=1 Experience=MiniExperienceDefinition:DA_MiniPracticeExperience
+
+=== Task19-Loading-WithMedia-Valid-Client.log ===
+[2026.10.03-10.59.54:618][  9]LogMiniInit: Display: MiniTask19Loading PASS: NetMode=Client State=Loaded Visible=0 Failure=0 TitleEmpty=1 DetailEmpty=1 UIBlocks=0 ControllerBlocked=0 TickerStopped=1 PendingObserved=1 Experience=MiniExperienceDefinition:DA_MiniPracticeExperience
+
+=== Task19-Loading-WithMedia-Invalid-Server.log ===
+[2026.10.03-11.00.04:957][  2]LogMiniInit: Display: MiniTask19Loading PASS: NetMode=ListenServer State=Failed Visible=1 Failure=1 TitlePresent=1 DetailMatches=1 UIBlocks=2 ControllerBlocked=1 TickerStopped=1 PendingObserved=0 Experience=MiniExperienceDefinition:DA_MiniDefinitelyMissing Reason=Unknown Experience ID 'MiniExperienceDefinition:DA_MiniDefinitelyMissing': no scanned asset has this ID RecoveryModal=1 ReturnButton=1 ModalListener=1
+
+=== Task19-Loading-WithMedia-Invalid-Client.log ===
+[2026.10.03-11.00.13:775][  7]LogMiniInit: Display: MiniTask19Loading PASS: NetMode=Client State=Failed Visible=1 Failure=1 TitlePresent=1 DetailMatches=1 UIBlocks=2 ControllerBlocked=1 TickerStopped=1 PendingObserved=0 Experience=MiniExperienceDefinition:DA_MiniDefinitelyMissing Reason=Unknown Experience ID 'MiniExperienceDefinition:DA_MiniDefinitelyMissing': no scanned asset has this ID RecoveryModal=1 ReturnButton=1 ModalListener=1

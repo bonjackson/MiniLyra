@@ -6,6 +6,7 @@
 #include "Character/MiniHealthComponent.h"
 #include "Character/MiniHeroComponent.h"
 #include "Character/MiniPawnExtensionComponent.h"
+#include "Engine/GameInstance.h"
 #include "Engine/World.h"
 #include "EngineUtils.h"
 #include "GameFeatures/MiniGameFeatureAction_AddInput.h"
@@ -24,6 +25,7 @@
 #include "Player/MiniPlayerState.h"
 #include "System/MiniGameplayTags.h"
 #include "System/MiniLogChannels.h"
+#include "System/MiniTravelSubsystem.h"
 #include "UI/MiniHUDLayout.h"
 #include "UI/MiniHUDWidgets.h"
 #include "UI/MiniPrimaryGameLayout.h"
@@ -125,6 +127,13 @@ void AMiniPlayerController::MiniToggleMenu()
 void AMiniPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
+	if (IsLocalController() && GetGameInstance())
+	{
+		if (UMiniTravelSubsystem* Travel = GetGameInstance()->GetSubsystem<UMiniTravelSubsystem>())
+		{
+			Travel->ObserveLocalController(this);
+		}
+	}
 #if !UE_BUILD_SHIPPING
 	bTask10ProbeEnabled = FParse::Param(FCommandLine::Get(), TEXT("MiniProbeTask10"));
 	if (bTask10ProbeEnabled && GetNetMode() == NM_Client && IsLocalController())
@@ -132,6 +141,18 @@ void AMiniPlayerController::BeginPlay()
 		GetWorldTimerManager().SetTimer(Task10ProbeTimer, this, &ThisClass::AdvanceTask10Probe, 0.25f, true);
 	}
 #endif
+}
+
+void AMiniPlayerController::ClientReturnToMainMenuWithTextReason_Implementation(const FText& ReturnReason)
+{
+	if (GetGameInstance())
+	{
+		if (UMiniTravelSubsystem* Travel = GetGameInstance()->GetSubsystem<UMiniTravelSubsystem>())
+		{
+			Travel->NotifyReturnReason(ReturnReason);
+		}
+	}
+	Super::ClientReturnToMainMenuWithTextReason_Implementation(ReturnReason);
 }
 
 void AMiniPlayerController::EndPlay(const EEndPlayReason::Type EndPlayReason)

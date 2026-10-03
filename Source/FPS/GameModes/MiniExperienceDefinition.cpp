@@ -2,6 +2,7 @@
 
 #include "Character/MiniPawnData.h"
 #include "GameFeatureAction.h"
+#include "GameFeatures/MiniGameFeatureAction_AddWidgets.h"
 #include "MiniExperienceActionSet.h"
 #include "System/MiniAssetManager.h"
 
@@ -19,12 +20,17 @@ FPrimaryAssetId UMiniExperienceDefinition::GetPrimaryAssetId() const
 bool UMiniExperienceDefinition::ValidateDefinition(FString& OutError) const
 {
 	OutError.Reset();
-	if (!DefaultPawnData)
+	if (bIsFrontEnd && (DefaultPawnData || !GameFeaturesToEnable.IsEmpty() || !ActionSets.IsEmpty()))
+	{
+		OutError = FString::Printf(TEXT("FrontEnd Experience '%s' must omit PawnData, gameplay plugins and ActionSets"), *GetPathName());
+		return false;
+	}
+	if (!bIsFrontEnd && !DefaultPawnData)
 	{
 		OutError = FString::Printf(TEXT("Experience '%s' has no DefaultPawnData"), *GetPathName());
 		return false;
 	}
-	if (!DefaultPawnData->ValidatePawnData(OutError))
+	if (DefaultPawnData && !DefaultPawnData->ValidatePawnData(OutError))
 	{
 		OutError = FString::Printf(TEXT("Experience '%s': %s"), *GetPathName(), *OutError);
 		return false;
@@ -42,6 +48,11 @@ bool UMiniExperienceDefinition::ValidateDefinition(FString& OutError) const
 		if (!Actions[Index])
 		{
 			OutError = FString::Printf(TEXT("Experience '%s' has a null Action at index %d"), *GetPathName(), Index);
+			return false;
+		}
+		if (bIsFrontEnd && !Actions[Index]->IsA<UMiniGameFeatureAction_AddWidgets>())
+		{
+			OutError = FString::Printf(TEXT("FrontEnd Experience '%s' only supports UI Actions"), *GetPathName());
 			return false;
 		}
 	}

@@ -33,7 +33,7 @@ if ($logText -match '(?:LogPluginManager|LogModuleManager|LogGameFeatures|LogMin
     throw "Task 04 runtime verification found an asset or framework error. See $verificationLog"
 }
 $requiredMarkers = @(
-    'MiniExperienceProbe PASS: ID=MiniExperienceDefinition:DA_MiniPracticeExperience',
+    'MiniExperienceProbe PASS: ID=MiniExperienceDefinition:DA_MiniFrontEndExperience',
     'MiniExperienceProbe negative cases PASS:',
     'Unknown Experience ID',
     'has no DefaultPawnData',

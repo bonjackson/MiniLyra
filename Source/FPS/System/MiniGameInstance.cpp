@@ -191,7 +191,7 @@ bool UMiniGameInstance::RunExperienceProbe()
 		return false;
 	}
 	const FSoftObjectPath RegisteredPath = Manager->GetPrimaryAssetPath(DefaultId);
-	const FSoftObjectPath ExpectedPath(TEXT("/Game/Mini/System/Experiences/DA_MiniPracticeExperience.DA_MiniPracticeExperience"));
+	const FSoftObjectPath ExpectedPath(TEXT("/Game/Mini/System/Experiences/DA_MiniFrontEndExperience.DA_MiniFrontEndExperience"));
 	if (RegisteredPath != ExpectedPath)
 	{
 		UE_LOG(LogMiniExperience, Error, TEXT("MiniExperienceProbe FAIL: ID %s maps to %s, expected %s"),
@@ -200,9 +200,10 @@ bool UMiniGameInstance::RunExperienceProbe()
 	}
 
 	UMiniExperienceDefinition* Experience = Manager->LoadExperienceSynchronously(DefaultId, Error);
-	if (!Experience)
+	if (!Experience || !Experience->bIsFrontEnd || Experience->DefaultPawnData ||
+		!Experience->GameFeaturesToEnable.IsEmpty() || !Experience->ActionSets.IsEmpty())
 	{
-		UE_LOG(LogMiniExperience, Error, TEXT("MiniExperienceProbe FAIL: %s"), *Error);
+		UE_LOG(LogMiniExperience, Error, TEXT("MiniExperienceProbe FAIL: invalid non-gameplay FrontEnd: %s"), *Error);
 		return false;
 	}
 

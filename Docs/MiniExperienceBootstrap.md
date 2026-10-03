@@ -2,13 +2,17 @@
 
 > 历史文档：2026-09-27 执行任务 01 时，用户要求从空项目开始，下方归档章节涉及的旧实现已经归档至 `Backups/Task01_PreReset_20260927`，不在当前 Source/Config 中启用。请以 `MiniLyraProgress.md` 和 `MiniLyraRoadmap.md` 的任务顺序为准。
 
-## 当前启动链（更新至 2026-10-01）
+## 当前启动链（更新至 2026-10-03）
 
-任务 01–22 已完成实现与验收。当前链路为权威旅行选项／地图／项目配置选择真实 Experience ID → GameState 复制 ID → 每端独立加载 Experience、PawnData、ActionSets 和 GameFeatures → 本地 Loaded → 服务器出生、PawnExtension／Hero 初始化、PlayerState ASC 绑定当前 Avatar → 数据 Loadout、输入与装备能力。下方旧实现的猜测 ID 兜底、网络加密测试和 CommonSession 反射绑定均不属于活动链路。
+任务 01–24 已完成实现与验收，提交／推送版本以 Git 为准。程序默认进入 `L_MiniFrontEnd`，地图与项目回退均选 `DA_MiniFrontEndExperience`。当前链路为权威旅行选项／地图／项目配置选择真实 Experience ID → GameState 复制 ID → 每端独立加载 Experience、PawnData、ActionSets 和 GameFeatures → 本地 Loaded → 服务器按 Experience 是否为前端决定出生。玩法 World 随后执行 PawnExtension／Hero 初始化、PlayerState ASC 绑定当前 Avatar → 数据 Loadout、输入与装备能力。下方旧实现的猜测 ID 兜底、网络加密测试和 CommonSession 反射绑定均不属于活动链路。
 
 任务 19 已增加 CommonGame UI Policy 和每 LocalPlayer 的 Game／Menu／Modal 根层栈；MiniShooterCore 经 AddWidgets Action 和 UIExtension 注入战斗 HUD。HUD 从已复制属性／装备取初始快照，GameplayMessage 只发本地通知；根布局的加载／失败界面在玩法 HUD 未创建或撤销后仍可存在。菜单、HUD 监听与异步句柄按对应生命周期回收，主机与客户端独立显示自己的数据。
 
-任务 20 完成训练内容，任务 21 完成独立 GameState 阶段 ASC／MiniArena 注入，任务 22 建立生产 FFA。任务 23 增加独立竞技图与地图 Experience 覆盖，八个安全出生点、真实环境 GE 跌落／同生命返回及全堵恢复工作接入既有死亡重生链；修复新 Avatar 等待旧死亡 Tag 解除时的输入重试事件。最终构建、资产三阶段、普通无探针四进程、两局真实 GE 与第三局清分、训练及输入／HUD／撤销回归、媒体复核均通过；见 [任务 20](Task20/PracticeExperience.md)、[任务 21](Task21/GamePhases.md)、[任务 22](Task22/FFAMatchRules.md) 与 [任务 23](Task23/ArenaMap.md)。下一入口为任务 24 前端与直接 IP 旅行；生产 cook 与 Cue 路径提示留任务 28 收敛。
+任务 20 完成训练内容，任务 21 完成独立 GameState 阶段 ASC／MiniArena 注入，任务 22 建立生产 FFA。任务 23 增加独立竞技图与地图 Experience 覆盖，八个安全出生点、真实环境 GE 跌落／同生命返回及全堵恢复工作接入既有死亡重生链；修复新 Avatar 等待旧死亡 Tag 解除时的输入重试事件。最终构建、资产三阶段、普通无探针四进程、两局真实 GE 与第三局清分、训练及输入／HUD／撤销回归、媒体复核均通过；见 [任务 20](Task20/PracticeExperience.md)、[任务 21](Task21/GamePhases.md)、[任务 22](Task22/FFAMatchRules.md) 与 [任务 23](Task23/ArenaMap.md)。
+
+任务 24 的前端 Experience 显式 `bIsFrontEnd`，没有 PawnData、战斗 GameFeature 或 ActionSet，唯一 AddWidgets 在 Menu 层注入前端。正常 PlayerState 与默认 ASC／HealthSet 仍存在，但没有战斗 Avatar 与能力授予。训练按钮进入 Practice，创建按钮进入 Arena Listen Server，加入按钮使用 IPv4[:port] 发起客户端旅行；前端不需要账号登录。`MiniGameSession` 在 PreLogin／Login 共同批准最多四人，死亡和临时无 Pawn 仍占位。
+
+所有地图切换采用普通旅行，`bUseSeamlessTravel=false`；新 World 重建 PlayerState／ASC 和对局统计。GameInstance 的 `MiniTravelSubsystem` 仅持久保存请求与失败提示，按 World／请求 generation／实际 Driver 归属过滤回调。主机返回通过可靠通知保存 `MINI_HOST_LEFT` 后沿引擎返回链恢复客户端前端；创建驱动失败／绑定失败以及真实连接失败都显示可关闭的中文 Modal。游戏中退出先完成前端旅行，再正常退出进程。最终七场景媒体专项与三个实际退出进程通过，见 [任务 24](Task24/FrontEndTravel.md)。下一入口为任务 25 生命周期收敛；生产 cook 与 Cue 路径提示留任务 28 收敛。
 
 ## 归档实现的目标
 

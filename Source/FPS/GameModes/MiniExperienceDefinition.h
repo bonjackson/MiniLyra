@@ -15,6 +15,10 @@ class FPS_API UMiniExperienceDefinition : public UPrimaryDataAsset
 public:
 	virtual FPrimaryAssetId GetPrimaryAssetId() const override;
 
+	/** A non-gameplay Experience may intentionally omit PawnData. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Mini|Gameplay")
+	bool bIsFrontEnd = false;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Mini|Gameplay")
 	TObjectPtr<UMiniPawnData> DefaultPawnData;
 

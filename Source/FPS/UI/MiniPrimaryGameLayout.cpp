@@ -57,7 +57,7 @@ void UMiniPrimaryGameLayout::BuildNativeLayout()
 	AddFullScreenChild(Canvas, GameLayer, 0);
 	AddFullScreenChild(Canvas, MenuLayer, 100);
 	AddFullScreenChild(Canvas, ModalLayer, 200);
-	AddFullScreenChild(Canvas, LoadingStatus, 300);
+	AddFullScreenChild(Canvas, LoadingStatus, 50);
 	RegisterLayer(GetGameLayerTag(), GameLayer);
 	RegisterLayer(GetMenuLayerTag(), MenuLayer);
 	RegisterLayer(GetModalLayerTag(), ModalLayer);

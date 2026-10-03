@@ -42,11 +42,14 @@ if len(arena_plugins) != 1 or arena_plugins[0].get("Enabled") is not True:
     raise RuntimeError("FPS.uproject must enable exactly one MiniArena descriptor for plugin discovery")
 game_config = read_ini(PROJECT / "Config/DefaultGame.ini")
 engine_config = read_ini(PROJECT / "Config/DefaultEngine.ini")
-if game_config["/Script/FPS.MiniAssetManager"].get("DefaultExperienceId") != "MiniExperienceDefinition:DA_MiniPracticeExperience":
-    raise RuntimeError("Project default Experience no longer selects the training assembly")
+if game_config["/Script/FPS.MiniAssetManager"].get("DefaultExperienceId") != "MiniExperienceDefinition:DA_MiniFrontEndExperience":
+    raise RuntimeError("Project default Experience must select the current FrontEnd")
 for field in ("GameDefaultMap", "EditorStartupMap"):
-    if engine_config["/Script/EngineSettings.GameMapsSettings"].get(field) != "/Game/Mini/Maps/L_MiniPractice":
-        raise RuntimeError(f"Training map default changed: {field}")
+    if engine_config["/Script/EngineSettings.GameMapsSettings"].get(field) != "/Game/Mini/Maps/L_MiniFrontEnd":
+        raise RuntimeError(f"Current FrontEnd map default changed: {field}")
+front_end = require(f"{SYSTEM}/Experiences/DA_MiniFrontEndExperience.DA_MiniFrontEndExperience", "/Script/FPS.MiniExperienceDefinition")
+if not unreal.MiniTask24AssetSetupLibrary.verify_front_end_experience(front_end):
+    raise RuntimeError("Current fallback is not the independently saved FrontEnd UI assembly")
 
 registry = unreal.AssetRegistryHelpers.get_asset_registry()
 registry.scan_paths_synchronous(["/MiniArena", SYSTEM, DIAGNOSTICS], force_rescan=True)
@@ -119,4 +122,4 @@ for kind, index in (("Experiences", 3), ("ActionSets", 2)):
         matching = [asset for asset in assets if str(asset.asset_name) == name]
         if len(matching) != 1:
             raise RuntimeError(f"Primary asset name missing or duplicated: {name} count={len(matching)}")
-unreal.log("MINI_TASK21_ASSETS_VERIFIED LegacyProduction=10/60/5OrTask22FFA Diagnostics=8/20/3 FixedNativeClasses=1 ServerOnly=1 TrainingDefault=1")
+unreal.log("MINI_TASK21_ASSETS_VERIFIED LegacyProduction=10/60/5OrTask22FFA Diagnostics=8/20/3 FixedNativeClasses=1 ServerOnly=1 FrontEndDefault=1 TrainingPreserved=1")

@@ -22,6 +22,7 @@ public:
 	virtual void OnUnPossess() override;
 	virtual void PostProcessInput(const float DeltaTime, const bool bGamePaused) override;
 	virtual void SetupInputComponent() override;
+	virtual void ClientReturnToMainMenuWithTextReason_Implementation(const FText& ReturnReason) override;
 	void SetMiniInputBlocked(bool bBlocked);
 	void SetMiniUIInputBlocked(bool bBlocked);
 	bool IsMiniInputBlocked() const { return bMiniInputBlocked || bMiniUIInputBlocked; }

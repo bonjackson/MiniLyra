@@ -1,6 +1,7 @@
 #include "MiniTask19LoadingProbeSubsystem.h"
 
 #include "Engine/World.h"
+#include "Engine/GameInstance.h"
 #include "EngineUtils.h"
 #include "GameModes/MiniExperienceManagerComponent.h"
 #include "GameModes/MiniGameState.h"
@@ -10,6 +11,9 @@
 #include "Misc/Paths.h"
 #include "Player/MiniPlayerController.h"
 #include "System/MiniLogChannels.h"
+#include "System/MiniTravelSubsystem.h"
+#include "UI/MiniConnectionStatusWidget.h"
+#include "Components/Button.h"
 #include "UI/MiniLoadingStatusWidget.h"
 #include "UI/MiniPrimaryGameLayout.h"
 #include "UnrealClient.h"
@@ -138,15 +142,24 @@ void UMiniTask19LoadingProbeSubsystem::Tick(float DeltaTime)
 			Fail(TEXT("negative scenario did not use the real unknown Experience failure"));
 			return;
 		}
+		const UMiniTravelSubsystem* Travel = World->GetGameInstance()->GetSubsystem<UMiniTravelSubsystem>();
+		const UMiniConnectionStatusWidget* Modal = Travel ? Travel->GetConnectionStatusWidget() : nullptr;
+		UButton* ReturnButton = Modal ? Modal->GetButton(TEXT("ReturnButton")) : nullptr;
 		if (Loading->GetVisibility() != ESlateVisibility::Visible || !Loading->HasFailure() ||
 			Loading->GetStatusTitle().ToString() != TEXT("玩法加载失败") || Loading->GetStatusDetail().ToString() != Reason ||
 			Loading->HasActiveStatusTicker() || !Root->IsGameplayInputBlockedByUI() ||
-			Root->GetGameplayInputBlockCount() != 1 || !Controller->IsMiniInputBlocked())
+			Root->GetGameplayInputBlockCount() != 2 || !Controller->IsMiniInputBlocked() ||
+			!Travel || !Travel->GetState().bHasError || Travel->GetState().FailureCode != TEXT("MINI_EXPERIENCE_FAILED") ||
+			!Modal || !Modal->IsActivated() || Modal->GetWorld() != World || Modal->GetStateListenerCount() != 1 ||
+			Modal->GetTitleText().ToString() != TEXT("玩法加载失败") ||
+			Modal->GetDisplayText().ToString() != TEXT("未能载入玩法资源，请返回主菜单后重试。若问题持续，请重新启动游戏。") ||
+			Modal->GetDisplayText().ToString() != Travel->GetState().DetailText.ToString() ||
+			!ReturnButton || !ReturnButton->GetIsEnabled() || ReturnButton->GetVisibility() != ESlateVisibility::Visible)
 		{
 			return;
 		}
 		if (!CaptureTerminalUI(TEXT("Failed"), NetModeName)) { return; }
-		UE_LOG(LogMiniInit, Display, TEXT("MiniTask19Loading PASS: NetMode=%s State=Failed Visible=1 Failure=1 TitlePresent=1 DetailMatches=1 UIBlocks=1 ControllerBlocked=1 TickerStopped=1 PendingObserved=%d Experience=%s Reason=%s"),
+		UE_LOG(LogMiniInit, Display, TEXT("MiniTask19Loading PASS: NetMode=%s State=Failed Visible=1 Failure=1 TitlePresent=1 DetailMatches=1 UIBlocks=2 ControllerBlocked=1 TickerStopped=1 PendingObserved=%d Experience=%s Reason=%s RecoveryModal=1 ReturnButton=1 ModalListener=1"),
 			NetModeName, bObservedLoadingBlock, *ExperienceId, *Reason);
 	}
 	bPassed = true;

@@ -7,11 +7,13 @@
 #include "Components/VerticalBox.h"
 #include "Components/VerticalBoxSlot.h"
 #include "Engine/World.h"
+#include "Engine/GameInstance.h"
 #include "InputCoreTypes.h"
 #include "Input/Events.h"
 #include "Input/Reply.h"
 #include "UI/MiniHUDViewModel.h"
 #include "System/MiniGameplayTags.h"
+#include "System/MiniTravelSubsystem.h"
 
 #define LOCTEXT_NAMESPACE "MiniHUDWidgets"
 
@@ -346,13 +348,22 @@ void UMiniDebugMenuWidget::NativeOnInitialized()
 	Title->SetFontSize(28.0f);
 	Title->SetJustification(ETextJustify::Center);
 	Content->AddChildToVerticalBox(Title)->SetPadding(FMargin(0.0f, 0.0f, 0.0f, 24.0f));
-	ContinueButton = WidgetTree->ConstructWidget<UButton>(UButton::StaticClass(), TEXT("ContinueButton"));
-	UTextBlock* ButtonText = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("ContinueLabel"));
-	ButtonText->SetText(LOCTEXT("Continue", "继续游戏"));
-	ButtonText->SetFontSize(22.0f);
-	ButtonText->SetJustification(ETextJustify::Center);
-	ContinueButton->SetContent(ButtonText);
-	Content->AddChildToVerticalBox(ContinueButton);
+	const auto AddButton = [this, Content](FName Name, const FText& Label)
+	{
+		UButton* Button = WidgetTree->ConstructWidget<UButton>(UButton::StaticClass(), Name);
+		UTextBlock* ButtonText = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(),
+			FName(*(Name.ToString() + TEXT("Label"))));
+		ButtonText->SetText(Label);
+		ButtonText->SetFontSize(22.0f);
+		ButtonText->SetJustification(ETextJustify::Center);
+		Button->SetContent(ButtonText);
+		Content->AddChildToVerticalBox(Button)->SetPadding(FMargin(0.0f, 6.0f, 0.0f, 6.0f));
+		return Button;
+	};
+	ContinueButton = AddButton(TEXT("ContinueButton"), LOCTEXT("Continue", "继续游戏"));
+	RestartArenaButton = AddButton(TEXT("RestartArenaButton"), LOCTEXT("RestartArena", "再开一局"));
+	ReturnButton = AddButton(TEXT("ReturnButton"), LOCTEXT("ReturnToMenu", "返回主菜单"));
+	QuitButton = AddButton(TEXT("QuitButton"), LOCTEXT("QuitGame", "退出游戏"));
 	Super::NativeOnInitialized();
 }
 
@@ -360,16 +371,101 @@ void UMiniDebugMenuWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 	if (ContinueButton) { ContinueButton->OnClicked.AddUniqueDynamic(this, &ThisClass::HandleCloseClicked); }
+	if (ReturnButton) { ReturnButton->OnClicked.AddUniqueDynamic(this, &ThisClass::HandleReturnClicked); }
+	if (RestartArenaButton) { RestartArenaButton->OnClicked.AddUniqueDynamic(this, &ThisClass::HandleRestartClicked); }
+	if (QuitButton) { QuitButton->OnClicked.AddUniqueDynamic(this, &ThisClass::HandleQuitClicked); }
+	StartTravelListening();
+}
+
+void UMiniDebugMenuWidget::NativeOnActivated()
+{
+	Super::NativeOnActivated();
+	if (IsActivated()) { StartTravelListening(); }
+}
+
+void UMiniDebugMenuWidget::NativeOnDeactivated()
+{
+	StopTravelListening();
+	Super::NativeOnDeactivated();
 }
 
 void UMiniDebugMenuWidget::NativeDestruct()
 {
+	StopTravelListening();
 	if (ContinueButton) { ContinueButton->OnClicked.RemoveDynamic(this, &ThisClass::HandleCloseClicked); }
+	if (ReturnButton) { ReturnButton->OnClicked.RemoveDynamic(this, &ThisClass::HandleReturnClicked); }
+	if (RestartArenaButton) { RestartArenaButton->OnClicked.RemoveDynamic(this, &ThisClass::HandleRestartClicked); }
+	if (QuitButton) { QuitButton->OnClicked.RemoveDynamic(this, &ThisClass::HandleQuitClicked); }
 	Super::NativeDestruct();
 }
 
 UWidget* UMiniDebugMenuWidget::NativeGetDesiredFocusTarget() const { return ContinueButton; }
 void UMiniDebugMenuWidget::HandleCloseClicked() { DeactivateWidget(); }
+
+UButton* UMiniDebugMenuWidget::GetButton(FName Name) const
+{
+	if (Name == TEXT("ContinueButton")) { return ContinueButton; }
+	if (Name == TEXT("ReturnButton")) { return ReturnButton; }
+	if (Name == TEXT("RestartArenaButton")) { return RestartArenaButton; }
+	if (Name == TEXT("QuitButton")) { return QuitButton; }
+	return nullptr;
+}
+
+void UMiniDebugMenuWidget::StartTravelListening()
+{
+	UMiniTravelSubsystem* Travel = GetGameInstance() ? GetGameInstance()->GetSubsystem<UMiniTravelSubsystem>() : nullptr;
+	if (TravelSubsystem.Get() != Travel) { StopTravelListening(); }
+	if (!Travel) { return; }
+	TravelSubsystem = Travel;
+	HandleTravelState(Travel->GetState());
+	if (!TravelStateHandle.IsValid())
+	{
+		TravelStateHandle = Travel->OnStateChanged.AddUObject(this, &ThisClass::HandleTravelState);
+	}
+}
+
+void UMiniDebugMenuWidget::StopTravelListening()
+{
+	if (UMiniTravelSubsystem* Travel = TravelSubsystem.Get()) { Travel->OnStateChanged.Remove(TravelStateHandle); }
+	TravelStateHandle.Reset();
+	TravelSubsystem.Reset();
+}
+
+void UMiniDebugMenuWidget::HandleTravelState(const FMiniTravelState& State)
+{
+	const bool bListenHost = GetWorld() && GetWorld()->GetNetMode() == NM_ListenServer;
+	if (RestartArenaButton)
+	{
+		RestartArenaButton->SetVisibility(bListenHost ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
+		RestartArenaButton->SetIsEnabled(bListenHost && !State.bBusy);
+	}
+	if (ReturnButton) { ReturnButton->SetIsEnabled(!State.bBusy); }
+	if (QuitButton) { QuitButton->SetIsEnabled(!State.bBusy); }
+}
+
+void UMiniDebugMenuWidget::HandleReturnClicked()
+{
+	if (UMiniTravelSubsystem* Travel = TravelSubsystem.Get())
+	{
+		if (!Travel->GetState().bBusy) { Travel->ReturnToFrontEnd(); }
+	}
+}
+
+void UMiniDebugMenuWidget::HandleRestartClicked()
+{
+	if (UMiniTravelSubsystem* Travel = TravelSubsystem.Get())
+	{
+		if (!Travel->GetState().bBusy && GetWorld() && GetWorld()->GetNetMode() == NM_ListenServer) { Travel->RestartArena(); }
+	}
+}
+
+void UMiniDebugMenuWidget::HandleQuitClicked()
+{
+	if (UMiniTravelSubsystem* Travel = TravelSubsystem.Get())
+	{
+		if (!Travel->GetState().bBusy) { Travel->QuitGame(); }
+	}
+}
 
 FReply UMiniDebugMenuWidget::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent)
 {

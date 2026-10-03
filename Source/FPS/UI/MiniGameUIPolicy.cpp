@@ -1,7 +1,11 @@
 #include "MiniGameUIPolicy.h"
 
 #include "CommonLocalPlayer.h"
+#include "Engine/GameInstance.h"
+#include "Engine/GameViewportClient.h"
+#include "Framework/Application/SlateApplication.h"
 #include "UI/MiniPrimaryGameLayout.h"
+#include "Widgets/SViewport.h"
 
 void UMiniGameUIPolicy::OnRootLayoutAddedToViewport(UCommonLocalPlayer* LocalPlayer, UPrimaryGameLayout* Layout)
 {
@@ -10,6 +14,19 @@ void UMiniGameUIPolicy::OnRootLayoutAddedToViewport(UCommonLocalPlayer* LocalPla
 	if (!LocalPlayer || !MiniLayout)
 	{
 		return;
+	}
+	// Ordinary travel removes the old focused widget. Establish a focus path
+	// for this player's viewport when none survives; CommonUI still owns the
+	// active screen's input configuration and desired focus target.
+	if (LocalPlayer->IsPrimaryPlayer() && FSlateApplication::IsInitialized() && LocalPlayer->ViewportClient)
+	{
+		const int32 UserIndex = LocalPlayer->GetGameInstance()->GetLocalPlayers().Find(LocalPlayer);
+		const TSharedPtr<SViewport> Viewport = LocalPlayer->ViewportClient->GetGameViewportWidget();
+		FSlateApplication& Slate = FSlateApplication::Get();
+		if (UserIndex != INDEX_NONE && Viewport.IsValid() && !Slate.GetUserFocusedWidget(UserIndex).IsValid())
+		{
+			Slate.SetUserFocus(UserIndex, Viewport);
+		}
 	}
 	MiniLayout->HandleViewportAdded();
 	if (MiniLayout->IsLayoutReady())

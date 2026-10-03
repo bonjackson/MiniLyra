@@ -13,6 +13,7 @@
 #include "GameModes/MiniExperienceManagerComponent.h"
 #include "GameModes/MiniExperienceDefinition.h"
 #include "GameModes/MiniGameState.h"
+#include "GameModes/MiniGameSession.h"
 #include "GameModes/MiniWorldSettings.h"
 #include "Engine/World.h"
 #include "GameFramework/PlayerController.h"
@@ -39,6 +40,8 @@ AMiniGameMode::AMiniGameMode(const FObjectInitializer& ObjectInitializer)
 	PlayerControllerClass = AMiniPlayerController::StaticClass();
 	PlayerStateClass = AMiniPlayerState::StaticClass();
 	HUDClass = AMiniHUD::StaticClass();
+	GameSessionClass = AMiniGameSession::StaticClass();
+	bUseSeamlessTravel = false;
 
 	// A missing or failed Experience must never fall back to a default Pawn.
 	DefaultPawnClass = nullptr;
@@ -137,6 +140,7 @@ void AMiniGameMode::HandleStartingNewPlayer_Implementation(APlayerController* Ne
 			*GetNameSafe(NewPlayer), Manager ? *Manager->GetLoadingDebugString() : TEXT("NoManager"));
 		return;
 	}
+	if (Manager->GetCurrentExperience()->bIsFrontEnd) { return; }
 	Super::HandleStartingNewPlayer_Implementation(NewPlayer);
 }
 
@@ -147,6 +151,11 @@ void AMiniGameMode::HandleExperienceLoaded(const UMiniExperienceDefinition* Expe
 		return;
 	}
 	UE_LOG(LogMiniExperience, Display, TEXT("MiniSpawn GATE_OPEN: Experience=%s"), *Experience->GetPrimaryAssetId().ToString());
+	if (Experience->bIsFrontEnd)
+	{
+		UE_LOG(LogMiniExperience, Display, TEXT("MiniSpawn FRONTEND: Experience=%s Pawn=0"), *Experience->GetPrimaryAssetId().ToString());
+		return;
+	}
 	for (TActorIterator<APlayerController> It(GetWorld()); It; ++It)
 	{
 		APlayerController* Controller = *It;
@@ -169,6 +178,7 @@ void AMiniGameMode::RestartPlayer(AController* NewPlayer)
 	{
 		return;
 	}
+	if (Manager->GetCurrentExperience()->bIsFrontEnd) { return; }
 	UMiniMatchRulesComponent* Match = GetMatchRules();
 	const bool bFFA = Match && Match->IsFFAConfigured();
 	if (bFFA && !Match->CanRespawnPlayer(NewPlayer))
@@ -929,6 +939,7 @@ UClass* AMiniGameMode::GetDefaultPawnClassForController_Implementation(AControll
 	{
 		return nullptr;
 	}
+	if (Manager->GetCurrentExperience()->bIsFrontEnd) { return nullptr; }
 	const UMiniPawnData* PawnData = GetPawnDataForController(InController);
 	return PawnData && PawnData->PawnClass && PawnData->PawnClass->IsChildOf(AMiniCharacter::StaticClass())
 		? PawnData->PawnClass.Get() : nullptr;

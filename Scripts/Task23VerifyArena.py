@@ -79,11 +79,14 @@ if "DA_MiniPracticeExperience" not in str(practice_settings.get_editor_property(
     raise RuntimeError("Practice map override changed")
 game = (project / "Config/DefaultGame.ini").read_text(encoding="utf-8-sig")
 engine = (project / "Config/DefaultEngine.ini").read_text(encoding="utf-8-sig")
-if "DefaultExperienceId=MiniExperienceDefinition:DA_MiniPracticeExperience" not in game:
-    raise RuntimeError("Project fallback must remain explicit Practice until FrontEnd")
-if "GameDefaultMap=/Game/Mini/Maps/L_MiniPractice" not in engine:
-    raise RuntimeError("Task23 does not replace the program entry before FrontEnd")
+if "DefaultExperienceId=MiniExperienceDefinition:DA_MiniFrontEndExperience" not in game:
+    raise RuntimeError("Project fallback must select the current FrontEnd")
+if "GameDefaultMap=/Game/Mini/Maps/L_MiniFrontEnd" not in engine:
+    raise RuntimeError("Program entry must select the current FrontEnd")
+front_end = unreal.load_asset("/Game/Mini/System/Experiences/DA_MiniFrontEndExperience.DA_MiniFrontEndExperience")
+if not unreal.MiniTask24AssetSetupLibrary.verify_front_end_experience(front_end):
+    raise RuntimeError("FrontEnd fallback is not the independently saved UI assembly")
 for path in (practice_path, spec["map"]):
     if f'+MapsToCook=(FilePath="{path}")' not in game:
         raise RuntimeError(f"Gameplay map absent from packaging list: {path}")
-unreal.log("MINI_TASK23_ARENA_VERIFIED Starts=8 Covers=11 Pit=1 MapOverrides=2 CoreArenaAssembly=1 FallbackPractice=1 CookMaps=2")
+unreal.log("MINI_TASK23_ARENA_VERIFIED Starts=8 Covers=11 Pit=1 MapOverrides=2 CoreArenaAssembly=1 FallbackFrontEnd=1 GameplayCookMaps=2")

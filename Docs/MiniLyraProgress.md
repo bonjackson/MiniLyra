@@ -1,6 +1,6 @@
 # Mini Lyra 实施进度
 
-更新：2026-10-01（Asia/Shanghai）
+更新：2026-10-03（Asia/Shanghai）
 
 ## 当前进度
 
@@ -23,7 +23,8 @@
 - [x] 任务 21：独立 GameState 阶段 ASC、简化 GamePhase、MiniArena 插件与 Action 注入规则组件完成；Editor／Game 构建、资产三阶段、服务器三阶段／晚加入／客户端拒绝／取消／实际撤销专项、生产 URL 与媒体验收通过，两张图已复核，详见 `Docs/Task21/GamePhases.md`。
 - [x] 任务 22：两人门槛、FFA 计分与冻结结算、共同 GE 伤害门控、生命归因去重、两秒保护／三秒重生和出生避障完成；Editor／Game、资产三阶段、普通生产 URL、达分／超时／并列／真实断开再加入／Action 撤销及媒体专项通过，任务 17／19／21 回归通过，三张图已复核，详见 `Docs/Task22/FFAMatchRules.md`。
 - [x] 任务 23：独立 `L_MiniArena`、八个安全出生点、三路胶囊净空、蓝橙掩体与明确跌落区完成；地图覆盖及双地图 Cook 入口、真实环境死亡／同生命恢复／全堵取消重试通过。Editor／Game、资产三阶段、普通四进程生产入口、两局 20 次真实 GE 与第三局清分、训练及任务 10／19／22 撤销回归、媒体重跑通过；修复新 Pawn 等待旧死亡 Tag 解除后的输入重试事件，四张图片已复核，详见 `Docs/Task23/ArenaMap.md`。
-- [ ] 任务 24–30：下一入口为极简前端、创建／IP 加入／返回与四人登录批准，随后生命周期和交付收敛。
+- [x] 任务 24：极简前端、创建／直接 IPv4 加入／返回／退出、普通再开局及四人登录批准完成；最终 Editor／Game、资产三阶段与七场景媒体专项均通过，三个退出进程实际正常结束，八张精选截图已复核。最后一次焦点修复后的任务 19 媒体三端 UI 与正常／失败双端 Loading 回归全部通过，详见 `Docs/Task24/FrontEndTravel.md`。提交／推送版本以 Git 记录为准。
+- [ ] 任务 25–30：下一入口为生命周期收敛，随后异步／弱网、性能、打包与交付验收。
 
 用户已确认第三人称、2–4 人竞技场，并明确允许忽略旧实现、从空项目开始。任务 01 据此重置活动源码和配置，保留旧工程文件作为本地备份；任务 02 在该空基线上建立独立的 Mini 内容入口。之前的 MiniExperience 启动壳不计作已完成框架。
 
@@ -203,7 +204,7 @@ CommonGame UI Policy 为每个 LocalPlayer 建立 Game／Menu／Modal 根层栈�
 | GameplayAbilities（GAS） | 引擎自带 | 任务 09 已接入 PlayerState ASC、AbilitySet 与效果／属性复制；任务 10 的输入处理已通过双进程专项验收 | 后续实现正式战斗能力 |
 | GameFeatures、ModularGameplay | 引擎自带 | 任务 06 已用于 `MiniShooterCore` 激活与 AddComponents 注入 | 后续 Action 类型沿用本次的 World 作用域和回收路径 |
 | EnhancedInput | 引擎自带 | 任务 03 已启用；任务 10 输入资产、重生及撤销专项验收通过 | 后续配合相机、装备和菜单接入 |
-| CommonUI／CommonInput | 引擎自带 | 任务 19 层栈、菜单与输入回收已验证 | CommonInput 是模块；产品前端留到任务 24 |
+| CommonUI／CommonInput | 引擎自带 | 任务 19 层栈、菜单与输入回收及任务 24 产品前端已验证 | CommonInput 是模块；前端／连接 Modal 沿用 CommonUI 焦点与输入管理 |
 | ModularGameplayActors、GameplayMessageRouter | 本机 Lyra 的 `Plugins` | 任务 19 已接入 CommonPlayerController 生命周期和本地 HUD 消息 | 消息只做本地通知，不替代网络复制 |
 | CommonGame、CommonUser、UIExtension | 本机 Lyra 的 `Plugins` | 任务 19 UI Policy、LocalPlayer 插槽与功能撤销已验证 | CommonUser 仍作依赖，首版不接平台登录 |
 
@@ -236,4 +237,4 @@ git status --short
 
 ## 下一次入口
 
-任务 01–22 的实现与验收已完成；任务 22 单独提交推送后进入任务 23 的正式灰盒竞技地图与装配。当前竞技规则暂用训练场几何，前端／最多四人容量属于任务 24。任务 16 的服务器回溯／竞技级延迟补偿仍延期；任务 20 的包只代表当时训练版本，不含任务 21／22 的竞技功能，最终打包与包内整局验收分别在任务 28／29 完成。
+任务 01–24 已实现并通过各项验收。任务 24 的最终七场景媒体专项及焦点修复后的任务 19 媒体三端 UI／正常与失败双端 Loading 回归全部通过，独立提交／推送版本以 Git 记录为准；下一项为任务 25 生命周期收敛。任务 16 的服务器回溯／竞技级延迟补偿仍延期；任务 20 的包只代表当时训练版本，不含任务 21–24 的竞技与前端功能，最终打包与包内整局验收分别在任务 28／29 完成。

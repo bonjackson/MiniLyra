@@ -62,11 +62,12 @@ function Read-LoadingLog($Entry, [bool]$InvalidExperience) {
 function Test-LoadingTerminal([string]$Text, [string]$NetMode, [bool]$InvalidExperience) {
     if ($InvalidExperience) {
         $pattern = 'MiniTask19Loading PASS: NetMode=' + $NetMode +
-            ' State=Failed Visible=1 Failure=1 TitlePresent=1 DetailMatches=1 UIBlocks=1 ControllerBlocked=1 TickerStopped=1 PendingObserved=[01] Experience=' +
+            ' State=Failed Visible=1 Failure=1 TitlePresent=1 DetailMatches=1 UIBlocks=2 ControllerBlocked=1 TickerStopped=1 PendingObserved=[01] Experience=' +
             [regex]::Escape($invalidId) + ' Reason=Unknown Experience ID'
         $flow = '(?m)MiniFlowProbe FAIL_EXPECTED: NetMode=' + $NetMode + '\b.*Unknown Experience ID'
         $terminalMatches = $Text -match $pattern -and $Text -match $flow -and
-            $Text.Contains('LoadingAssets -> Failed Reason=Unknown Experience ID')
+            $Text.Contains('LoadingAssets -> Failed Reason=Unknown Experience ID') -and
+            $Text.Contains('RecoveryModal=1 ReturnButton=1 ModalListener=1')
         if ($NetMode -eq 'Client') {
             $terminalMatches = $terminalMatches -and $Text.Contains("Experience ID replicated NetMode=Client ID=$invalidId")
         }

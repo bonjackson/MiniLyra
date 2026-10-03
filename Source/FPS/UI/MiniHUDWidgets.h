@@ -10,6 +10,8 @@
 class UButton;
 class UTextBlock;
 class UMiniHUDViewModel;
+class UMiniTravelSubsystem;
+struct FMiniTravelState;
 
 /** Snapshot first, then local messages. StopListening also works for pooled widgets. */
 UCLASS(Abstract)
@@ -115,15 +117,29 @@ class FPS_API UMiniDebugMenuWidget : public UMiniActivatableWidget
 	GENERATED_BODY()
 public:
 	UMiniDebugMenuWidget(const FObjectInitializer& ObjectInitializer);
+	UButton* GetButton(FName Name) const;
 protected:
 	virtual void NativeOnInitialized() override;
 	virtual void NativeConstruct() override;
+	virtual void NativeOnActivated() override;
+	virtual void NativeOnDeactivated() override;
 	virtual void NativeDestruct() override;
 	virtual UWidget* NativeGetDesiredFocusTarget() const override;
 	virtual FReply NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent) override;
 private:
 	UFUNCTION()
 	void HandleCloseClicked();
+	UFUNCTION() void HandleReturnClicked();
+	UFUNCTION() void HandleRestartClicked();
+	UFUNCTION() void HandleQuitClicked();
+	void StartTravelListening();
+	void StopTravelListening();
+	void HandleTravelState(const FMiniTravelState& State);
 	UPROPERTY(Transient)
 	TObjectPtr<UButton> ContinueButton;
+	UPROPERTY(Transient) TObjectPtr<UButton> ReturnButton;
+	UPROPERTY(Transient) TObjectPtr<UButton> RestartArenaButton;
+	UPROPERTY(Transient) TObjectPtr<UButton> QuitButton;
+	TWeakObjectPtr<UMiniTravelSubsystem> TravelSubsystem;
+	FDelegateHandle TravelStateHandle;
 };
