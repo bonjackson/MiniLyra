@@ -1,0 +1,44 @@
+Task25 regression evidence, 2026-10-03
+Operator-confirmed runner ExitCode=0: VerifyTask08, VerifyTask09, VerifyTask10, VerifyTask23 -Mode All.
+Task08: both dependency orders, late join, simulated proxies and idempotent transitions passed.
+Task09: grants, revoke, restore, reused PlayerState ASC and safe old Pawn cleanup passed.
+Task10: movement, Fire, three respawns, menu and Action revocation passed.
+Task23: four-player Arena two completed rounds and independent Practice passed.
+
+=== Task08-Server.log ===
+[2026.10.03-12.14.41:644][ 63]LogMiniInit: Display: MiniInitProbe SNAPSHOT: NetMode=ListenServer PlayerStates=3 Characters=3 ExtensionDataInitialized=3 HeroDataInitialized=3 SimulatedDataInitialized=0 SimulatedWithoutLocalInputInitialized=0 GameplayReady=3 ProbeReleased=0 RepeatNotified=3
+[2026.10.03-12.14.42:146][594]LogMiniInit: Display: MiniInitProbe SNAPSHOT: NetMode=ListenServer PlayerStates=3 Characters=3 ExtensionDataInitialized=3 HeroDataInitialized=3 SimulatedDataInitialized=0 SimulatedWithoutLocalInputInitialized=0 GameplayReady=3 ProbeReleased=0 RepeatNotified=3
+[2026.10.03-12.14.42:645][252]LogMiniInit: Display: MiniInitProbe SNAPSHOT: NetMode=ListenServer PlayerStates=3 Characters=3 ExtensionDataInitialized=3 HeroDataInitialized=3 SimulatedDataInitialized=0 SimulatedWithoutLocalInputInitialized=0 GameplayReady=3 ProbeReleased=0 RepeatNotified=3
+[2026.10.03-12.14.43:141][913]LogMiniInit: Display: MiniInitProbe SNAPSHOT: NetMode=ListenServer PlayerStates=2 Characters=2 ExtensionDataInitialized=2 HeroDataInitialized=2 SimulatedDataInitialized=0 SimulatedWithoutLocalInputInitialized=0 GameplayReady=2 ProbeReleased=0 RepeatNotified=2
+
+=== Task08-ClientA.log ===
+[2026.10.03-12.14.41:755][963]LogMiniInit: Display: MiniInitProbe SNAPSHOT: NetMode=Client PlayerStates=3 Characters=3 ExtensionDataInitialized=2 HeroDataInitialized=2 SimulatedDataInitialized=1 SimulatedWithoutLocalInputInitialized=1 GameplayReady=2 ProbeReleased=2 RepeatNotified=2
+[2026.10.03-12.14.42:255][550]LogMiniInit: Display: MiniInitProbe SECOND_RELEASE: Order=DataFirst Pawn=/Game/Mini/Maps/L_MiniPractice.L_MiniPractice:PersistentLevel.BP_MiniCharacter_C_2
+[2026.10.03-12.14.42:255][550]LogMiniInit: Display: MiniInitProbe SNAPSHOT: NetMode=Client PlayerStates=3 Characters=3 ExtensionDataInitialized=3 HeroDataInitialized=3 SimulatedDataInitialized=2 SimulatedWithoutLocalInputInitialized=2 GameplayReady=3 ProbeReleased=3 RepeatNotified=3
+[2026.10.03-12.14.42:753][247]LogMiniInit: Display: MiniInitProbe SNAPSHOT: NetMode=Client PlayerStates=3 Characters=3 ExtensionDataInitialized=3 HeroDataInitialized=3 SimulatedDataInitialized=2 SimulatedWithoutLocalInputInitialized=2 GameplayReady=3 ProbeReleased=3 RepeatNotified=3
+
+=== Task08-ClientB.log ===
+[2026.10.03-12.14.42:620][899]LogMiniInit: Display: MiniInitProbe SECOND_RELEASE: Order=PlayerStateFirst Pawn=/Game/Mini/Maps/L_MiniPractice.L_MiniPractice:PersistentLevel.BP_MiniCharacter_C_0
+[2026.10.03-12.14.42:620][899]LogMiniInit: Display: MiniInitProbe SECOND_RELEASE: Order=PlayerStateFirst Pawn=/Game/Mini/Maps/L_MiniPractice.L_MiniPractice:PersistentLevel.BP_MiniCharacter_C_1
+[2026.10.03-12.14.42:620][899]LogMiniInit: Display: MiniInitProbe SECOND_RELEASE: Order=PlayerStateFirst Pawn=/Game/Mini/Maps/L_MiniPractice.L_MiniPractice:PersistentLevel.BP_MiniCharacter_C_2
+[2026.10.03-12.14.42:620][899]LogMiniInit: Display: MiniInitProbe SNAPSHOT: NetMode=Client PlayerStates=3 Characters=3 ExtensionDataInitialized=3 HeroDataInitialized=3 SimulatedDataInitialized=2 SimulatedWithoutLocalInputInitialized=2 GameplayReady=3 ProbeReleased=3 RepeatNotified=3
+
+=== Task09-Server.log ===
+[2026.10.03-12.15.41:898][ 65]LogMiniInit: Display: MiniAbilityProbe BASELINE_PASS: Players=2
+[2026.10.03-12.15.42:371][937]LogMiniInit: Display: MiniAbilityProbe REVOKE_PASS: PawnAbilities=2 FeatureAbilities=0
+[2026.10.03-12.15.44:704][514]LogMiniInit: Display: MiniAbilityProbe RESTORE_PASS: Players=2
+[2026.10.03-12.15.45:203][214]LogMiniInit: Display: MiniAbilityProbe PASS: PlayerStateASCReused=1 OldPawnCleanupSafe=1
+
+=== Task10-ClientA.log ===
+[2026.10.03-15.54.02:465][484]LogMiniInit: Display: MiniInputProbe MOVE_PASS: Pawn=/Game/Mini/Maps/L_MiniPractice.L_MiniPractice:PersistentLevel.BP_MiniCharacter_C_0 Distance=68.2
+[2026.10.03-15.54.12:231][210]LogMiniInit: Display: MiniInputProbe PASS: Cycles=4 Respawns=3 MenuGate=1 ActionGate=1
+
+=== Task23-Arena-Server.log ===
+[2026.10.03-15.56.46:275][450]LogMiniInit: Display: MiniTask23Probe SERVER_RESULT_PASS: CompletedRound=1 Players=4 RealKills=10 Clients=3 Frozen=1 PostFallSameLife=1 PendingRespawn=0
+[2026.10.03-15.56.50:997][665]LogMiniInit: Display: MiniTask23Probe SERVER_NEXT_ROUND_PASS: Round=2 Players=4 ScoresCleared=1 NewLives=4 Ground=1 Clients=3
+[2026.10.03-15.57.38:166][178]LogMiniInit: Display: MiniTask23Probe SERVER_RESULT_PASS: CompletedRound=2 Players=4 RealKills=10 Clients=3 Frozen=1 PostFallSameLife=1 PendingRespawn=0
+[2026.10.03-15.57.43:013][743]LogMiniInit: Display: MiniTask23Probe SERVER_NEXT_ROUND_PASS: Round=3 Players=4 ScoresCleared=1 NewLives=4 Ground=1 Clients=3
+[2026.10.03-15.57.48:013][970]LogMiniInit: Display: MiniTask23Probe ARENA_PASS: MapDefaultArena=1 Starts=8 Routes=3 Listen=1 Clients=3 CompletedRounds=2 RealGEKills=20 EnvironmentDeaths=4 WarmupFall=1 ProtectedFall=1 PostFall=2 BlockedAndReleased=1 SharedRecoveryCleanup=1 SameLifeRecovery=1 Respawn3=1 ProtectionNoRefresh=1 HUD=1
+
+=== Task23-Practice-Server.log ===
+[2026.10.03-15.57.58:954][984]LogMiniInit: Display: MiniTask23Probe PRACTICE_PASS: MapDefaultPractice=1 TrainingTargets=3 RealGE=1 RealFall=1 Respawn3=1 Ground=1 ArenaRules=0 MatchSource=0 PhaseSource=0 FFAHUD=0 Protection=0

@@ -1,0 +1,85 @@
+Task25 final candidate evidence: Task25-WithMedia
+Actual runner ExitCode=0 and actual tracked host stop were explicitly confirmed by the caller.
+All six modes must have required raw PASS markers; derived counts below are checked from original logs.
+The successful product runner also strictly checks these counts; summaries are not fabricated raw markers.
+This collector does not establish build, regression, screenshot visual review or Git completion.
+Selected excerpts preserve source filenames and UTC timestamps. CLI and machine connection metadata omitted.
+Stress: four players, forty real environment deaths and forty production respawns.
+  PlayerId=256: Deaths=10 Respawns=10.
+  PlayerId=257: Deaths=10 Respawns=10.
+  PlayerId=258: Deaths=10 Respawns=10.
+  PlayerId=259: Deaths=10 Respawns=10.
+  Iteration=1: Deaths=4 Respawns=4 DeadOwnerACKs=3 LiveOwnerACKs=3 AllDeadPrediction=0.
+  Iteration=2: Deaths=4 Respawns=4 DeadOwnerACKs=3 LiveOwnerACKs=3 AllDeadPrediction=0.
+  Iteration=3: Deaths=4 Respawns=4 DeadOwnerACKs=3 LiveOwnerACKs=3 AllDeadPrediction=0.
+  Iteration=4: Deaths=4 Respawns=4 DeadOwnerACKs=3 LiveOwnerACKs=3 AllDeadPrediction=0.
+  Iteration=5: Deaths=4 Respawns=4 DeadOwnerACKs=3 LiveOwnerACKs=3 AllDeadPrediction=0.
+  Iteration=6: Deaths=4 Respawns=4 DeadOwnerACKs=3 LiveOwnerACKs=3 AllDeadPrediction=0.
+  Iteration=7: Deaths=4 Respawns=4 DeadOwnerACKs=3 LiveOwnerACKs=3 AllDeadPrediction=0.
+  Iteration=8: Deaths=4 Respawns=4 DeadOwnerACKs=3 LiveOwnerACKs=3 AllDeadPrediction=0.
+  Iteration=9: Deaths=4 Respawns=4 DeadOwnerACKs=3 LiveOwnerACKs=3 AllDeadPrediction=0.
+  Iteration=10: Deaths=4 Respawns=4 DeadOwnerACKs=3 LiveOwnerACKs=3 AllDeadPrediction=0.
+  ClientA: Dead=10 Live=10 SavedMove96BeforeArmed=0 AfterActualHostStop=18.
+  ClientB: Dead=10 Live=10 SavedMove96BeforeArmed=0 AfterActualHostStop=18.
+  ClientC: Dead=10 Live=10 SavedMove96BeforeArmed=0 AfterActualHostStop=18.
+RoundTrip derived: Worlds=15, Cleanups=14, SilentDelays=14, LateLoaded=15, Practice=4, Arena=3; complete cycles=3.
+Saved-move warning exception only concerns the real host-stop timeout wait; all dead checkpoints remain strict.
+
+=== Task25-WithMedia-Stress-Server.log ===
+[2026.10.03-12.08.56:465][465]LogMiniInit: Display: MiniTask25Probe STRESS_LATE_JOIN_READY: Players=3 Playing=1 OwnersAcknowledged=2 Round=1 Deadline=314.971
+[2026.10.03-12.10.05:005][518]LogMiniInit: Display: MiniTask25Probe STRESS_LOGOUT_PASS: Roster=3 OldPawnEnded=1 RetainedPSASC=1 OldWork=0
+[2026.10.03-12.10.12:535][744]LogMiniInit: Display: MiniTask25Probe STRESS_SERVER_PASS: Players=4 Iterations=10 EnvironmentDeaths=40 Respawns=40 LateJoinPlaying=1 Rejoin=1
+[2026.10.03-12.10.12:535][744]LogMiniInit: Display: MiniTask25Probe HOST_LOSS_ARMED: Peer=Server ActualClients=3
+
+=== Task25-WithMedia-Stress-ClientA.log ===
+[2026.10.03-12.10.04:960][ 48]LogMiniInit: Display: MiniTask25Probe CLIENT_LEAVE_REQUEST: Peer=ClientA ProductionAPI=1 ActualClientTravelLogout=1
+[2026.10.03-12.10.08:538][152]LogMiniInit: Display: MiniTask25Probe CLIENT_REJOIN_REQUEST: Peer=ClientA Address=127.0.0.1:18926 ProductionAPI=1
+[2026.10.03-12.10.12:239][261]LogMiniInit: Display: MiniTask25Probe REJOIN_OLD_FRONT_RELEASED: Peer=ClientA OldInput=0 OldHUD=0 NewWorldPSASC=1
+[2026.10.03-12.11.14:527][128]LogMiniInit: Display: MiniTask25Probe REAL_NETWORK_FAILURE: Peer=ClientA Type=4 Driver=IpNetDriver_1 Armed=1 Reason=UNetConnection::Tick: Connection TIMED OUT. Closing connection.. Elapsed: 60.00, Real: 60.00, Good: 60.00, DriverTime: 65.98, Threshold: 60.00 [connection metadata omitted]
+[2026.10.03-12.11.18:147][235]LogMiniInit: Display: MiniTask25Probe STRESS_CLIENT_PASS: Deaths=10 Respawns=10 HostLoss=1
+
+=== Task25-WithMedia-Stress-ClientB.log ===
+[2026.10.03-12.11.14:536][133]LogMiniInit: Display: MiniTask25Probe REAL_NETWORK_FAILURE: Peer=ClientB Type=4 Driver=IpNetDriver_0 Armed=1 Reason=UNetConnection::Tick: Connection TIMED OUT. Closing connection.. Elapsed: 60.00, Real: 60.00, Good: 60.00, DriverTime: 139.34, Threshold: 60.00 [connection metadata omitted]
+[2026.10.03-12.11.18:163][239]LogMiniInit: Display: MiniTask25Probe STRESS_CLIENT_PASS: Deaths=10 Respawns=10 HostLoss=1
+
+=== Task25-WithMedia-Stress-ClientC.log ===
+[2026.10.03-12.11.14:529][604]LogMiniInit: Display: MiniTask25Probe REAL_NETWORK_FAILURE: Peer=ClientC Type=4 Driver=IpNetDriver_0 Armed=1 Reason=UNetConnection::Tick: Connection TIMED OUT. Closing connection.. Elapsed: 60.00, Real: 60.00, Good: 60.00, DriverTime: 121.35, Threshold: 60.00 [connection metadata omitted]
+[2026.10.03-12.11.18:142][710]LogMiniInit: Display: MiniTask25Probe STRESS_CLIENT_PASS: Deaths=10 Respawns=10 HostLoss=1
+
+=== Task25-WithMedia-RoundTrip-Server.log ===
+[2026.10.03-12.11.39:976][  4]LogMiniInit: Display: MiniTask25Probe WORLD_READY: Generation=1 Kind=FrontEnd NewPlayerState=1 NewASC=1 LoadedLateOnce=1
+[2026.10.03-12.11.40:011][  5]LogMiniInit: Display: MiniTask25Probe OLD_WORLD_RELEASED: Cleanup=1 Peer=Server World=L_MiniFrontEnd OldInput=0 OldHUD=0 OldWork=0 OldGrants=0 ActorContributions=0 WidgetContributions=0
+[2026.10.03-12.11.43:543][109]LogMiniInit: Display: MiniTask25Probe OLD_STATE_SILENT: Cleanup=1 WaitSeconds=3.5 OldInput=0 OldHUD=0 OldWork=0 OldItemChanges=0
+[2026.10.03-12.12.30:549][481]LogMiniInit: Display: MiniTask25Probe ROUNDTRIP_PASS: Cycles=3 Cleanups=14 Worlds=15 Practice=4 Arena=3 OldInput=0 OldHUD=0 OldWork=0
+
+=== Task25-WithMedia-RecoveryAction-Server.log ===
+[2026.10.03-12.12.40:017][ 16]LogMiniInit: Display: MiniTask25Probe RECOVERY_PAUSED: Mode=RecoveryAction Pending=1 SameLife=1 Alive=1 MovementNone=1 MovementTick=1
+[2026.10.03-12.12.40:017][ 16]LogMiniInit: Display: MiniTask25Probe RECOVERY_ACTION_REVOKED: ActualStockAction=1 WorldContext=Context_0 NoPreCancel=1
+[2026.10.03-12.12.43:952][123]LogMiniInit: Display: MiniTask25Probe RECOVERY_ACTION_PASS: ActualAction=1 OldWork=0 LiveMovementRestored=1
+
+=== Task25-WithMedia-RecoveryLogout-Server.log ===
+[2026.10.03-12.13.03:144][320]LogMiniInit: Display: MiniTask25Probe RECOVERY_PAUSED: Mode=RecoveryLogout Pending=1 SameLife=1 Alive=1 MovementNone=1 MovementTick=1
+[2026.10.03-12.13.07:107][439]LogMiniInit: Display: MiniTask25Probe RECOVERY_LOGOUT_SERVER_PASS: ActualLogout=1 OldWork=0 OldLifeRespawn=0
+
+=== Task25-WithMedia-RecoveryLogout-Client.log ===
+[2026.10.03-12.13.03:587][ 10]LogMiniInit: Display: MiniTask25Probe CLIENT_LEAVE_REQUEST: Peer=Client ProductionAPI=1 ActualClientTravelLogout=1
+[2026.10.03-12.13.03:630][ 11]LogMiniInit: Display: MiniTask25Probe CLEANUP_OBSERVATION: Peer=Client PC=0 PS=0 Pawn=0 Avatar=0 Input=0 Held=0 EquipmentSpecs=2 ActiveSpecs=0 ASCRegistered=0 VMRunning=0 VMBindings=0 VMWorld=0 VMPawn=0 HUDWidgets=0 HUDPoints=0 Menu=0 Gates=0 FrontListeners=0 ModalListeners=0
+[2026.10.03-12.13.07:502][115]LogMiniInit: Display: MiniTask25Probe RECOVERY_LOGOUT_CLIENT_PASS: NewFrontEnd=1 OldHUD=0
+
+=== Task25-WithMedia-RecoveryTravel-Server.log ===
+[2026.10.03-12.13.19:154][ 16]LogMiniInit: Display: MiniTask25Probe RECOVERY_PAUSED: Mode=RecoveryTravel Pending=1 SameLife=1 Alive=1 MovementNone=1 MovementTick=1
+[2026.10.03-12.13.19:194][ 17]LogMiniInit: Display: MiniTask25Probe CLEANUP_OBSERVATION: Peer=Server PC=0 PS=0 Pawn=0 Avatar=0 Input=0 Held=0 EquipmentSpecs=0 ActiveSpecs=0 ASCRegistered=0 VMRunning=0 VMBindings=0 VMWorld=0 VMPawn=0 HUDWidgets=0 HUDPoints=0 Menu=0 Gates=0 FrontListeners=0 ModalListeners=0
+[2026.10.03-12.13.23:042][121]LogMiniInit: Display: MiniTask25Probe RECOVERY_TRAVEL_PASS: ActualWorldCleanup=1 OldWork=0 NewFrontEnd=1
+
+=== Task25-WithMedia-RecoveryDeath-Server.log ===
+[2026.10.03-12.13.41:862][325]LogMiniInit: Display: MiniTask25Probe RECOVERY_PAUSED: Mode=RecoveryDeath Pending=1 SameLife=1 Alive=1 MovementNone=1 MovementTick=1
+[2026.10.03-12.13.43:893][386]LogMiniInit: Display: MiniTask25Probe SERVER_CLIENT_ACK: Owner=1 Checkpoint=RecoveryDead Iteration=1 Life=2 Deaths=1 Bindings=0 Held=0 Prediction=0
+[2026.10.03-12.13.46:927][477]LogMiniInit: Display: MiniTask25Probe SERVER_CLIENT_ACK: Owner=1 Checkpoint=RecoveryRespawned Iteration=1 Life=3 Deaths=1 Bindings=16 Held=0 Prediction=1
+[2026.10.03-12.13.46:928][477]LogMiniInit: Display: MiniTask25Probe RECOVERY_DEATH_PASS: RealGE=1 OldWork=0 CorpseMovementNone=1 CorpseTick=0 NewLifeReady=1
+
+=== Task25-WithMedia-RecoveryDeath-Client.log ===
+[2026.10.03-12.13.47:307][151]LogMiniInit: Display: MiniTask25Probe RECOVERY_DEATH_CLIENT_PASS: SameASC=1 NewLifeReady=1
+
+=== Real input arming excerpts ===
+[2026.10.03-12.09.15:701][573]LogMiniInit: Display: MiniTask25Probe INPUT_ARMED: Peer=ClientA FireHeld=1 AmmoChanged=1 ActualInputKey=1
+[2026.10.03-12.09.21:037][733]LogMiniInit: Display: MiniTask25Probe INPUT_ARMED: Peer=ClientA ReloadActive=1 AmmoChanged=1 ActualInputKey=1

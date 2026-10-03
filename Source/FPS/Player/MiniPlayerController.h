@@ -21,6 +21,7 @@ public:
 	virtual void OnRep_PlayerState() override;
 	virtual void OnUnPossess() override;
 	virtual void PostProcessInput(const float DeltaTime, const bool bGamePaused) override;
+	virtual bool InputKey(const FInputKeyEventArgs& Params) override;
 	virtual void SetupInputComponent() override;
 	virtual void ClientReturnToMainMenuWithTextReason_Implementation(const FText& ReturnReason) override;
 	void SetMiniInputBlocked(bool bBlocked);

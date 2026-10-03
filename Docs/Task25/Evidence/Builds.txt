@@ -1,0 +1,6 @@
+Task25 frozen-source Development builds. Acceptance finalized 2026-10-04 Asia/Shanghai.
+Operator-confirmed process ExitCode=0 for both targets, using BuildProject.ps1 -DisableAdaptiveUnity.
+FPSEditor: Result Succeeded, Total execution time 17.35 seconds.
+FPS: Result Succeeded, Total execution time 90.04 seconds.
+Final source includes diagnostic InputKey isolation and ACK_WAIT; no C++ changed after these builds.
+Full local logs: Saved/Logs/Build-FPSEditor-Win64-Development.log and Build-FPS-Win64-Development.log.

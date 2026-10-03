@@ -231,6 +231,12 @@ void UMiniHealthComponent::ApplyDeathPresentation()
 	{
 		Movement->StopMovementImmediately();
 		Movement->DisableMovement();
+		// This Pawn cannot move again. A new life gets a new movement component.
+		Movement->SetComponentTickEnabled(false);
+		if (Pawn->IsLocallyControlled() && Pawn->GetLocalRole() == ROLE_AutonomousProxy)
+		{
+			Movement->ResetPredictionData_Client();
+		}
 	}
 	Pawn->SetActorEnableCollision(false);
 	if (UMiniHeroComponent* Hero = Pawn->GetHeroComponent())

@@ -2,9 +2,9 @@
 
 > 历史文档：2026-09-27 执行任务 01 时，用户要求从空项目开始，下方归档章节涉及的旧实现已经归档至 `Backups/Task01_PreReset_20260927`，不在当前 Source/Config 中启用。请以 `MiniLyraProgress.md` 和 `MiniLyraRoadmap.md` 的任务顺序为准。
 
-## 当前启动链（更新至 2026-10-03）
+## 当前启动链（更新至 2026-10-04）
 
-任务 01–24 已完成实现与验收，提交／推送版本以 Git 为准。程序默认进入 `L_MiniFrontEnd`，地图与项目回退均选 `DA_MiniFrontEndExperience`。当前链路为权威旅行选项／地图／项目配置选择真实 Experience ID → GameState 复制 ID → 每端独立加载 Experience、PawnData、ActionSets 和 GameFeatures → 本地 Loaded → 服务器按 Experience 是否为前端决定出生。玩法 World 随后执行 PawnExtension／Hero 初始化、PlayerState ASC 绑定当前 Avatar → 数据 Loadout、输入与装备能力。下方旧实现的猜测 ID 兜底、网络加密测试和 CommonSession 反射绑定均不属于活动链路。
+任务 01–25 已完成实现与验收，提交／推送版本以 Git 为准。程序默认进入 `L_MiniFrontEnd`，地图与项目回退均选 `DA_MiniFrontEndExperience`。当前链路为权威旅行选项／地图／项目配置选择真实 Experience ID → GameState 复制 ID → 每端独立加载 Experience、PawnData、ActionSets 和 GameFeatures → 本地 Loaded → 服务器按 Experience 是否为前端决定出生。玩法 World 随后执行 PawnExtension／Hero 初始化、PlayerState ASC 绑定当前 Avatar → 数据 Loadout、输入与装备能力。下方旧实现的猜测 ID 兜底、网络加密测试和 CommonSession 反射绑定均不属于活动链路。
 
 任务 19 已增加 CommonGame UI Policy 和每 LocalPlayer 的 Game／Menu／Modal 根层栈；MiniShooterCore 经 AddWidgets Action 和 UIExtension 注入战斗 HUD。HUD 从已复制属性／装备取初始快照，GameplayMessage 只发本地通知；根布局的加载／失败界面在玩法 HUD 未创建或撤销后仍可存在。菜单、HUD 监听与异步句柄按对应生命周期回收，主机与客户端独立显示自己的数据。
 
@@ -12,7 +12,9 @@
 
 任务 24 的前端 Experience 显式 `bIsFrontEnd`，没有 PawnData、战斗 GameFeature 或 ActionSet，唯一 AddWidgets 在 Menu 层注入前端。正常 PlayerState 与默认 ASC／HealthSet 仍存在，但没有战斗 Avatar 与能力授予。训练按钮进入 Practice，创建按钮进入 Arena Listen Server，加入按钮使用 IPv4[:port] 发起客户端旅行；前端不需要账号登录。`MiniGameSession` 在 PreLogin／Login 共同批准最多四人，死亡和临时无 Pawn 仍占位。
 
-所有地图切换采用普通旅行，`bUseSeamlessTravel=false`；新 World 重建 PlayerState／ASC 和对局统计。GameInstance 的 `MiniTravelSubsystem` 仅持久保存请求与失败提示，按 World／请求 generation／实际 Driver 归属过滤回调。主机返回通过可靠通知保存 `MINI_HOST_LEFT` 后沿引擎返回链恢复客户端前端；创建驱动失败／绑定失败以及真实连接失败都显示可关闭的中文 Modal。游戏中退出先完成前端旅行，再正常退出进程。最终七场景媒体专项与三个实际退出进程通过，见 [任务 24](Task24/FrontEndTravel.md)。下一入口为任务 25 生命周期收敛；生产 cook 与 Cue 路径提示留任务 28 收敛。
+所有地图切换采用普通旅行，`bUseSeamlessTravel=false`；新 World 重建 PlayerState／ASC 和对局统计。GameInstance 的 `MiniTravelSubsystem` 仅持久保存请求与失败提示，按 World／请求 generation／实际 Driver 归属过滤回调。主机返回通过可靠通知保存 `MINI_HOST_LEFT` 后沿引擎返回链恢复客户端前端；创建驱动失败／绑定失败以及真实连接失败都显示可关闭的中文 Modal。游戏中退出先完成前端旅行，再正常退出进程。最终七场景媒体专项与三个实际退出进程通过，见 [任务 24](Task24/FrontEndTravel.md)。生产 cook 与 Cue 路径提示留任务 28 收敛。
+
+任务25确认同World重生保留PlayerState ASC并替换Pawn／life／物品GUID，普通旅行创建新PS／ASC；Loaded迟订阅立即一次，重复初始化不叠加能力／输入／HUD绑定。死亡仅停止尸体Movement Tick与owning客户端预测，活paused recovery仍由真实Tick恢复。默认及最终媒体六模式、四人40次死亡／重生、三完整往返、退出重连及真主机丢失、四类待恢复工作回收和08／09／10／23回归通过；旧活动能力、Avatar、输入及UI监听归零。详见[任务25](Task25/Lifecycle.md)。下一入口为任务26异步故障与弱网。
 
 ## 归档实现的目标
 

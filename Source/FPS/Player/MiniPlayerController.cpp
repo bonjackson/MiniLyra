@@ -105,6 +105,27 @@ void AMiniPlayerController::SetupInputComponent()
 	}
 }
 
+bool AMiniPlayerController::InputKey(const FInputKeyEventArgs& Params)
+{
+#if !UE_BUILD_SHIPPING
+	// The unattended multi-window probe supplies its keys through the normal
+	// simulated InputKey path. Isolate only unrelated desktop/device events;
+	// Slate buttons still receive their real routed down/up sequence.
+	FString Task25Mode;
+	if (!Params.IsSimulatedInput() && FParse::Param(FCommandLine::Get(), TEXT("MiniTask25IsolateInput")) &&
+		FParse::Value(FCommandLine::Get(), TEXT("MiniProbeTask25="), Task25Mode))
+	{
+		if (Params.Event == IE_Pressed || Params.Event == IE_Released)
+		{
+			UE_LOG(LogMiniInit, Display, TEXT("MiniTask25Probe EXTERNAL_INPUT_ISOLATED: Controller=%s Pawn=%s Key=%s Event=%d Simulated=0"),
+				*GetName(), *GetNameSafe(GetPawn()), *Params.Key.ToString(), int32(Params.Event));
+		}
+		return true;
+	}
+#endif
+	return Super::InputKey(Params);
+}
+
 void AMiniPlayerController::MiniToggleMenu()
 {
 	UMiniPrimaryGameLayout* Root = IsLocalController()

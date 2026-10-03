@@ -1,0 +1,14 @@
+Task25 RecoveryLogout independent run, 2026-10-03.
+Recorded runner outcome: ExitCode=0. This is one mode, not full Task25 acceptance.
+Selected raw markers; source filename and UTC log timestamps retained.
+
+=== Task25-RecoveryLogout-Server.log ===
+[2026.10.03-11.37.07:268][357]LogMiniInit: Display: MiniTask25Probe RECOVERY_FALL_ARMED: Mode=RecoveryLogout PlayerId=257 Life=2 StartsBlocked=8 RealMovementTick=1
+[2026.10.03-11.37.07:278][358]LogMiniInit: Display: MiniTask25Probe RECOVERY_PAUSED: Mode=RecoveryLogout Pending=1 SameLife=1 Alive=1 MovementNone=1 MovementTick=1
+[2026.10.03-11.37.11:092][737]LogMiniInit: Display: MiniTask25Probe RECOVERY_LOGOUT_SERVER_PASS: ActualLogout=1 OldWork=0 OldLifeRespawn=0
+
+=== Task25-RecoveryLogout-Client.log ===
+[2026.10.03-11.37.07:600][136]LogMiniInit: Display: MiniTask25Probe CLIENT_LEAVE_REQUEST: Peer=Client ProductionAPI=1 ActualClientTravelLogout=1
+[2026.10.03-11.37.07:614][137]LogMiniInit: Display: MiniTask25Probe CLEANUP_OBSERVATION: Peer=Client PC=0 PS=0 Pawn=0 Avatar=0 Input=0 Held=0 EquipmentSpecs=2 ActiveSpecs=0 ASCRegistered=0 VMRunning=0 VMBindings=0 VMWorld=0 VMPawn=0 HUDWidgets=0 HUDPoints=0 Menu=0 Gates=0 FrontListeners=0 ModalListeners=0
+[2026.10.03-11.37.07:614][137]LogMiniInit: Display: MiniTask25Probe OLD_WORLD_RELEASED: Cleanup=1 Peer=Client World=L_MiniArena OldInput=0 OldHUD=0 OldWork=0 OldGrants=0 ActorContributions=0 WidgetContributions=0
+[2026.10.03-11.37.11:116][294]LogMiniInit: Display: MiniTask25Probe RECOVERY_LOGOUT_CLIENT_PASS: NewFrontEnd=1 OldHUD=0
