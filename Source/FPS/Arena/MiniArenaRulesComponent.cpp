@@ -32,9 +32,9 @@ void UMiniArenaRulesComponent::BeginPlay()
 	UMiniExperienceManagerComponent* Experience = State->GetExperienceManagerComponent();
 	if (!Experience) { StopArenaPhases(); return; }
 	Experience->CallOrRegister_OnExperienceFailed(FOnMiniExperienceFailed::FDelegate::CreateWeakLambda(this,
-		[this, ExpectedGeneration](const FString&)
+		[this](const FString&)
 		{
-			if (SourceGeneration == ExpectedGeneration && bPhaseContextAvailable) { StopArenaPhases(); }
+			if (bPhaseContextAvailable) { StopArenaPhases(); }
 		}));
 	Experience->CallOrRegister_OnExperienceLoaded(FOnMiniExperienceLoaded::FDelegate::CreateWeakLambda(this,
 		[this, ExpectedGeneration](const UMiniExperienceDefinition*)

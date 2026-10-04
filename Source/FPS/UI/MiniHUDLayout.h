@@ -20,6 +20,8 @@ public:
 	UMiniHUDViewModel* GetViewModel() const { return ViewModel; }
 	int32 GetExtensionWidgetCount() const { return ExtensionWidgets.Num(); }
 	int32 GetExtensionPointCount() const { return ExtensionPointHandles.Num(); }
+	/** Actual construction/attachment evidence, independent of Pawn/ASC readiness. */
+	bool HasAttachedExtensionWidget(const FUIExtensionHandle& Handle) const;
 	void GetExtensionWidgets(TArray<UMiniHUDDataWidget*>& OutWidgets) const;
 	UMiniDebugMenuWidget* OpenDebugMenu();
 	void CloseDebugMenu();

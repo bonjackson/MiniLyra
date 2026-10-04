@@ -1,5 +1,9 @@
 #include "MiniGameFeatureAction_AddActors.h"
 
+#if !UE_BUILD_SHIPPING
+#include "Diagnostics/MiniTask26ActionProbeHooks.h"
+#endif
+
 #include "Engine/AssetManager.h"
 #include "Engine/Engine.h"
 #include "Engine/GameInstance.h"
@@ -144,7 +148,12 @@ void UMiniGameFeatureAction_AddActors::ConsiderWorld(UWorld* World)
 			continue;
 		}
 		const uint64 Generation = ++NextGeneration;
-		Data->Worlds.Add(World).Generation = Generation;
+		FWorldData& Added = Data->Worlds.Add(World);
+		Added.Generation = Generation;
+		Added.Entries = Data->Entries;
+#if !UE_BUILD_SHIPPING
+		FMiniTask26ActionProbeHooks::ActionWorldPrepared().Broadcast(this, World);
+#endif
 		if (!World->HasBegunPlay())
 		{
 			const FDelegateHandle Handle = World->OnWorldBeginPlay.AddUObject(this, &ThisClass::BeginWorld,
@@ -191,7 +200,7 @@ void UMiniGameFeatureAction_AddActors::BeginWorld(FGameFeatureStateChangeContext
 		UE_LOG(LogMiniInit, Display, TEXT("MiniAddActors SKIP_CLIENT: World=%s Action=%s"), *World->GetName(), *GetPathName());
 		return;
 	}
-	const TArray<FMiniFeatureActorEntry> Entries = ContextData.FindChecked(Context).Entries;
+	const TArray<FMiniFeatureActorEntry> Entries = Data->Entries;
 	TArray<FSoftObjectPath> Paths;
 	for (const FMiniFeatureActorEntry& Entry : Entries)
 	{
@@ -218,7 +227,11 @@ void UMiniGameFeatureAction_AddActors::BeginWorld(FGameFeatureStateChangeContext
 			FailWorld(Context, WorldKey, Generation, TEXT("class load request failed"));
 			return;
 		}
-		Handle->StartStalledHandle();
+		bool bHoldStalled = false;
+#if !UE_BUILD_SHIPPING
+		FMiniTask26ActionProbeHooks::HandlePrepared().Broadcast(this, WorldKey.Get(), Handle, bHoldStalled);
+#endif
+		if (!bHoldStalled) { Handle->StartStalledHandle(); }
 	}
 	else if (Handle.IsValid())
 	{
@@ -235,7 +248,7 @@ void UMiniGameFeatureAction_AddActors::FinishLoad(FGameFeatureStateChangeContext
 	{
 		return;
 	}
-	const TArray<FMiniFeatureActorEntry> Entries = ContextData.FindChecked(Context).Entries;
+	const TArray<FMiniFeatureActorEntry> Entries = Data->Entries;
 	for (const FMiniFeatureActorEntry& Entry : Entries)
 	{
 		UClass* Class = Entry.ActorClass.Get();
@@ -289,6 +302,7 @@ void UMiniGameFeatureAction_AddActors::FailWorld(FGameFeatureStateChangeContext 
 	if (FWorldData* Data = FindWorld(Context, World, Generation))
 	{
 		Data->bFailed = true;
+		Data->FailureReason = Reason;
 		Data->bSpawning = false;
 		// Detach all resources before cancellation/destruction can reenter the
 		// Action or tear down its World. Failed worlds retain only failure state.
@@ -314,8 +328,10 @@ void UMiniGameFeatureAction_AddActors::FailWorld(FGameFeatureStateChangeContext 
 				Actor->Destroy();
 			}
 		}
-		UE_LOG(LogMiniInit, Error, TEXT("MiniAddActors FAILED: World=%s Action=%s Reason=%s"),
-			*WorldName, *ActionName, Reason);
+		UE_LOG(LogMiniInit, Error, TEXT("MiniAddActors FAILED: World=%s Action=%s Reason=%s Generation=%llu"),
+			*WorldName, *ActionName, Reason, Generation);
+		OnRequiredActionFailed.Broadcast(World.Get(), this, Generation, FString(Reason));
+		// Failure may synchronously deactivate this context; do not use Data again.
 	}
 }
 
@@ -424,4 +440,52 @@ void UMiniGameFeatureAction_AddActors::GetWorldStats(const UWorld* World, int32&
 		}
 	}
 	bOutReady &= OutWorlds > 0;
+}
+
+bool UMiniGameFeatureAction_AddActors::GatherRequiredClasses(UWorld* World, bool bAuthority,
+	TArray<FMiniRequiredActionClassRequest>& OutRequests, FString& OutError) const
+{
+	if (!bAuthority) { return true; }
+	const TArray<FMiniFeatureActorEntry>* Entries = &Actors;
+	for (const auto& Pair : ContextData)
+	{
+		if (Pair.Value.Worlds.Contains(World))
+		{
+			Entries = &Pair.Value.Worlds.FindChecked(World).Entries;
+			break;
+		}
+	}
+	for (int32 Index = 0; Index < Entries->Num(); ++Index)
+	{
+		const FMiniFeatureActorEntry& Entry = (*Entries)[Index];
+		if (Entry.ActorClass.IsNull() || Entry.Transform.ContainsNaN() || !Entry.Transform.IsValid())
+		{
+			OutError = FString::Printf(TEXT("%s Actor[%d] requires a class and finite transform"), *GetPathName(), Index);
+			return false;
+		}
+		FMiniRequiredActionClassRequest& Request = OutRequests.AddDefaulted_GetRef();
+		Request.Action = const_cast<UMiniGameFeatureAction_AddActors*>(this);
+		Request.ClassPath = Entry.ActorClass.ToSoftObjectPath();
+		Request.Entry = FString::Printf(TEXT("Actor[%d]"), Index);
+		Request.Kind = EMiniRequiredActionClassKind::ReplicatedActor;
+	}
+	return true;
+}
+
+bool UMiniGameFeatureAction_AddActors::GetRequiredFailure(const UWorld* World,
+	uint64& OutGeneration, FString& OutReason) const
+{
+	for (const auto& Context : ContextData)
+	{
+		for (const auto& Pair : Context.Value.Worlds)
+		{
+			if (Pair.Key.Get() == World && Pair.Value.bFailed)
+			{
+				OutGeneration = Pair.Value.Generation;
+				OutReason = Pair.Value.FailureReason;
+				return true;
+			}
+		}
+	}
+	return false;
 }

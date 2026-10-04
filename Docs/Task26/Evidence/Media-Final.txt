@@ -1,0 +1,27 @@
+After final Editor/Game build: Deadline -WithMedia actual ExitCode=0; Task19Loading -WithMedia actual ExitCode=0.
+Visual check: Deadline and Task19 client error detail has two lines separated from all three buttons; no overlap/clipping.
+
+=== Task26-Faults-WithMedia-Deadline.log ===
+[2026.10.04-01.53.46:600][  3]LogMiniInit: Display: MiniTask26Probe PENDING_VERIFIED: Mode=Deadline World=L_MiniFrontEnd State=3 RealHandleOrPlugin=1
+[2026.10.04-01.54.46:283][792]LogMiniInit: Display: MiniTask26Probe FAILED_OBSERVED: Mode=Deadline World=L_MiniFrontEnd Target=1 Count=1 Loaded=0 Reason=Experience loading exceeded 60 seconds in LoadingActionResources
+[2026.10.04-01.54.46:702][794]LogMiniInit: Display: MiniTask26Probe SCREENSHOT_SAVED: Mode=Deadline Stage=ExpectedFailure Path=F:\FPS\FPS\Saved\Screenshots/Task26-Deadline-ExpectedFailure.png
+[2026.10.04-01.54.46:752][795]LogMiniInit: Display: MiniTask26Probe CLEANUP_SNAPSHOT: Mode=Deadline Released=1 BeforeWorldGarbageCollection=1 PureData=1
+[2026.10.04-01.54.47:041][799]LogMiniInit: Display: MiniTask26Probe SCREENSHOT_SAVED: Mode=Deadline Stage=RecoveredFrontEnd Path=F:\FPS\FPS\Saved\Screenshots/Task26-Deadline-RecoveredFrontEnd.png
+[2026.10.04-01.54.47:041][799]LogMiniInit: Display: MiniTask26Probe RECOVERED: NewWorld=1 NewLoaded=1 NewFailed=0 Menu=1 Gate=1 InputSourceReleased=1 Consumed=1
+[2026.10.04-01.54.47:041][799]LogMiniInit: Display: MiniTask26Probe PASS: Mode=Deadline Claimed=1 Mutations=1 TargetLoaded=0 TargetFailed=1 PendingObserved=1 Holds=1 RejectedOtherWorld=2 WorldRecords=2 LateFeatureActivated=0 LateFeatureDeactivated=0
+
+=== Task19-Loading-WithMedia-Valid-Server.log ===
+[2026.10.04-01.53.49:266][ 76]LogMiniInit: Display: MiniTask19Loading SCREENSHOT_REQUESTED: NetMode=ListenServer State=Loaded ShowUI=1 Path=F:/FPS/FPS/Saved/Screenshots/Task19-Loading-Loaded-ListenServer.png
+[2026.10.04-01.53.49:722][ 77]LogMiniInit: Display: MiniTask19Loading PASS: NetMode=ListenServer State=Loaded Visible=0 Failure=0 TitleEmpty=1 DetailEmpty=1 UIBlocks=0 ControllerBlocked=0 TickerStopped=1 PendingObserved=1 Experience=MiniExperienceDefinition:DA_MiniPracticeExperience
+
+=== Task19-Loading-WithMedia-Valid-Client.log ===
+[2026.10.04-01.54.02:412][  9]LogMiniInit: Display: MiniTask19Loading SCREENSHOT_REQUESTED: NetMode=Client State=Loaded ShowUI=1 Path=F:/FPS/FPS/Saved/Screenshots/Task19-Loading-Loaded-Client.png
+[2026.10.04-01.54.02:821][ 10]LogMiniInit: Display: MiniTask19Loading PASS: NetMode=Client State=Loaded Visible=0 Failure=0 TitleEmpty=1 DetailEmpty=1 UIBlocks=0 ControllerBlocked=0 TickerStopped=1 PendingObserved=1 Experience=MiniExperienceDefinition:DA_MiniPracticeExperience
+
+=== Task19-Loading-WithMedia-Invalid-Server.log ===
+[2026.10.04-01.54.15:880][  1]LogMiniInit: Display: MiniTask19Loading SCREENSHOT_REQUESTED: NetMode=ListenServer State=Failed ShowUI=1 Path=F:/FPS/FPS/Saved/Screenshots/Task19-Loading-Failed-ListenServer.png
+[2026.10.04-01.54.16:253][  2]LogMiniInit: Display: MiniTask19Loading PASS: NetMode=ListenServer State=Failed Visible=1 Failure=1 TitlePresent=1 DetailMatches=1 UIBlocks=2 ControllerBlocked=1 TickerStopped=1 PendingObserved=0 Experience=MiniExperienceDefinition:DA_MiniDefinitelyMissing Reason=Unknown Experience ID 'MiniExperienceDefinition:DA_MiniDefinitelyMissing': no scanned asset has this ID RecoveryModal=1 ReturnButton=1 ModalListener=1
+
+=== Task19-Loading-WithMedia-Invalid-Client.log ===
+[2026.10.04-01.54.29:524][  6]LogMiniInit: Display: MiniTask19Loading SCREENSHOT_REQUESTED: NetMode=Client State=Failed ShowUI=1 Path=F:/FPS/FPS/Saved/Screenshots/Task19-Loading-Failed-Client.png
+[2026.10.04-01.54.29:908][  7]LogMiniInit: Display: MiniTask19Loading PASS: NetMode=Client State=Failed Visible=1 Failure=1 TitlePresent=1 DetailMatches=1 UIBlocks=2 ControllerBlocked=1 TickerStopped=1 PendingObserved=0 Experience=MiniExperienceDefinition:DA_MiniDefinitelyMissing Reason=Unknown Experience ID 'MiniExperienceDefinition:DA_MiniDefinitelyMissing': no scanned asset has this ID RecoveryModal=1 ReturnButton=1 ModalListener=1

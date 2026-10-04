@@ -1,0 +1,150 @@
+Task26 rendered fault matrix: VerifyTask26Faults.ps1 -Mode All -WithMedia -TimeoutSeconds 240
+Actual runner ExitCode=0; all 19 tracked processes normal ExitCode=0. 32 UI-inclusive 960x540 PNGs.
+Initial matrix precedes explicit wrapping fix. Final Deadline and FailedFrontQuit reruns PASS; selected PNGs replaced from those reruns. See Media-Final.txt.
+
+=== Task26-Faults-WithMedia-ActorActionReturn.log ===
+[2026.10.03-17.11.41:867][ 29]LogMiniInit: Display: MiniTask26Probe PENDING_VERIFIED: Mode=ActorActionReturn World=L_MiniPractice State=4 RealHandleOrPlugin=1
+[2026.10.03-17.11.41:906][ 30]LogMiniInit: Display: MiniTask26Probe CLEANUP_SNAPSHOT: Mode=ActorActionReturn Released=1 BeforeWorldGarbageCollection=1 PureData=1
+[2026.10.03-17.11.42:459][ 34]LogMiniInit: Display: MiniTask26Probe SCREENSHOT_SAVED: Mode=ActorActionReturn Stage=RecoveredFrontEnd Path=F:\FPS\FPS\Saved\Screenshots/Task26-ActorActionReturn-RecoveredFrontEnd.png
+[2026.10.03-17.11.42:459][ 34]LogMiniInit: Display: MiniTask26Probe RECOVERED: NewWorld=1 NewLoaded=1 NewFailed=0 Menu=1 Gate=1 InputSourceReleased=1 Consumed=1
+[2026.10.03-17.11.42:459][ 34]LogMiniInit: Display: MiniTask26Probe PASS: Mode=ActorActionReturn Claimed=1 Mutations=1 TargetLoaded=0 TargetFailed=0 PendingObserved=1 Holds=1 RejectedOtherWorld=1 WorldRecords=3 LateFeatureActivated=0 LateFeatureDeactivated=0
+
+=== Task26-Faults-WithMedia-ActorAsyncFailure.log ===
+[2026.10.03-17.09.58:226][ 29]LogMiniInit: Display: MiniTask26Probe FAILED_OBSERVED: Mode=ActorAsyncFailure World=L_MiniPractice Target=1 Count=1 Loaded=0 Reason=Required Action '/Game/Mini/System/ActionSets/DA_MiniPracticeActionSet.DA_MiniPracticeActionSet:MiniPractice_AddActors' failed in World 'L_MiniPractice' (generation 1): class must be concrete and replicated
+[2026.10.03-17.09.58:625][ 31]LogMiniInit: Display: MiniTask26Probe SCREENSHOT_SAVED: Mode=ActorAsyncFailure Stage=ExpectedFailure Path=F:\FPS\FPS\Saved\Screenshots/Task26-ActorAsyncFailure-ExpectedFailure.png
+[2026.10.03-17.09.58:661][ 32]LogMiniInit: Display: MiniTask26Probe CLEANUP_SNAPSHOT: Mode=ActorAsyncFailure Released=1 BeforeWorldGarbageCollection=1 PureData=1
+[2026.10.03-17.09.58:852][ 36]LogMiniInit: Display: MiniTask26Probe SCREENSHOT_SAVED: Mode=ActorAsyncFailure Stage=RecoveredFrontEnd Path=F:\FPS\FPS\Saved\Screenshots/Task26-ActorAsyncFailure-RecoveredFrontEnd.png
+[2026.10.03-17.09.58:852][ 36]LogMiniInit: Display: MiniTask26Probe RECOVERED: NewWorld=1 NewLoaded=1 NewFailed=0 Menu=1 Gate=1 InputSourceReleased=1 Consumed=1
+[2026.10.03-17.09.58:852][ 36]LogMiniInit: Display: MiniTask26Probe PASS: Mode=ActorAsyncFailure Claimed=1 Mutations=1 TargetLoaded=0 TargetFailed=1 PendingObserved=0 Holds=0 RejectedOtherWorld=1 WorldRecords=3 LateFeatureActivated=0 LateFeatureDeactivated=0
+
+=== Task26-Faults-WithMedia-ActorClass.log ===
+[2026.10.03-17.09.28:516][ 26]LogMiniInit: Display: MiniTask26Probe FAILED_OBSERVED: Mode=ActorClass World=L_MiniPractice Target=1 Count=1 Loaded=0 Reason=Required Action '/Game/Mini/System/ActionSets/DA_MiniPracticeActionSet.DA_MiniPracticeActionSet:MiniPractice_AddActors' Actor[0] class '/Game/Mini/Diagnostics/Task26/MissingActorClass.MissingActorClass_C' is missing or invalid
+[2026.10.03-17.09.28:898][ 28]LogMiniInit: Display: MiniTask26Probe SCREENSHOT_SAVED: Mode=ActorClass Stage=ExpectedFailure Path=F:\FPS\FPS\Saved\Screenshots/Task26-ActorClass-ExpectedFailure.png
+[2026.10.03-17.09.28:933][ 29]LogMiniInit: Display: MiniTask26Probe CLEANUP_SNAPSHOT: Mode=ActorClass Released=1 BeforeWorldGarbageCollection=1 PureData=1
+[2026.10.03-17.09.29:126][ 33]LogMiniInit: Display: MiniTask26Probe SCREENSHOT_SAVED: Mode=ActorClass Stage=RecoveredFrontEnd Path=F:\FPS\FPS\Saved\Screenshots/Task26-ActorClass-RecoveredFrontEnd.png
+[2026.10.03-17.09.29:126][ 33]LogMiniInit: Display: MiniTask26Probe RECOVERED: NewWorld=1 NewLoaded=1 NewFailed=0 Menu=1 Gate=1 InputSourceReleased=1 Consumed=1
+[2026.10.03-17.09.29:126][ 33]LogMiniInit: Display: MiniTask26Probe PASS: Mode=ActorClass Claimed=1 Mutations=1 TargetLoaded=0 TargetFailed=1 PendingObserved=0 Holds=0 RejectedOtherWorld=1 WorldRecords=3 LateFeatureActivated=0 LateFeatureDeactivated=0
+
+=== Task26-Faults-WithMedia-AssetReturn.log ===
+[2026.10.03-17.10.43:795][  6]LogMiniInit: Display: MiniTask26Probe PENDING_VERIFIED: Mode=AssetReturn World=L_MiniPractice State=1 RealHandleOrPlugin=1
+[2026.10.03-17.10.43:799][  7]LogMiniInit: Display: MiniTask26Probe CLEANUP_SNAPSHOT: Mode=AssetReturn Released=1 BeforeWorldGarbageCollection=1 PureData=1
+[2026.10.03-17.10.44:309][ 11]LogMiniInit: Display: MiniTask26Probe SCREENSHOT_SAVED: Mode=AssetReturn Stage=RecoveredFrontEnd Path=F:\FPS\FPS\Saved\Screenshots/Task26-AssetReturn-RecoveredFrontEnd.png
+[2026.10.03-17.10.44:309][ 11]LogMiniInit: Display: MiniTask26Probe RECOVERED: NewWorld=1 NewLoaded=1 NewFailed=0 Menu=1 Gate=1 InputSourceReleased=1 Consumed=1
+[2026.10.03-17.10.44:309][ 11]LogMiniInit: Display: MiniTask26Probe PASS: Mode=AssetReturn Claimed=1 Mutations=1 TargetLoaded=0 TargetFailed=0 PendingObserved=1 Holds=1 RejectedOtherWorld=1 WorldRecords=3 LateFeatureActivated=0 LateFeatureDeactivated=0
+
+=== Task26-Faults-WithMedia-Deadline.log ===
+[2026.10.03-17.11.56:215][  3]LogMiniInit: Display: MiniTask26Probe PENDING_VERIFIED: Mode=Deadline World=L_MiniFrontEnd State=3 RealHandleOrPlugin=1
+[2026.10.03-17.12.56:117][800]LogMiniInit: Display: MiniTask26Probe FAILED_OBSERVED: Mode=Deadline World=L_MiniFrontEnd Target=1 Count=1 Loaded=0 Reason=Experience loading exceeded 60 seconds in LoadingActionResources
+[2026.10.03-17.12.56:502][802]LogMiniInit: Display: MiniTask26Probe SCREENSHOT_SAVED: Mode=Deadline Stage=ExpectedFailure Path=F:\FPS\FPS\Saved\Screenshots/Task26-Deadline-ExpectedFailure.png
+[2026.10.03-17.12.56:537][803]LogMiniInit: Display: MiniTask26Probe CLEANUP_SNAPSHOT: Mode=Deadline Released=1 BeforeWorldGarbageCollection=1 PureData=1
+[2026.10.03-17.12.56:731][807]LogMiniInit: Display: MiniTask26Probe SCREENSHOT_SAVED: Mode=Deadline Stage=RecoveredFrontEnd Path=F:\FPS\FPS\Saved\Screenshots/Task26-Deadline-RecoveredFrontEnd.png
+[2026.10.03-17.12.56:731][807]LogMiniInit: Display: MiniTask26Probe RECOVERED: NewWorld=1 NewLoaded=1 NewFailed=0 Menu=1 Gate=1 InputSourceReleased=1 Consumed=1
+[2026.10.03-17.12.56:731][807]LogMiniInit: Display: MiniTask26Probe PASS: Mode=Deadline Claimed=1 Mutations=1 TargetLoaded=0 TargetFailed=1 PendingObserved=1 Holds=1 RejectedOtherWorld=2 WorldRecords=2 LateFeatureActivated=0 LateFeatureDeactivated=0
+
+=== Task26-Faults-WithMedia-FailedFrontQuit.log ===
+[2026.10.03-17.13.06:410][  4]LogMiniInit: Display: MiniTask26Probe FAILED_OBSERVED: Mode=FailedFrontQuit World=L_MiniFrontEnd Target=1 Count=1 Loaded=0 Reason=Required Action '/Game/Mini/System/Experiences/DA_MiniFrontEndExperience.DA_MiniFrontEndExperience:MiniFrontEnd_AddWidgets' Layout[0] layer=UI.Layer.Menu class '/Game/Mini/Diagnostics/Task26/MissingFailedFrontQuit.MissingFailedFrontQuit_C' is missing or invalid
+[2026.10.03-17.13.06:792][  6]LogMiniInit: Display: MiniTask26Probe SCREENSHOT_SAVED: Mode=FailedFrontQuit Stage=ExpectedFailure Path=F:\FPS\FPS\Saved\Screenshots/Task26-FailedFrontQuit-ExpectedFailure.png
+[2026.10.03-17.13.06:810][  6]LogMiniInit: Display: MiniTask26Probe UI_CLICK: Button=QuitButton MouseMove=1 Hover=1 Pressed=1 Capture=1 Down=1 Up=1
+[2026.10.03-17.13.06:810][  6]LogMiniInit: Display: MiniTask26Probe PASS: Mode=FailedFrontQuit Claimed=1 Mutations=1 TargetLoaded=0 TargetFailed=1 PendingObserved=0 Holds=0 RejectedOtherWorld=0 WorldRecords=1 LateFeatureActivated=0 LateFeatureDeactivated=0
+
+=== Task26-Faults-WithMedia-FeatureReturn.log ===
+[2026.10.03-17.10.56:993][ 26]LogMiniInit: Display: MiniTask26Probe FEATURE_REAL_PAUSED: Plugin=MiniShooterCore State=Mounting ManagerPending=1 FiniteSeconds=15
+[2026.10.03-17.10.57:022][ 27]LogMiniInit: Display: MiniTask26Probe PENDING_VERIFIED: Mode=FeatureReturn World=L_MiniPractice State=2 RealHandleOrPlugin=1
+[2026.10.03-17.10.57:057][ 28]LogMiniInit: Display: MiniTask26Probe CLEANUP_SNAPSHOT: Mode=FeatureReturn Released=1 BeforeWorldGarbageCollection=1 PureData=1
+[2026.10.03-17.10.57:569][ 32]LogMiniInit: Display: MiniTask26Probe SCREENSHOT_SAVED: Mode=FeatureReturn Stage=RecoveredFrontEnd Path=F:\FPS\FPS\Saved\Screenshots/Task26-FeatureReturn-RecoveredFrontEnd.png
+[2026.10.03-17.10.57:569][ 32]LogMiniInit: Display: MiniTask26Probe RECOVERED: NewWorld=1 NewLoaded=1 NewFailed=0 Menu=1 Gate=1 InputSourceReleased=1 Consumed=1
+[2026.10.03-17.10.57:569][ 32]LogMiniInit: Display: MiniTask26Probe PASS: Mode=FeatureReturn Claimed=1 Mutations=1 TargetLoaded=0 TargetFailed=0 PendingObserved=1 Holds=0 RejectedOtherWorld=2 WorldRecords=3 LateFeatureActivated=1 LateFeatureDeactivated=1
+
+=== Task26-Faults-WithMedia-FrontClass.log ===
+[2026.10.03-17.08.56:591][  4]LogMiniInit: Display: MiniTask26Probe FAILED_OBSERVED: Mode=FrontClass World=L_MiniFrontEnd Target=1 Count=1 Loaded=0 Reason=Required Action '/Game/Mini/System/Experiences/DA_MiniFrontEndExperience.DA_MiniFrontEndExperience:MiniFrontEnd_AddWidgets' Layout[0] layer=UI.Layer.Menu class '/Game/Mini/Diagnostics/Task26/MissingFrontClass.MissingFrontClass_C' is missing or invalid
+[2026.10.03-17.08.56:999][  6]LogMiniInit: Display: MiniTask26Probe SCREENSHOT_SAVED: Mode=FrontClass Stage=ExpectedFailure Path=F:\FPS\FPS\Saved\Screenshots/Task26-FrontClass-ExpectedFailure.png
+[2026.10.03-17.08.57:043][  7]LogMiniInit: Display: MiniTask26Probe CLEANUP_SNAPSHOT: Mode=FrontClass Released=1 BeforeWorldGarbageCollection=1 PureData=1
+[2026.10.03-17.08.57:250][ 11]LogMiniInit: Display: MiniTask26Probe SCREENSHOT_SAVED: Mode=FrontClass Stage=RecoveredFrontEnd Path=F:\FPS\FPS\Saved\Screenshots/Task26-FrontClass-RecoveredFrontEnd.png
+[2026.10.03-17.08.57:250][ 11]LogMiniInit: Display: MiniTask26Probe RECOVERED: NewWorld=1 NewLoaded=1 NewFailed=0 Menu=1 Gate=1 InputSourceReleased=1 Consumed=1
+[2026.10.03-17.08.57:250][ 11]LogMiniInit: Display: MiniTask26Probe PASS: Mode=FrontClass Claimed=1 Mutations=1 TargetLoaded=0 TargetFailed=1 PendingObserved=0 Holds=0 RejectedOtherWorld=2 WorldRecords=2 LateFeatureActivated=0 LateFeatureDeactivated=0
+
+=== Task26-Faults-WithMedia-HUDClass.log ===
+[2026.10.03-17.09.12:640][ 29]LogMiniInit: Display: MiniTask26Probe FAILED_OBSERVED: Mode=HUDClass World=L_MiniPractice Target=1 Count=1 Loaded=0 Reason=Required Action '/MiniShooterCore/GameFeatureData.GameFeatureData:MiniTask19_AddWidgets' Layout[0] layer=UI.Layer.Game class '/Game/Mini/Diagnostics/Task26/MissingHUDClass.MissingHUDClass_C' is missing or invalid
+[2026.10.03-17.09.13:040][ 31]LogMiniInit: Display: MiniTask26Probe SCREENSHOT_SAVED: Mode=HUDClass Stage=ExpectedFailure Path=F:\FPS\FPS\Saved\Screenshots/Task26-HUDClass-ExpectedFailure.png
+[2026.10.03-17.09.13:078][ 32]LogMiniInit: Display: MiniTask26Probe CLEANUP_SNAPSHOT: Mode=HUDClass Released=1 BeforeWorldGarbageCollection=1 PureData=1
+[2026.10.03-17.09.13:292][ 36]LogMiniInit: Display: MiniTask26Probe SCREENSHOT_SAVED: Mode=HUDClass Stage=RecoveredFrontEnd Path=F:\FPS\FPS\Saved\Screenshots/Task26-HUDClass-RecoveredFrontEnd.png
+[2026.10.03-17.09.13:292][ 36]LogMiniInit: Display: MiniTask26Probe RECOVERED: NewWorld=1 NewLoaded=1 NewFailed=0 Menu=1 Gate=1 InputSourceReleased=1 Consumed=1
+[2026.10.03-17.09.13:292][ 36]LogMiniInit: Display: MiniTask26Probe PASS: Mode=HUDClass Claimed=1 Mutations=1 TargetLoaded=0 TargetFailed=1 PendingObserved=0 Holds=0 RejectedOtherWorld=1 WorldRecords=3 LateFeatureActivated=0 LateFeatureDeactivated=0
+
+=== Task26-Faults-WithMedia-MissingFeature.log ===
+[2026.10.03-17.08.27:171][ 24]LogMiniInit: Display: MiniTask26Probe FAILED_OBSERVED: Mode=MissingFeature World=L_MiniPractice Target=1 Count=1 Loaded=0 Reason=GameFeature plugin 'MiniDefinitelyMissing' from 'DA_MiniMissingFeatureExperience' was not found
+[2026.10.03-17.08.27:562][ 26]LogMiniInit: Display: MiniTask26Probe SCREENSHOT_SAVED: Mode=MissingFeature Stage=ExpectedFailure Path=F:\FPS\FPS\Saved\Screenshots/Task26-MissingFeature-ExpectedFailure.png
+[2026.10.03-17.08.27:597][ 27]LogMiniInit: Display: MiniTask26Probe CLEANUP_SNAPSHOT: Mode=MissingFeature Released=1 BeforeWorldGarbageCollection=1 PureData=1
+[2026.10.03-17.08.27:781][ 31]LogMiniInit: Display: MiniTask26Probe SCREENSHOT_SAVED: Mode=MissingFeature Stage=RecoveredFrontEnd Path=F:\FPS\FPS\Saved\Screenshots/Task26-MissingFeature-RecoveredFrontEnd.png
+[2026.10.03-17.08.27:781][ 31]LogMiniInit: Display: MiniTask26Probe RECOVERED: NewWorld=1 NewLoaded=1 NewFailed=0 Menu=1 Gate=1 InputSourceReleased=1 Consumed=1
+[2026.10.03-17.08.27:781][ 31]LogMiniInit: Display: MiniTask26Probe PASS: Mode=MissingFeature Claimed=1 Mutations=1 TargetLoaded=0 TargetFailed=1 PendingObserved=0 Holds=0 RejectedOtherWorld=1 WorldRecords=3 LateFeatureActivated=0 LateFeatureDeactivated=0
+
+=== Task26-Faults-WithMedia-MissingPrimary.log ===
+[2026.10.03-17.08.41:137][  8]LogMiniInit: Display: MiniTask26Probe FAILED_OBSERVED: Mode=MissingPrimary World=L_MiniPractice Target=1 Count=1 Loaded=0 Reason=Experience 'MiniExperienceDefinition:DA_MiniTask26MissingPrimary' finished loading without a MiniExperienceDefinition object
+[2026.10.03-17.08.41:544][ 10]LogMiniInit: Display: MiniTask26Probe SCREENSHOT_SAVED: Mode=MissingPrimary Stage=ExpectedFailure Path=F:\FPS\FPS\Saved\Screenshots/Task26-MissingPrimary-ExpectedFailure.png
+[2026.10.03-17.08.41:580][ 11]LogMiniInit: Display: MiniTask26Probe CLEANUP_SNAPSHOT: Mode=MissingPrimary Released=1 BeforeWorldGarbageCollection=1 PureData=1
+[2026.10.03-17.08.41:761][ 15]LogMiniInit: Display: MiniTask26Probe SCREENSHOT_SAVED: Mode=MissingPrimary Stage=RecoveredFrontEnd Path=F:\FPS\FPS\Saved\Screenshots/Task26-MissingPrimary-RecoveredFrontEnd.png
+[2026.10.03-17.08.41:761][ 15]LogMiniInit: Display: MiniTask26Probe RECOVERED: NewWorld=1 NewLoaded=1 NewFailed=0 Menu=1 Gate=1 InputSourceReleased=1 Consumed=1
+[2026.10.03-17.08.41:761][ 15]LogMiniInit: Display: MiniTask26Probe PASS: Mode=MissingPrimary Claimed=1 Mutations=1 TargetLoaded=0 TargetFailed=1 PendingObserved=0 Holds=0 RejectedOtherWorld=1 WorldRecords=3 LateFeatureActivated=0 LateFeatureDeactivated=0
+
+=== Task26-Faults-WithMedia-NoLayer.log ===
+[2026.10.03-17.10.13:677][  4]LogMiniInit: Display: MiniTask26Probe FAILED_OBSERVED: Mode=NoLayer World=L_MiniFrontEnd Target=1 Count=1 Loaded=1 Reason=Required Action '/Game/Mini/System/Experiences/DA_MiniFrontEndExperience.DA_MiniFrontEndExperience:MiniFrontEnd_AddWidgets' failed in World 'L_MiniFrontEnd' (generation 1): NO_LAYER_OR_WIDGET: layer=UI.HUD.Health class=/Script/FPS.MiniFrontEndWidget
+[2026.10.03-17.10.14:064][  6]LogMiniInit: Display: MiniTask26Probe SCREENSHOT_SAVED: Mode=NoLayer Stage=ExpectedFailure Path=F:\FPS\FPS\Saved\Screenshots/Task26-NoLayer-ExpectedFailure.png
+[2026.10.03-17.10.14:104][  7]LogMiniInit: Display: MiniTask26Probe CLEANUP_SNAPSHOT: Mode=NoLayer Released=1 BeforeWorldGarbageCollection=1 PureData=1
+[2026.10.03-17.10.14:288][ 11]LogMiniInit: Display: MiniTask26Probe SCREENSHOT_SAVED: Mode=NoLayer Stage=RecoveredFrontEnd Path=F:\FPS\FPS\Saved\Screenshots/Task26-NoLayer-RecoveredFrontEnd.png
+[2026.10.03-17.10.14:288][ 11]LogMiniInit: Display: MiniTask26Probe RECOVERED: NewWorld=1 NewLoaded=1 NewFailed=0 Menu=1 Gate=1 InputSourceReleased=1 Consumed=1
+[2026.10.03-17.10.14:288][ 11]LogMiniInit: Display: MiniTask26Probe PASS: Mode=NoLayer Claimed=1 Mutations=1 TargetLoaded=1 TargetFailed=1 PendingObserved=0 Holds=0 RejectedOtherWorld=2 WorldRecords=2 LateFeatureActivated=0 LateFeatureDeactivated=0
+
+=== Task26-Faults-WithMedia-NormalPractice.log ===
+[2026.10.03-17.07.57:814][ 34]LogMiniInit: Display: MiniTask26Probe SCREENSHOT_SAVED: Mode=NormalPractice Stage=NormalPractice Path=F:\FPS\FPS\Saved\Screenshots/Task26-NormalPractice-NormalPractice.png
+[2026.10.03-17.07.57:857][ 35]LogMiniInit: Display: MiniTask26Probe CLEANUP_SNAPSHOT: Mode=NormalPractice Released=1 BeforeWorldGarbageCollection=1 PureData=1
+[2026.10.03-17.07.58:032][ 39]LogMiniInit: Display: MiniTask26Probe SCREENSHOT_SAVED: Mode=NormalPractice Stage=RecoveredFrontEnd Path=F:\FPS\FPS\Saved\Screenshots/Task26-NormalPractice-RecoveredFrontEnd.png
+[2026.10.03-17.07.58:032][ 39]LogMiniInit: Display: MiniTask26Probe RECOVERED: NewWorld=1 NewLoaded=1 NewFailed=0 Menu=1 Gate=1 InputSourceReleased=1 Consumed=1
+[2026.10.03-17.07.58:032][ 39]LogMiniInit: Display: MiniTask26Probe PASS: Mode=NormalPractice Claimed=1 Mutations=0 TargetLoaded=1 TargetFailed=0 PendingObserved=0 Holds=0 RejectedOtherWorld=1 WorldRecords=3 LateFeatureActivated=0 LateFeatureDeactivated=0
+
+=== Task26-Faults-WithMedia-NoSlot.log ===
+[2026.10.03-17.10.30:190][ 25]LogMiniInit: Display: MiniTask26Probe FAILED_OBSERVED: Mode=NoSlot World=L_MiniPractice Target=1 Count=1 Loaded=0 Reason=Required Action '/MiniShooterCore/GameFeatureData.GameFeatureData:MiniTask19_AddWidgets' failed in World 'L_MiniPractice' (generation 1): REQUIRED_EXTENSION_NOT_ATTACHED: slot=UI.Layer.Modal class=/Script/FPS.MiniHUDHealthWidget
+[2026.10.03-17.10.30:572][ 27]LogMiniInit: Display: MiniTask26Probe SCREENSHOT_SAVED: Mode=NoSlot Stage=ExpectedFailure Path=F:\FPS\FPS\Saved\Screenshots/Task26-NoSlot-ExpectedFailure.png
+[2026.10.03-17.10.30:607][ 28]LogMiniInit: Display: MiniTask26Probe CLEANUP_SNAPSHOT: Mode=NoSlot Released=1 BeforeWorldGarbageCollection=1 PureData=1
+[2026.10.03-17.10.30:799][ 32]LogMiniInit: Display: MiniTask26Probe SCREENSHOT_SAVED: Mode=NoSlot Stage=RecoveredFrontEnd Path=F:\FPS\FPS\Saved\Screenshots/Task26-NoSlot-RecoveredFrontEnd.png
+[2026.10.03-17.10.30:799][ 32]LogMiniInit: Display: MiniTask26Probe RECOVERED: NewWorld=1 NewLoaded=1 NewFailed=0 Menu=1 Gate=1 InputSourceReleased=1 Consumed=1
+[2026.10.03-17.10.30:799][ 32]LogMiniInit: Display: MiniTask26Probe PASS: Mode=NoSlot Claimed=1 Mutations=1 TargetLoaded=0 TargetFailed=1 PendingObserved=0 Holds=0 RejectedOtherWorld=1 WorldRecords=3 LateFeatureActivated=0 LateFeatureDeactivated=0
+
+=== Task26-Faults-WithMedia-ResourcesReturn.log ===
+[2026.10.03-17.11.11:369][ 27]LogMiniInit: Display: MiniTask26Probe PENDING_VERIFIED: Mode=ResourcesReturn World=L_MiniPractice State=3 RealHandleOrPlugin=1
+[2026.10.03-17.11.11:407][ 28]LogMiniInit: Display: MiniTask26Probe CLEANUP_SNAPSHOT: Mode=ResourcesReturn Released=1 BeforeWorldGarbageCollection=1 PureData=1
+[2026.10.03-17.11.11:926][ 32]LogMiniInit: Display: MiniTask26Probe SCREENSHOT_SAVED: Mode=ResourcesReturn Stage=RecoveredFrontEnd Path=F:\FPS\FPS\Saved\Screenshots/Task26-ResourcesReturn-RecoveredFrontEnd.png
+[2026.10.03-17.11.11:926][ 32]LogMiniInit: Display: MiniTask26Probe RECOVERED: NewWorld=1 NewLoaded=1 NewFailed=0 Menu=1 Gate=1 InputSourceReleased=1 Consumed=1
+[2026.10.03-17.11.11:926][ 32]LogMiniInit: Display: MiniTask26Probe PASS: Mode=ResourcesReturn Claimed=1 Mutations=1 TargetLoaded=0 TargetFailed=0 PendingObserved=1 Holds=1 RejectedOtherWorld=1 WorldRecords=3 LateFeatureActivated=0 LateFeatureDeactivated=0
+
+=== Task26-Faults-WithMedia-StaleFailure.log ===
+[2026.10.03-17.13.16:220][  5]LogMiniInit: Display: MiniTask26Probe FAILED_OBSERVED: Mode=StaleFailure World=L_MiniFrontEnd Target=1 Count=1 Loaded=1 Reason=Required Action '/Game/Mini/System/Experiences/DA_MiniFrontEndExperience.DA_MiniFrontEndExperience:MiniFrontEnd_AddWidgets' failed in World 'L_MiniFrontEnd' (generation 1): required widget class or tag is invalid
+[2026.10.03-17.13.16:603][  7]LogMiniInit: Display: MiniTask26Probe SCREENSHOT_SAVED: Mode=StaleFailure Stage=ExpectedFailure Path=F:\FPS\FPS\Saved\Screenshots/Task26-StaleFailure-ExpectedFailure.png
+[2026.10.03-17.13.16:638][  8]LogMiniInit: Display: MiniTask26Probe CLEANUP_SNAPSHOT: Mode=StaleFailure Released=1 BeforeWorldGarbageCollection=1 PureData=1
+[2026.10.03-17.13.16:789][ 11]LogMiniInit: Display: MiniTask26Probe STALE_FAILURE_REJECTED: ActualPayloadReplayed=1 OldWorldEnded=1 NewLoaded=1 NewFailed=0 NewError=0
+[2026.10.03-17.13.16:822][ 12]LogMiniInit: Display: MiniTask26Probe SCREENSHOT_SAVED: Mode=StaleFailure Stage=RecoveredFrontEnd Path=F:\FPS\FPS\Saved\Screenshots/Task26-StaleFailure-RecoveredFrontEnd.png
+[2026.10.03-17.13.16:822][ 12]LogMiniInit: Display: MiniTask26Probe RECOVERED: NewWorld=1 NewLoaded=1 NewFailed=0 Menu=1 Gate=1 InputSourceReleased=1 Consumed=1
+[2026.10.03-17.13.16:822][ 12]LogMiniInit: Display: MiniTask26Probe PASS: Mode=StaleFailure Claimed=1 Mutations=1 TargetLoaded=1 TargetFailed=1 PendingObserved=0 Holds=0 RejectedOtherWorld=2 WorldRecords=2 LateFeatureActivated=0 LateFeatureDeactivated=0
+
+=== Task26-Faults-WithMedia-UIActionReturn.log ===
+[2026.10.03-17.11.25:318][  4]LogMiniInit: Display: MiniTask26Probe PENDING_VERIFIED: Mode=UIActionReturn World=L_MiniFrontEnd State=5 RealHandleOrPlugin=1
+[2026.10.03-17.11.25:363][  5]LogMiniInit: Display: MiniTask26Probe CLEANUP_SNAPSHOT: Mode=UIActionReturn Released=1 BeforeWorldGarbageCollection=1 PureData=1
+[2026.10.03-17.11.25:876][  9]LogMiniInit: Display: MiniTask26Probe SCREENSHOT_SAVED: Mode=UIActionReturn Stage=RecoveredFrontEnd Path=F:\FPS\FPS\Saved\Screenshots/Task26-UIActionReturn-RecoveredFrontEnd.png
+[2026.10.03-17.11.25:876][  9]LogMiniInit: Display: MiniTask26Probe RECOVERED: NewWorld=1 NewLoaded=1 NewFailed=0 Menu=1 Gate=1 InputSourceReleased=1 Consumed=1
+[2026.10.03-17.11.25:876][  9]LogMiniInit: Display: MiniTask26Probe PASS: Mode=UIActionReturn Claimed=1 Mutations=1 TargetLoaded=1 TargetFailed=0 PendingObserved=1 Holds=1 RejectedOtherWorld=2 WorldRecords=2 LateFeatureActivated=0 LateFeatureDeactivated=0
+
+=== Task26-Faults-WithMedia-UIAsyncFailure.log ===
+[2026.10.03-17.09.42:224][  5]LogMiniInit: Display: MiniTask26Probe FAILED_OBSERVED: Mode=UIAsyncFailure World=L_MiniFrontEnd Target=1 Count=1 Loaded=1 Reason=Required Action '/Game/Mini/System/Experiences/DA_MiniFrontEndExperience.DA_MiniFrontEndExperience:MiniFrontEnd_AddWidgets' failed in World 'L_MiniFrontEnd' (generation 1): required widget class or tag is invalid
+[2026.10.03-17.09.42:612][  7]LogMiniInit: Display: MiniTask26Probe SCREENSHOT_SAVED: Mode=UIAsyncFailure Stage=ExpectedFailure Path=F:\FPS\FPS\Saved\Screenshots/Task26-UIAsyncFailure-ExpectedFailure.png
+[2026.10.03-17.09.42:654][  8]LogMiniInit: Display: MiniTask26Probe CLEANUP_SNAPSHOT: Mode=UIAsyncFailure Released=1 BeforeWorldGarbageCollection=1 PureData=1
+[2026.10.03-17.09.42:840][ 12]LogMiniInit: Display: MiniTask26Probe SCREENSHOT_SAVED: Mode=UIAsyncFailure Stage=RecoveredFrontEnd Path=F:\FPS\FPS\Saved\Screenshots/Task26-UIAsyncFailure-RecoveredFrontEnd.png
+[2026.10.03-17.09.42:840][ 12]LogMiniInit: Display: MiniTask26Probe RECOVERED: NewWorld=1 NewLoaded=1 NewFailed=0 Menu=1 Gate=1 InputSourceReleased=1 Consumed=1
+[2026.10.03-17.09.42:840][ 12]LogMiniInit: Display: MiniTask26Probe PASS: Mode=UIAsyncFailure Claimed=1 Mutations=1 TargetLoaded=1 TargetFailed=1 PendingObserved=0 Holds=0 RejectedOtherWorld=2 WorldRecords=2 LateFeatureActivated=0 LateFeatureDeactivated=0
+
+=== Task26-Faults-WithMedia-Unknown.log ===
+[2026.10.03-17.08.13:277][  6]LogMiniInit: Display: MiniTask26Probe FAILED_OBSERVED: Mode=Unknown World=L_MiniPractice Target=1 Count=1 Loaded=0 Reason=Unknown Experience ID 'MiniExperienceDefinition:DA_MiniTask26DefinitelyMissing': no scanned asset has this ID
+[2026.10.03-17.08.13:646][  7]LogMiniInit: Display: MiniTask26Probe SCREENSHOT_SAVED: Mode=Unknown Stage=ExpectedFailure Path=F:\FPS\FPS\Saved\Screenshots/Task26-Unknown-ExpectedFailure.png
+[2026.10.03-17.08.13:680][  8]LogMiniInit: Display: MiniTask26Probe CLEANUP_SNAPSHOT: Mode=Unknown Released=1 BeforeWorldGarbageCollection=1 PureData=1
+[2026.10.03-17.08.13:860][ 12]LogMiniInit: Display: MiniTask26Probe SCREENSHOT_SAVED: Mode=Unknown Stage=RecoveredFrontEnd Path=F:\FPS\FPS\Saved\Screenshots/Task26-Unknown-RecoveredFrontEnd.png
+[2026.10.03-17.08.13:860][ 12]LogMiniInit: Display: MiniTask26Probe RECOVERED: NewWorld=1 NewLoaded=1 NewFailed=0 Menu=1 Gate=1 InputSourceReleased=1 Consumed=1
+[2026.10.03-17.08.13:860][ 12]LogMiniInit: Display: MiniTask26Probe PASS: Mode=Unknown Claimed=1 Mutations=1 TargetLoaded=0 TargetFailed=1 PendingObserved=0 Holds=0 RejectedOtherWorld=1 WorldRecords=3 LateFeatureActivated=0 LateFeatureDeactivated=0

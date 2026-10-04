@@ -1,5 +1,9 @@
 #include "MiniGameFeatureAction_AddWidgets.h"
 
+#if !UE_BUILD_SHIPPING
+#include "Diagnostics/MiniTask26ActionProbeHooks.h"
+#endif
+
 #include "CommonActivatableWidget.h"
 #include "CommonLocalPlayer.h"
 #include "Components/GameFrameworkComponentManager.h"
@@ -18,6 +22,8 @@
 #include "System/MiniLogChannels.h"
 #include "UI/MiniGameUIPolicy.h"
 #include "UI/MiniPrimaryGameLayout.h"
+#include "UI/MiniHUDLayout.h"
+#include "Widgets/CommonActivatableWidgetContainer.h"
 
 #if WITH_EDITORONLY_DATA
 #include "AssetRegistry/AssetBundleData.h"
@@ -106,7 +112,13 @@ void UMiniGameFeatureAction_AddWidgets::AddToWorld(UWorld* World,
 		BindWorldPolicy(World, ChangeContext);
 		return;
 	}
-	Context->Worlds.Add(WorldKey);
+	FPerWorldData& WorldData = Context->Worlds.Add(WorldKey);
+	WorldData.Generation = ++NextWorldGeneration;
+	WorldData.LayoutRequests = Context->LayoutRequests;
+	WorldData.ElementRequests = Context->ElementRequests;
+#if !UE_BUILD_SHIPPING
+	FMiniTask26ActionProbeHooks::ActionWorldPrepared().Broadcast(this, World);
+#endif
 	BindWorldPolicy(World, ChangeContext);
 	// AddExtensionHandler synchronously calls existing receivers: install our World first.
 	TSharedPtr<FComponentRequestHandle> Receiver = Manager->AddExtensionHandler(
@@ -238,7 +250,7 @@ void UMiniGameFeatureAction_AddWidgets::TryAddHUD(AMiniHUD* HUD,
 	BindWorldPolicy(WorldKey.Get(), ChangeContext);
 	FPerContextData* Context = ContextData.Find(ChangeContext);
 	FPerWorldData* World = Context ? Context->Worlds.Find(WorldKey) : nullptr;
-	if (!World || World->bProbeSuspended)
+	if (!World || World->bFailed || World->bProbeSuspended)
 	{
 		return;
 	}
@@ -271,11 +283,11 @@ void UMiniGameFeatureAction_AddWidgets::TryAddHUD(AMiniHUD* HUD,
 	Data.LocalPlayer = LocalPlayer;
 	const uint64 Generation = Data.Generation;
 	TArray<FSoftObjectPath> Paths;
-	for (const FMiniHUDLayoutRequest& Entry : Context->LayoutRequests)
+	for (const FMiniHUDLayoutRequest& Entry : World->LayoutRequests)
 	{
 		if (!Entry.LayoutClass.IsNull()) { Paths.AddUnique(Entry.LayoutClass.ToSoftObjectPath()); }
 	}
-	for (const FMiniHUDElementRequest& Entry : Context->ElementRequests)
+	for (const FMiniHUDElementRequest& Entry : World->ElementRequests)
 	{
 		if (!Entry.WidgetClass.IsNull()) { Paths.AddUnique(Entry.WidgetClass.ToSoftObjectPath()); }
 	}
@@ -290,13 +302,15 @@ void UMiniGameFeatureAction_AddWidgets::TryAddHUD(AMiniHUD* HUD,
 		FStreamableManager::DefaultAsyncLoadPriority, false, true, TEXT("MiniAddWidgets"));
 	if (Data.LoadHandle.IsValid())
 	{
-		Data.LoadHandle->StartStalledHandle();
+		bool bHoldStalled = false;
+#if !UE_BUILD_SHIPPING
+		FMiniTask26ActionProbeHooks::HandlePrepared().Broadcast(this, WorldKey.Get(), Data.LoadHandle, bHoldStalled);
+#endif
+		if (!bHoldStalled) { Data.LoadHandle->StartStalledHandle(); }
 	}
 	else
 	{
-		Data.bLoadFailed = true;
-		UE_LOG(LogMiniInit, Error, TEXT("MiniAddWidgets LOAD_FAILED: HUD=%s Action=%s"),
-			*GetNameSafe(HUD), *GetPathName());
+		FailHUD(ChangeContext, WorldKey, HUD, Generation, TEXT("class load request failed"));
 	}
 }
 
@@ -307,7 +321,8 @@ UMiniGameFeatureAction_AddWidgets::FPerHUDData* UMiniGameFeatureAction_AddWidget
 	FPerContextData* Context = ContextData.Find(ChangeContext);
 	FPerWorldData* World = Context ? Context->Worlds.Find(WorldKey) : nullptr;
 	FPerHUDData* Data = World ? World->HUDs.Find(HUDKey) : nullptr;
-	return World && !World->bProbeSuspended && Data && Data->Generation == Generation ? Data : nullptr;
+	return WorldKey.IsValid() && !WorldKey->bIsTearingDown && World && !World->bFailed &&
+		!World->bProbeSuspended && Data && Data->Generation == Generation ? Data : nullptr;
 }
 
 void UMiniGameFeatureAction_AddWidgets::HandleClassesLoaded(FGameFeatureStateChangeContext ChangeContext,
@@ -319,28 +334,29 @@ void UMiniGameFeatureAction_AddWidgets::HandleClassesLoaded(FGameFeatureStateCha
 		return;
 	}
 	FPerContextData* Context = ContextData.Find(ChangeContext);
-	for (const FMiniHUDLayoutRequest& Entry : Context->LayoutRequests)
+	FPerWorldData* World = Context ? Context->Worlds.Find(WorldKey) : nullptr;
+	if (!World) { return; }
+	for (const FMiniHUDLayoutRequest& Entry : World->LayoutRequests)
 	{
 		UClass* Class = Entry.LayoutClass.Get();
 		if (!Class || !Class->IsChildOf(UCommonActivatableWidget::StaticClass()) ||
-			Class->HasAnyClassFlags(CLASS_Abstract) || !Entry.LayerTag.IsValid())
+			Class->HasAnyClassFlags(CLASS_Abstract | CLASS_Deprecated | CLASS_NewerVersionExists) || !Entry.LayerTag.IsValid())
 		{
 			Data->bLoadFailed = true;
 		}
 	}
-	for (const FMiniHUDElementRequest& Entry : Context->ElementRequests)
+	for (const FMiniHUDElementRequest& Entry : World->ElementRequests)
 	{
 		UClass* Class = Entry.WidgetClass.Get();
 		if (!Class || !Class->IsChildOf(UUserWidget::StaticClass()) ||
-			Class->HasAnyClassFlags(CLASS_Abstract) || !Entry.SlotTag.IsValid())
+			Class->HasAnyClassFlags(CLASS_Abstract | CLASS_Deprecated | CLASS_NewerVersionExists) || !Entry.SlotTag.IsValid())
 		{
 			Data->bLoadFailed = true;
 		}
 	}
 	if (Data->bLoadFailed)
 	{
-		UE_LOG(LogMiniInit, Error, TEXT("MiniAddWidgets INVALID_CLASS_OR_TAG: HUD=%s Action=%s"),
-			*GetNameSafe(HUDKey.Get()), *GetPathName());
+		FailHUD(ChangeContext, WorldKey, HUDKey, Generation, TEXT("required widget class or tag is invalid"));
 		return;
 	}
 	Data->bClassesLoaded = true;
@@ -379,8 +395,8 @@ void UMiniGameFeatureAction_AddWidgets::TryInjectHUD(const FGameFeatureStateChan
 			Current->bInjecting = false;
 		}
 	};
-	const TArray<FMiniHUDLayoutRequest> LayoutRequests = ContextData.FindChecked(ChangeContext).LayoutRequests;
-	const TArray<FMiniHUDElementRequest> ElementRequests = ContextData.FindChecked(ChangeContext).ElementRequests;
+	const TArray<FMiniHUDLayoutRequest> LayoutRequests = ContextData.FindChecked(ChangeContext).Worlds.FindChecked(WorldKey).LayoutRequests;
+	const TArray<FMiniHUDElementRequest> ElementRequests = ContextData.FindChecked(ChangeContext).Worlds.FindChecked(WorldKey).ElementRequests;
 	for (int32 Index = 0; Index < LayoutRequests.Num(); ++Index)
 	{
 		Data = FindHUD(ChangeContext, WorldKey, HUDKey, Generation);
@@ -401,14 +417,15 @@ void UMiniGameFeatureAction_AddWidgets::TryInjectHUD(const FGameFeatureStateChan
 		}
 		else
 		{
-			UE_LOG(LogMiniInit, Error, TEXT("MiniAddWidgets NO_LAYER: HUD=%s Layer=%s"),
-				*GetNameSafe(HUD), *Entry.LayerTag.ToString());
+			FailHUD(ChangeContext, WorldKey, HUDKey, Generation,
+				FString::Printf(TEXT("NO_LAYER_OR_WIDGET: layer=%s class=%s"), *Entry.LayerTag.ToString(), *Entry.LayoutClass.ToString()));
+			return;
 		}
 	}
 	UUIExtensionSubsystem* Extensions = WorldKey->GetSubsystem<UUIExtensionSubsystem>();
 	if (!Extensions && !ElementRequests.IsEmpty())
 	{
-		UE_LOG(LogMiniInit, Error, TEXT("MiniAddWidgets NO_EXTENSION_SUBSYSTEM: World=%s"), *GetNameSafe(WorldKey.Get()));
+		FailHUD(ChangeContext, WorldKey, HUDKey, Generation, TEXT("NO_EXTENSION_SUBSYSTEM"));
 		return;
 	}
 	for (int32 Index = 0; Index < ElementRequests.Num(); ++Index)
@@ -425,10 +442,38 @@ void UMiniGameFeatureAction_AddWidgets::TryInjectHUD(const FGameFeatureStateChan
 			Handle.Unregister();
 			return;
 		}
-		if (Handle.IsValid()) { Data->ExtensionHandles.Add(Index, MoveTemp(Handle)); }
+		if (!Handle.IsValid())
+		{
+			FailHUD(ChangeContext, WorldKey, HUDKey, Generation,
+				FString::Printf(TEXT("EXTENSION_REGISTRATION_FAILED: slot=%s"), *Entry.SlotTag.ToString()));
+			return;
+		}
+		// The native Mini HUD constructs matched extensions synchronously. A valid
+		// registration handle alone does not prove an actual widget was attached.
+		bool bAttached = false;
+		if (UCommonActivatableWidgetContainerBase* GameLayer = Root->GetLayerWidget(UMiniPrimaryGameLayout::GetGameLayerTag()))
+		{
+			for (UCommonActivatableWidget* LayoutWidget : GameLayer->GetWidgetList())
+			{
+				if (const UMiniHUDLayout* Layout = Cast<UMiniHUDLayout>(LayoutWidget))
+				{
+					bAttached |= Layout->HasAttachedExtensionWidget(Handle);
+				}
+			}
+		}
+		if (!bAttached)
+		{
+			Handle.Unregister();
+			FailHUD(ChangeContext, WorldKey, HUDKey, Generation,
+				FString::Printf(TEXT("REQUIRED_EXTENSION_NOT_ATTACHED: slot=%s class=%s"), *Entry.SlotTag.ToString(), *Entry.WidgetClass.ToString()));
+			return;
+		}
+		Data->ExtensionHandles.Add(Index, MoveTemp(Handle));
 	}
+	Data = FindHUD(ChangeContext, WorldKey, HUDKey, Generation);
+	if (!Data) { return; }
 	UE_LOG(LogMiniInit, Display, TEXT("MiniAddWidgets INJECTED: HUD=%s Layouts=%d Elements=%d"),
-		*GetNameSafe(HUD), LayoutRequests.Num(), ElementRequests.Num());
+		*GetNameSafe(HUD), Data->AddedLayouts.Num(), Data->ExtensionHandles.Num());
 }
 
 void UMiniGameFeatureAction_AddWidgets::RemoveHUD(const FGameFeatureStateChangeContext& ChangeContext,
@@ -608,3 +653,85 @@ EDataValidationResult UMiniGameFeatureAction_AddWidgets::IsDataValid(FDataValida
 		: EDataValidationResult::Valid;
 }
 #endif
+
+bool UMiniGameFeatureAction_AddWidgets::GatherRequiredClasses(UWorld* World, bool bAuthority,
+	TArray<FMiniRequiredActionClassRequest>& OutRequests, FString& OutError) const
+{
+	if (!World || World->GetNetMode() == NM_DedicatedServer) { return true; }
+	const TArray<FMiniHUDLayoutRequest>* LayoutRequests = &Layouts;
+	const TArray<FMiniHUDElementRequest>* ElementRequests = &Elements;
+	for (const auto& Pair : ContextData)
+	{
+		if (Pair.Value.Worlds.Contains(World))
+		{
+			LayoutRequests = &Pair.Value.Worlds.FindChecked(World).LayoutRequests;
+			ElementRequests = &Pair.Value.Worlds.FindChecked(World).ElementRequests;
+			break;
+		}
+	}
+	for (int32 Index = 0; Index < LayoutRequests->Num(); ++Index)
+	{
+		const FMiniHUDLayoutRequest& Entry = (*LayoutRequests)[Index];
+		if (Entry.LayoutClass.IsNull() || !Entry.LayerTag.IsValid())
+		{
+			OutError = FString::Printf(TEXT("%s Layout[%d] requires a class and layer tag"), *GetPathName(), Index);
+			return false;
+		}
+		FMiniRequiredActionClassRequest& Request = OutRequests.AddDefaulted_GetRef();
+		Request.Action = const_cast<UMiniGameFeatureAction_AddWidgets*>(this);
+		Request.ClassPath = Entry.LayoutClass.ToSoftObjectPath();
+		Request.Entry = FString::Printf(TEXT("Layout[%d] layer=%s"), Index, *Entry.LayerTag.ToString());
+		Request.Kind = EMiniRequiredActionClassKind::Layout;
+	}
+	for (int32 Index = 0; Index < ElementRequests->Num(); ++Index)
+	{
+		const FMiniHUDElementRequest& Entry = (*ElementRequests)[Index];
+		if (Entry.WidgetClass.IsNull() || !Entry.SlotTag.IsValid())
+		{
+			OutError = FString::Printf(TEXT("%s Element[%d] requires a class and slot tag"), *GetPathName(), Index);
+			return false;
+		}
+		FMiniRequiredActionClassRequest& Request = OutRequests.AddDefaulted_GetRef();
+		Request.Action = const_cast<UMiniGameFeatureAction_AddWidgets*>(this);
+		Request.ClassPath = Entry.WidgetClass.ToSoftObjectPath();
+		Request.Entry = FString::Printf(TEXT("Element[%d] slot=%s"), Index, *Entry.SlotTag.ToString());
+		Request.Kind = EMiniRequiredActionClassKind::HUDElement;
+	}
+	return true;
+}
+
+bool UMiniGameFeatureAction_AddWidgets::GetRequiredFailure(const UWorld* World,
+	uint64& OutGeneration, FString& OutReason) const
+{
+	for (const auto& Context : ContextData)
+	{
+		for (const auto& Pair : Context.Value.Worlds)
+		{
+			if (Pair.Key.Get() == World && Pair.Value.bFailed)
+			{
+				OutGeneration = Pair.Value.Generation;
+				OutReason = Pair.Value.FailureReason;
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+void UMiniGameFeatureAction_AddWidgets::FailHUD(const FGameFeatureStateChangeContext& ChangeContext,
+	TWeakObjectPtr<UWorld> WorldKey, TWeakObjectPtr<AMiniHUD> HUDKey, uint64 Generation, const FString& Reason)
+{
+	if (!FindHUD(ChangeContext, WorldKey, HUDKey, Generation)) { return; }
+	FPerWorldData* World = ContextData.FindChecked(ChangeContext).Worlds.Find(WorldKey);
+	World->bFailed = true;
+	World->FailureReason = Reason;
+	const uint64 WorldGeneration = World->Generation;
+	const FString WorldName = GetNameSafe(WorldKey.Get());
+	TMap<TWeakObjectPtr<AMiniHUD>, FPerHUDData> HUDs = MoveTemp(World->HUDs);
+	// Detach ownership before callbacks from cancel/destruct can reenter.
+	for (auto& Pair : HUDs) { ResetHUD(Pair.Value); }
+	UE_LOG(LogMiniInit, Error, TEXT("MiniAddWidgets REQUIRED_FAILED: World=%s Action=%s Generation=%llu Reason=%s"),
+		*WorldName, *GetPathName(), WorldGeneration, *Reason);
+	OnRequiredActionFailed.Broadcast(WorldKey.Get(), this, WorldGeneration, Reason);
+	// Failure may synchronously deactivate this context; never reuse World here.
+}

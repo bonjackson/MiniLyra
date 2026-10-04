@@ -60,6 +60,9 @@ public:
 		uint32 ShotSequence, const FGuid& SourceItemId);
 
 private:
+#if !UE_BUILD_SHIPPING
+	friend class AMiniTask26NetworkProbeActor;
+#endif
 	UFUNCTION(Server, Reliable)
 	void ServerFire(FVector_NetQuantize CameraOrigin, FVector_NetQuantizeNormal AimDirection,
 		uint32 ShotSequence, FGuid SourceItemId, UMiniEquipmentInstance* SourceEquipment);

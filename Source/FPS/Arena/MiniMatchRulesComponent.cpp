@@ -68,9 +68,9 @@ void UMiniMatchRulesComponent::BeginPlay()
 	AMiniGameState* State = Cast<AMiniGameState>(GetOwner());
 	if (!State || !State->GetExperienceManagerComponent()) { StopMatchRules(); return; }
 	State->GetExperienceManagerComponent()->CallOrRegister_OnExperienceFailed(FOnMiniExperienceFailed::FDelegate::CreateWeakLambda(this,
-		[this, ExpectedGeneration](const FString&)
+		[this](const FString&)
 		{
-			if (RulesGeneration == ExpectedGeneration && bContextAvailable) { StopMatchRules(); }
+			if (bContextAvailable) { StopMatchRules(); }
 		}));
 	State->GetExperienceManagerComponent()->CallOrRegister_OnExperienceLoaded(FOnMiniExperienceLoaded::FDelegate::CreateWeakLambda(this,
 		[this, ExpectedGeneration](const UMiniExperienceDefinition*)

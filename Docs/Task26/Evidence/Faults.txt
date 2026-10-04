@@ -1,0 +1,102 @@
+Task26 fault matrix: VerifyTask26Faults.ps1 -Mode All -TimeoutSeconds 240
+Operator-confirmed actual runner ExitCode=0. Nineteen tracked processes exited normally with ExitCode=0.
+Editor source built successfully in 165.56 seconds. Runtime results below precede later network additions.
+One mutation in one claimed World (normal control has zero mutations). Recovery measurements use real cleanup before GC, then pure cached data.
+AssetReturn exercises the registered PrimaryAsset path with a real stalled streamable request; MissingPrimary separately exercises normal LoadPrimaryAsset failure.
+
+=== Task26-Faults-ActorActionReturn.log ===
+[2026.10.03-16.59.19:245][ 20]LogMiniInit: Display: MiniTask26Probe PENDING_VERIFIED: Mode=ActorActionReturn World=L_MiniPractice State=4 RealHandleOrPlugin=1
+[2026.10.03-16.59.19:250][ 21]LogMiniInit: Display: MiniTask26Probe CLEANUP_SNAPSHOT: Mode=ActorActionReturn Released=1 BeforeWorldGarbageCollection=1 PureData=1
+[2026.10.03-16.59.19:319][ 24]LogMiniInit: Display: MiniTask26Probe PASS: Mode=ActorActionReturn Claimed=1 Mutations=1 TargetLoaded=0 TargetFailed=0 PendingObserved=1 Holds=1 RejectedOtherWorld=1 WorldRecords=3 LateFeatureActivated=0 LateFeatureDeactivated=0
+
+=== Task26-Faults-ActorAsyncFailure.log ===
+[2026.10.03-16.58.32:462][ 21]LogMiniInit: Display: MiniTask26Probe FAILED_OBSERVED: Mode=ActorAsyncFailure World=L_MiniPractice Target=1 Count=1 Loaded=0 Reason=Required Action '/Game/Mini/System/ActionSets/DA_MiniPracticeActionSet.DA_MiniPracticeActionSet:MiniPractice_AddActors' failed in World 'L_MiniPractice' (generation 1): class must be concrete and replicated
+[2026.10.03-16.58.32:464][ 23]LogMiniInit: Display: MiniTask26Probe CLEANUP_SNAPSHOT: Mode=ActorAsyncFailure Released=1 BeforeWorldGarbageCollection=1 PureData=1
+[2026.10.03-16.58.32:536][ 26]LogMiniInit: Display: MiniTask26Probe PASS: Mode=ActorAsyncFailure Claimed=1 Mutations=1 TargetLoaded=0 TargetFailed=1 PendingObserved=0 Holds=0 RejectedOtherWorld=1 WorldRecords=3 LateFeatureActivated=0 LateFeatureDeactivated=0
+
+=== Task26-Faults-ActorClass.log ===
+[2026.10.03-16.58.19:422][ 18]LogMiniInit: Display: MiniTask26Probe FAILED_OBSERVED: Mode=ActorClass World=L_MiniPractice Target=1 Count=1 Loaded=0 Reason=Required Action '/Game/Mini/System/ActionSets/DA_MiniPracticeActionSet.DA_MiniPracticeActionSet:MiniPractice_AddActors' Actor[0] class '/Game/Mini/Diagnostics/Task26/MissingActorClass.MissingActorClass_C' is missing or invalid
+[2026.10.03-16.58.19:425][ 20]LogMiniInit: Display: MiniTask26Probe CLEANUP_SNAPSHOT: Mode=ActorClass Released=1 BeforeWorldGarbageCollection=1 PureData=1
+[2026.10.03-16.58.19:501][ 23]LogMiniInit: Display: MiniTask26Probe PASS: Mode=ActorClass Claimed=1 Mutations=1 TargetLoaded=0 TargetFailed=1 PendingObserved=0 Holds=0 RejectedOtherWorld=1 WorldRecords=3 LateFeatureActivated=0 LateFeatureDeactivated=0
+
+=== Task26-Faults-AssetReturn.log ===
+[2026.10.03-16.58.52:688][  6]LogMiniInit: Display: MiniTask26Probe PENDING_VERIFIED: Mode=AssetReturn World=L_MiniPractice State=1 RealHandleOrPlugin=1
+[2026.10.03-16.58.52:690][  7]LogMiniInit: Display: MiniTask26Probe CLEANUP_SNAPSHOT: Mode=AssetReturn Released=1 BeforeWorldGarbageCollection=1 PureData=1
+[2026.10.03-16.58.52:742][ 10]LogMiniInit: Display: MiniTask26Probe PASS: Mode=AssetReturn Claimed=1 Mutations=1 TargetLoaded=0 TargetFailed=0 PendingObserved=1 Holds=1 RejectedOtherWorld=1 WorldRecords=3 LateFeatureActivated=0 LateFeatureDeactivated=0
+
+=== Task26-Faults-Deadline.log ===
+[2026.10.03-16.59.25:051][  3]LogMiniInit: Display: MiniTask26Probe PENDING_VERIFIED: Mode=Deadline World=L_MiniFrontEnd State=3 RealHandleOrPlugin=1
+[2026.10.03-17.00.25:020][ 36]LogMiniInit: Display: MiniTask26Probe FAILED_OBSERVED: Mode=Deadline World=L_MiniFrontEnd Target=1 Count=1 Loaded=0 Reason=Experience loading exceeded 60 seconds in LoadingActionResources
+[2026.10.03-17.00.25:035][ 38]LogMiniInit: Display: MiniTask26Probe CLEANUP_SNAPSHOT: Mode=Deadline Released=1 BeforeWorldGarbageCollection=1 PureData=1
+[2026.10.03-17.00.25:105][ 41]LogMiniInit: Display: MiniTask26Probe PASS: Mode=Deadline Claimed=1 Mutations=1 TargetLoaded=0 TargetFailed=1 PendingObserved=1 Holds=1 RejectedOtherWorld=2 WorldRecords=2 LateFeatureActivated=0 LateFeatureDeactivated=0
+
+=== Task26-Faults-FailedFrontQuit.log ===
+[2026.10.03-17.00.31:328][  4]LogMiniInit: Display: MiniTask26Probe FAILED_OBSERVED: Mode=FailedFrontQuit World=L_MiniFrontEnd Target=1 Count=1 Loaded=0 Reason=Required Action '/Game/Mini/System/Experiences/DA_MiniFrontEndExperience.DA_MiniFrontEndExperience:MiniFrontEnd_AddWidgets' Layout[0] layer=UI.Layer.Menu class '/Game/Mini/Diagnostics/Task26/MissingFailedFrontQuit.MissingFailedFrontQuit_C' is missing or invalid
+[2026.10.03-17.00.31:329][  5]LogMiniInit: Display: MiniTask26Probe PASS: Mode=FailedFrontQuit Claimed=1 Mutations=1 TargetLoaded=0 TargetFailed=1 PendingObserved=0 Holds=0 RejectedOtherWorld=0 WorldRecords=1 LateFeatureActivated=0 LateFeatureDeactivated=0
+
+=== Task26-Faults-FeatureReturn.log ===
+[2026.10.03-16.58.59:068][ 18]LogMiniInit: Display: MiniTask26Probe FEATURE_REAL_PAUSED: Plugin=MiniShooterCore State=Mounting ManagerPending=1 FiniteSeconds=15
+[2026.10.03-16.58.59:069][ 19]LogMiniInit: Display: MiniTask26Probe PENDING_VERIFIED: Mode=FeatureReturn World=L_MiniPractice State=2 RealHandleOrPlugin=1
+[2026.10.03-16.58.59:071][ 20]LogMiniInit: Display: MiniTask26Probe CLEANUP_SNAPSHOT: Mode=FeatureReturn Released=1 BeforeWorldGarbageCollection=1 PureData=1
+[2026.10.03-16.58.59:156][ 23]LogMiniInit: Display: MiniTask26Probe PASS: Mode=FeatureReturn Claimed=1 Mutations=1 TargetLoaded=0 TargetFailed=0 PendingObserved=1 Holds=0 RejectedOtherWorld=2 WorldRecords=3 LateFeatureActivated=1 LateFeatureDeactivated=1
+
+=== Task26-Faults-FrontClass.log ===
+[2026.10.03-16.58.06:065][  4]LogMiniInit: Display: MiniTask26Probe FAILED_OBSERVED: Mode=FrontClass World=L_MiniFrontEnd Target=1 Count=1 Loaded=0 Reason=Required Action '/Game/Mini/System/Experiences/DA_MiniFrontEndExperience.DA_MiniFrontEndExperience:MiniFrontEnd_AddWidgets' Layout[0] layer=UI.Layer.Menu class '/Game/Mini/Diagnostics/Task26/MissingFrontClass.MissingFrontClass_C' is missing or invalid
+[2026.10.03-16.58.06:067][  6]LogMiniInit: Display: MiniTask26Probe CLEANUP_SNAPSHOT: Mode=FrontClass Released=1 BeforeWorldGarbageCollection=1 PureData=1
+[2026.10.03-16.58.06:119][  9]LogMiniInit: Display: MiniTask26Probe PASS: Mode=FrontClass Claimed=1 Mutations=1 TargetLoaded=0 TargetFailed=1 PendingObserved=0 Holds=0 RejectedOtherWorld=2 WorldRecords=2 LateFeatureActivated=0 LateFeatureDeactivated=0
+
+=== Task26-Faults-HUDClass.log ===
+[2026.10.03-16.58.12:423][ 23]LogMiniInit: Display: MiniTask26Probe FAILED_OBSERVED: Mode=HUDClass World=L_MiniPractice Target=1 Count=1 Loaded=0 Reason=Required Action '/MiniShooterCore/GameFeatureData.GameFeatureData:MiniTask19_AddWidgets' Layout[0] layer=UI.Layer.Game class '/Game/Mini/Diagnostics/Task26/MissingHUDClass.MissingHUDClass_C' is missing or invalid
+[2026.10.03-16.58.12:426][ 25]LogMiniInit: Display: MiniTask26Probe CLEANUP_SNAPSHOT: Mode=HUDClass Released=1 BeforeWorldGarbageCollection=1 PureData=1
+[2026.10.03-16.58.12:496][ 28]LogMiniInit: Display: MiniTask26Probe PASS: Mode=HUDClass Claimed=1 Mutations=1 TargetLoaded=0 TargetFailed=1 PendingObserved=0 Holds=0 RejectedOtherWorld=1 WorldRecords=3 LateFeatureActivated=0 LateFeatureDeactivated=0
+
+=== Task26-Faults-MissingFeature.log ===
+[2026.10.03-16.57.52:489][ 22]LogMiniInit: Display: MiniTask26Probe FAILED_OBSERVED: Mode=MissingFeature World=L_MiniPractice Target=1 Count=1 Loaded=0 Reason=GameFeature plugin 'MiniDefinitelyMissing' from 'DA_MiniMissingFeatureExperience' was not found
+[2026.10.03-16.57.52:494][ 24]LogMiniInit: Display: MiniTask26Probe CLEANUP_SNAPSHOT: Mode=MissingFeature Released=1 BeforeWorldGarbageCollection=1 PureData=1
+[2026.10.03-16.57.52:585][ 27]LogMiniInit: Display: MiniTask26Probe PASS: Mode=MissingFeature Claimed=1 Mutations=1 TargetLoaded=0 TargetFailed=1 PendingObserved=0 Holds=0 RejectedOtherWorld=1 WorldRecords=3 LateFeatureActivated=0 LateFeatureDeactivated=0
+
+=== Task26-Faults-MissingPrimary.log ===
+[2026.10.03-16.57.59:504][  8]LogMiniInit: Display: MiniTask26Probe FAILED_OBSERVED: Mode=MissingPrimary World=L_MiniPractice Target=1 Count=1 Loaded=0 Reason=Experience 'MiniExperienceDefinition:DA_MiniTask26MissingPrimary' finished loading without a MiniExperienceDefinition object
+[2026.10.03-16.57.59:505][ 10]LogMiniInit: Display: MiniTask26Probe CLEANUP_SNAPSHOT: Mode=MissingPrimary Released=1 BeforeWorldGarbageCollection=1 PureData=1
+[2026.10.03-16.57.59:554][ 13]LogMiniInit: Display: MiniTask26Probe PASS: Mode=MissingPrimary Claimed=1 Mutations=1 TargetLoaded=0 TargetFailed=1 PendingObserved=0 Holds=0 RejectedOtherWorld=1 WorldRecords=3 LateFeatureActivated=0 LateFeatureDeactivated=0
+
+=== Task26-Faults-NoLayer.log ===
+[2026.10.03-16.58.39:417][  4]LogMiniInit: Display: MiniTask26Probe FAILED_OBSERVED: Mode=NoLayer World=L_MiniFrontEnd Target=1 Count=1 Loaded=1 Reason=Required Action '/Game/Mini/System/Experiences/DA_MiniFrontEndExperience.DA_MiniFrontEndExperience:MiniFrontEnd_AddWidgets' failed in World 'L_MiniFrontEnd' (generation 1): NO_LAYER_OR_WIDGET: layer=UI.HUD.Health class=/Script/FPS.MiniFrontEndWidget
+[2026.10.03-16.58.39:420][  6]LogMiniInit: Display: MiniTask26Probe CLEANUP_SNAPSHOT: Mode=NoLayer Released=1 BeforeWorldGarbageCollection=1 PureData=1
+[2026.10.03-16.58.39:466][  9]LogMiniInit: Display: MiniTask26Probe PASS: Mode=NoLayer Claimed=1 Mutations=1 TargetLoaded=1 TargetFailed=1 PendingObserved=0 Holds=0 RejectedOtherWorld=2 WorldRecords=2 LateFeatureActivated=0 LateFeatureDeactivated=0
+
+=== Task26-Faults-NormalPractice.log ===
+[2026.10.03-16.57.37:234][ 27]LogMiniInit: Display: MiniTask26Probe NORMAL_READY: ActualHUDWidgets=4 ActualAuthorityActorsReady=1 LocalInput=1
+[2026.10.03-16.57.37:241][ 28]LogMiniInit: Display: MiniTask26Probe CLEANUP_SNAPSHOT: Mode=NormalPractice Released=1 BeforeWorldGarbageCollection=1 PureData=1
+[2026.10.03-16.57.37:289][ 31]LogMiniInit: Display: MiniTask26Probe PASS: Mode=NormalPractice Claimed=1 Mutations=0 TargetLoaded=1 TargetFailed=0 PendingObserved=0 Holds=0 RejectedOtherWorld=1 WorldRecords=3 LateFeatureActivated=0 LateFeatureDeactivated=0
+
+=== Task26-Faults-NoSlot.log ===
+[2026.10.03-16.58.45:581][ 19]LogMiniInit: Display: MiniTask26Probe FAILED_OBSERVED: Mode=NoSlot World=L_MiniPractice Target=1 Count=1 Loaded=0 Reason=Required Action '/MiniShooterCore/GameFeatureData.GameFeatureData:MiniTask19_AddWidgets' failed in World 'L_MiniPractice' (generation 1): REQUIRED_EXTENSION_NOT_ATTACHED: slot=UI.Layer.Modal class=/Script/FPS.MiniHUDHealthWidget
+[2026.10.03-16.58.45:586][ 21]LogMiniInit: Display: MiniTask26Probe CLEANUP_SNAPSHOT: Mode=NoSlot Released=1 BeforeWorldGarbageCollection=1 PureData=1
+[2026.10.03-16.58.45:667][ 24]LogMiniInit: Display: MiniTask26Probe PASS: Mode=NoSlot Claimed=1 Mutations=1 TargetLoaded=0 TargetFailed=1 PendingObserved=0 Holds=0 RejectedOtherWorld=1 WorldRecords=3 LateFeatureActivated=0 LateFeatureDeactivated=0
+
+=== Task26-Faults-ResourcesReturn.log ===
+[2026.10.03-16.59.06:181][ 18]LogMiniInit: Display: MiniTask26Probe PENDING_VERIFIED: Mode=ResourcesReturn World=L_MiniPractice State=3 RealHandleOrPlugin=1
+[2026.10.03-16.59.06:187][ 19]LogMiniInit: Display: MiniTask26Probe CLEANUP_SNAPSHOT: Mode=ResourcesReturn Released=1 BeforeWorldGarbageCollection=1 PureData=1
+[2026.10.03-16.59.06:268][ 22]LogMiniInit: Display: MiniTask26Probe PASS: Mode=ResourcesReturn Claimed=1 Mutations=1 TargetLoaded=0 TargetFailed=0 PendingObserved=1 Holds=1 RejectedOtherWorld=1 WorldRecords=3 LateFeatureActivated=0 LateFeatureDeactivated=0
+
+=== Task26-Faults-StaleFailure.log ===
+[2026.10.03-17.00.37:323][  5]LogMiniInit: Display: MiniTask26Probe FAILED_OBSERVED: Mode=StaleFailure World=L_MiniFrontEnd Target=1 Count=1 Loaded=1 Reason=Required Action '/Game/Mini/System/Experiences/DA_MiniFrontEndExperience.DA_MiniFrontEndExperience:MiniFrontEnd_AddWidgets' failed in World 'L_MiniFrontEnd' (generation 1): required widget class or tag is invalid
+[2026.10.03-17.00.37:325][  7]LogMiniInit: Display: MiniTask26Probe CLEANUP_SNAPSHOT: Mode=StaleFailure Released=1 BeforeWorldGarbageCollection=1 PureData=1
+[2026.10.03-17.00.37:374][ 10]LogMiniInit: Display: MiniTask26Probe STALE_FAILURE_REJECTED: ActualPayloadReplayed=1 OldWorldEnded=1 NewLoaded=1 NewFailed=0 NewError=0
+[2026.10.03-17.00.37:374][ 10]LogMiniInit: Display: MiniTask26Probe PASS: Mode=StaleFailure Claimed=1 Mutations=1 TargetLoaded=1 TargetFailed=1 PendingObserved=0 Holds=0 RejectedOtherWorld=2 WorldRecords=2 LateFeatureActivated=0 LateFeatureDeactivated=0
+
+=== Task26-Faults-UIActionReturn.log ===
+[2026.10.03-16.59.13:054][  4]LogMiniInit: Display: MiniTask26Probe PENDING_VERIFIED: Mode=UIActionReturn World=L_MiniFrontEnd State=5 RealHandleOrPlugin=1
+[2026.10.03-16.59.13:056][  5]LogMiniInit: Display: MiniTask26Probe CLEANUP_SNAPSHOT: Mode=UIActionReturn Released=1 BeforeWorldGarbageCollection=1 PureData=1
+[2026.10.03-16.59.13:107][  8]LogMiniInit: Display: MiniTask26Probe PASS: Mode=UIActionReturn Claimed=1 Mutations=1 TargetLoaded=1 TargetFailed=0 PendingObserved=1 Holds=1 RejectedOtherWorld=2 WorldRecords=2 LateFeatureActivated=0 LateFeatureDeactivated=0
+
+=== Task26-Faults-UIAsyncFailure.log ===
+[2026.10.03-16.58.26:299][  5]LogMiniInit: Display: MiniTask26Probe FAILED_OBSERVED: Mode=UIAsyncFailure World=L_MiniFrontEnd Target=1 Count=1 Loaded=1 Reason=Required Action '/Game/Mini/System/Experiences/DA_MiniFrontEndExperience.DA_MiniFrontEndExperience:MiniFrontEnd_AddWidgets' failed in World 'L_MiniFrontEnd' (generation 1): required widget class or tag is invalid
+[2026.10.03-16.58.26:301][  7]LogMiniInit: Display: MiniTask26Probe CLEANUP_SNAPSHOT: Mode=UIAsyncFailure Released=1 BeforeWorldGarbageCollection=1 PureData=1
+[2026.10.03-16.58.26:349][ 10]LogMiniInit: Display: MiniTask26Probe PASS: Mode=UIAsyncFailure Claimed=1 Mutations=1 TargetLoaded=1 TargetFailed=1 PendingObserved=0 Holds=0 RejectedOtherWorld=2 WorldRecords=2 LateFeatureActivated=0 LateFeatureDeactivated=0
+
+=== Task26-Faults-Unknown.log ===
+[2026.10.03-16.57.44:971][  6]LogMiniInit: Display: MiniTask26Probe FAILED_OBSERVED: Mode=Unknown World=L_MiniPractice Target=1 Count=1 Loaded=0 Reason=Unknown Experience ID 'MiniExperienceDefinition:DA_MiniTask26DefinitelyMissing': no scanned asset has this ID
+[2026.10.03-16.57.44:974][  7]LogMiniInit: Display: MiniTask26Probe CLEANUP_SNAPSHOT: Mode=Unknown Released=1 BeforeWorldGarbageCollection=1 PureData=1
+[2026.10.03-16.57.45:018][ 10]LogMiniInit: Display: MiniTask26Probe PASS: Mode=Unknown Claimed=1 Mutations=1 TargetLoaded=0 TargetFailed=1 PendingObserved=0 Holds=0 RejectedOtherWorld=1 WorldRecords=3 LateFeatureActivated=0 LateFeatureDeactivated=0

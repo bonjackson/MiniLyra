@@ -134,7 +134,13 @@ function Invoke-ProbeScenario {
                     $serverText.Contains('LoadingAssets -> Failed Reason=Unknown Experience ID')
                 $clientPassed = [bool]($clientText -match '(?m)^.*MiniFlowProbe FAIL_EXPECTED: NetMode=Client\b.*Unknown Experience ID.*$') -and
                     $clientText.Contains('Experience ID replicated NetMode=Client ID=MiniExperienceDefinition:DA_MiniDefinitelyMissing') -and
-                    $clientText.Contains('LoadingAssets -> Failed Reason=Unknown Experience ID')
+                    # Authority failure can replicate before the ID's load callback.
+                    # Both paths must terminate for the exact ID/cause, without spawning.
+                    ([regex]::Matches($clientText, 'Experience state NetMode=Client ID=MiniExperienceDefinition:DA_MiniDefinitelyMissing (Unloaded|LoadingAssets) -> Failed Reason=Unknown Experience ID').Count -eq 1)
+                if ($serverText.Contains(' -> Loaded') -or $clientText.Contains(' -> Loaded') -or
+                    $serverText.Contains('MiniSpawn COMMITTED:') -or $clientText.Contains('MiniSpawn COMMITTED:')) {
+                    throw 'Unknown Experience advanced to Loaded or spawned a gameplay Pawn.'
+                }
             } else {
                 $serverPassed = $serverText.Contains($expectedServer) -and
                     $serverText.Contains("MiniGameMode selected map Experience $experienceId") -and

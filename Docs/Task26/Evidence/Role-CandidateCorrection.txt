@@ -1,0 +1,5 @@
+Initial Role candidate failure: Arena assembly contains no required AddActors class.
+Correction: use production Practice assembly across Standalone/Listen/Client/Dedicated roles; do not change gameplay assets.
+[2026.10.03-17.36.28:156][ 11]LogMiniInit: Display: MiniTask26Role RESOURCE_SCOPE: Role=Listen Peer=Listen-Server Layouts=1 Elements=4 ActorClasses=0 SelectedGFDUI=5
+[2026.10.03-17.36.28:208][ 12]LogMiniInit: Display: MiniTask26Role LOADED: Role=Listen Peer=Listen-Server Scenario=Normal Count=1 ID=MiniExperienceDefinition:DA_MiniArenaExperience
+[2026.10.03-17.36.28:211][ 13]LogMiniInit: Error: MiniTask26Role FAIL: Role=Listen Peer=Listen-Server Scenario=Normal Reason=central resource role scope did not match Client/Server UI/Actor contract

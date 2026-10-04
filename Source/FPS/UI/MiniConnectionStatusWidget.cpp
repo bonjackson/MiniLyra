@@ -48,12 +48,14 @@ void UMiniConnectionStatusWidget::NativeOnInitialized()
 	Content->AddChildToVerticalBox(TitleText)->SetPadding(FMargin(0.0f, 0.0f, 0.0f, 18.0f));
 	DetailText = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("ConnectionDetail"));
 	DetailText->SetFontSize(17.0f);
-	DetailText->SetAutoWrapText(true);
+	// The panel has a fixed 580 width and 36 padding on each side. Explicit
+	// wrapping gives the first layout pass the final text height immediately.
+	DetailText->SetWrapTextAt(508.0f);
 	DetailText->SetJustification(ETextJustify::Center);
 	Content->AddChildToVerticalBox(DetailText)->SetPadding(FMargin(0.0f, 0.0f, 0.0f, 16.0f));
 	AddressText = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("ConnectionAddress"));
 	AddressText->SetFontSize(16.0f);
-	AddressText->SetAutoWrapText(true);
+	AddressText->SetWrapTextAt(508.0f);
 	AddressText->SetJustification(ETextJustify::Center);
 	AddressText->SetColorAndOpacity(FSlateColor(FLinearColor(0.65f, 0.75f, 0.86f)));
 	Content->AddChildToVerticalBox(AddressText)->SetPadding(FMargin(0.0f, 0.0f, 0.0f, 20.0f));
@@ -73,6 +75,7 @@ void UMiniConnectionStatusWidget::NativeOnInitialized()
 	CancelButton = AddButton(TEXT("CancelButton"), LOCTEXT("Cancel", "取消并返回主菜单"));
 	CloseButton = AddButton(TEXT("CloseButton"), LOCTEXT("Close", "关闭提示"));
 	ReturnButton = AddButton(TEXT("ReturnButton"), LOCTEXT("Return", "返回主菜单"));
+	QuitButton = AddButton(TEXT("QuitButton"), LOCTEXT("Quit", "退出游戏"));
 	Super::NativeOnInitialized();
 }
 
@@ -82,6 +85,7 @@ void UMiniConnectionStatusWidget::NativeConstruct()
 	CancelButton->OnClicked.AddUniqueDynamic(this, &ThisClass::HandleCancelClicked);
 	CloseButton->OnClicked.AddUniqueDynamic(this, &ThisClass::HandleCloseClicked);
 	ReturnButton->OnClicked.AddUniqueDynamic(this, &ThisClass::HandleReturnClicked);
+	QuitButton->OnClicked.AddUniqueDynamic(this, &ThisClass::HandleQuitClicked);
 	StartListening();
 }
 
@@ -103,6 +107,7 @@ void UMiniConnectionStatusWidget::NativeDestruct()
 	CancelButton->OnClicked.RemoveDynamic(this, &ThisClass::HandleCancelClicked);
 	CloseButton->OnClicked.RemoveDynamic(this, &ThisClass::HandleCloseClicked);
 	ReturnButton->OnClicked.RemoveDynamic(this, &ThisClass::HandleReturnClicked);
+	QuitButton->OnClicked.RemoveDynamic(this, &ThisClass::HandleQuitClicked);
 	Super::NativeDestruct();
 }
 
@@ -151,6 +156,8 @@ void UMiniConnectionStatusWidget::HandleTravelState(const FMiniTravelState& Stat
 		State.Operation != EMiniTravelOperation::Quit);
 	CloseButton->SetVisibility(!State.bBusy && State.bHasError ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
 	ReturnButton->SetVisibility(!State.bBusy && State.bHasError ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
+	QuitButton->SetVisibility(!State.bBusy && State.bHasError && State.FailureCode == TEXT("MINI_EXPERIENCE_FAILED")
+		? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
 	UWidget* CurrentFocusTarget = NativeGetDesiredFocusTarget();
 	if (PreviousFocusTarget != CurrentFocusTarget)
 	{
@@ -166,13 +173,14 @@ UButton* UMiniConnectionStatusWidget::GetButton(FName Name) const
 	if (Name == TEXT("CancelButton")) { return CancelButton; }
 	if (Name == TEXT("CloseButton")) { return CloseButton; }
 	if (Name == TEXT("ReturnButton")) { return ReturnButton; }
+	if (Name == TEXT("QuitButton")) { return QuitButton; }
 	return nullptr;
 }
 FText UMiniConnectionStatusWidget::GetTitleText() const { return TitleText ? TitleText->GetText() : FText::GetEmpty(); }
 FText UMiniConnectionStatusWidget::GetDisplayText() const { return DetailText ? DetailText->GetText() : FText::GetEmpty(); }
 UWidget* UMiniConnectionStatusWidget::NativeGetDesiredFocusTarget() const
 {
-	for (UButton* Button : { CancelButton.Get(), CloseButton.Get(), ReturnButton.Get() })
+	for (UButton* Button : { CancelButton.Get(), CloseButton.Get(), ReturnButton.Get(), QuitButton.Get() })
 	{
 		if (Button && Button->GetVisibility() == ESlateVisibility::Visible && Button->GetIsEnabled()) { return Button; }
 	}
@@ -200,6 +208,15 @@ void UMiniConnectionStatusWidget::HandleReturnClicked()
 	if (UMiniTravelSubsystem* Travel = TravelSubsystem.Get())
 	{
 		if (!Travel->GetState().bBusy && Travel->GetState().bHasError) { Travel->ReturnToFrontEnd(); }
+	}
+}
+
+void UMiniConnectionStatusWidget::HandleQuitClicked()
+{
+	if (UMiniTravelSubsystem* Travel = TravelSubsystem.Get())
+	{
+		const FMiniTravelState& State = Travel->GetState();
+		if (!State.bBusy && State.bHasError && State.FailureCode == TEXT("MINI_EXPERIENCE_FAILED")) { Travel->QuitGame(); }
 	}
 }
 

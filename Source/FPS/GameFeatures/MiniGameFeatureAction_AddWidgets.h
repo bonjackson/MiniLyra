@@ -4,6 +4,7 @@
 #include "GameFeatureAction.h"
 #include "GameFeaturesSubsystem.h"
 #include "GameplayTagContainer.h"
+#include "GameFeatures/MiniRequiredActionResources.h"
 #include "UIExtensionSystem.h"
 #include "MiniGameFeatureAction_AddWidgets.generated.h"
 
@@ -66,6 +67,12 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Mini|UI")
 	TArray<FMiniHUDElementRequest> Elements;
 
+	/** All configured UI is required; Dedicated Server has no local UI requirement. */
+	bool GatherRequiredClasses(UWorld* World, bool bAuthority,
+		TArray<FMiniRequiredActionClassRequest>& OutRequests, FString& OutError) const;
+	bool GetRequiredFailure(const UWorld* World, uint64& OutGeneration, FString& OutReason) const;
+	FMiniRequiredActionFailed OnRequiredActionFailed;
+
 	virtual void OnGameFeatureActivating(FGameFeatureActivatingContext& Context) override;
 	virtual void OnGameFeatureDeactivating(FGameFeatureDeactivatingContext& Context) override;
 	virtual void OnGameFeatureUnregistering() override;
@@ -82,6 +89,10 @@ public:
 #endif
 
 private:
+#if !UE_BUILD_SHIPPING
+	friend class UMiniTask26ProbeSubsystem;
+	friend class UMiniTask26RoleProbeSubsystem;
+#endif
 	struct FPerHUDData
 	{
 		TWeakObjectPtr<ULocalPlayer> LocalPlayer;
@@ -97,11 +108,16 @@ private:
 
 	struct FPerWorldData
 	{
+		TArray<FMiniHUDLayoutRequest> LayoutRequests;
+		TArray<FMiniHUDElementRequest> ElementRequests;
 		TSharedPtr<FComponentRequestHandle> HUDReceiverHandle;
 		TWeakObjectPtr<UMiniGameUIPolicy> Policy;
 		FDelegateHandle LayoutReadyHandle;
 		FDelegateHandle LayoutUnavailableHandle;
 		TMap<TWeakObjectPtr<AMiniHUD>, FPerHUDData> HUDs;
+		uint64 Generation = 0;
+		FString FailureReason;
+		bool bFailed = false;
 		bool bProbeSuspended = false;
 	};
 
@@ -117,6 +133,7 @@ private:
 
 	TMap<FGameFeatureStateChangeContext, FPerContextData> ContextData;
 	uint64 NextHUDGeneration = 0;
+	uint64 NextWorldGeneration = 0;
 
 	void AddToWorld(UWorld* World, const FGameFeatureStateChangeContext& ChangeContext);
 	void BindWorldPolicy(UWorld* World, const FGameFeatureStateChangeContext& ChangeContext);
@@ -139,6 +156,8 @@ private:
 		TWeakObjectPtr<UWorld> WorldKey, TWeakObjectPtr<AMiniHUD> HUDKey, uint64 Generation);
 	FPerHUDData* FindHUD(const FGameFeatureStateChangeContext& ChangeContext,
 		TWeakObjectPtr<UWorld> WorldKey, TWeakObjectPtr<AMiniHUD> HUDKey, uint64 Generation);
+	void FailHUD(const FGameFeatureStateChangeContext& ChangeContext,
+		TWeakObjectPtr<UWorld> WorldKey, TWeakObjectPtr<AMiniHUD> HUDKey, uint64 Generation, const FString& Reason);
 	void RemoveHUD(const FGameFeatureStateChangeContext& ChangeContext,
 		TWeakObjectPtr<UWorld> WorldKey, TWeakObjectPtr<AMiniHUD> HUDKey);
 	static void RemoveWidgets(FPerHUDData& Data);

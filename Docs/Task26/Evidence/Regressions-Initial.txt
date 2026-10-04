@@ -1,0 +1,173 @@
+Task26 initial production-change regressions, before addon build and explicit WrapTextAt fix.
+Actual runner exits: Task05=0, Task06=0, Task19Loading -WithMedia=0, Task23 -Mode All=0.
+
+=== Task05-Invalid-Client.log ===
+[2026.10.03-17.23.40:339][ 74]LogMiniExperience: Error: Experience state NetMode=Client ID=MiniExperienceDefinition:DA_MiniDefinitelyMissing Unloaded -> Failed Reason=Unknown Experience ID 'MiniExperienceDefinition:DA_MiniDefinitelyMissing': no scanned asset has this ID
+[2026.10.03-17.23.40:340][ 74]LogMiniExperience: Display: MiniFlowProbe FAIL_EXPECTED: NetMode=Client Reason=Unknown Experience ID 'MiniExperienceDefinition:DA_MiniDefinitelyMissing': no scanned asset has this ID
+
+=== Task05-Invalid-Server.log ===
+[2026.10.03-17.23.33:901][  0]LogMiniExperience: Error: Experience state NetMode=ListenServer ID=MiniExperienceDefinition:DA_MiniDefinitelyMissing LoadingAssets -> Failed Reason=Unknown Experience ID 'MiniExperienceDefinition:DA_MiniDefinitelyMissing': no scanned asset has this ID
+[2026.10.03-17.23.33:904][  0]LogMiniExperience: Display: MiniFlowProbe FAIL_EXPECTED: NetMode=ListenServer Reason=Unknown Experience ID 'MiniExperienceDefinition:DA_MiniDefinitelyMissing': no scanned asset has this ID
+
+=== Task05-Valid-Client.log ===
+[2026.10.03-17.23.27:012][128]LogMiniExperience: Display: MiniActionResources CLASS_READY: World=L_MiniPractice Generation=1 Action=/MiniShooterCore/GameFeatureData.GameFeatureData:MiniTask19_AddWidgets Entry=Layout[0] layer=UI.Layer.Game Path=/Script/FPS.MiniHUDLayout
+[2026.10.03-17.23.27:012][128]LogMiniExperience: Display: MiniActionResources CLASS_READY: World=L_MiniPractice Generation=1 Action=/MiniShooterCore/GameFeatureData.GameFeatureData:MiniTask19_AddWidgets Entry=Element[0] slot=UI.HUD.Health Path=/Script/FPS.MiniHUDHealthWidget
+[2026.10.03-17.23.27:012][128]LogMiniExperience: Display: MiniActionResources CLASS_READY: World=L_MiniPractice Generation=1 Action=/MiniShooterCore/GameFeatureData.GameFeatureData:MiniTask19_AddWidgets Entry=Element[1] slot=UI.HUD.Ammo Path=/Script/FPS.MiniHUDAmmoWidget
+[2026.10.03-17.23.27:012][128]LogMiniExperience: Display: MiniActionResources CLASS_READY: World=L_MiniPractice Generation=1 Action=/MiniShooterCore/GameFeatureData.GameFeatureData:MiniTask19_AddWidgets Entry=Element[2] slot=UI.HUD.Crosshair Path=/Script/FPS.MiniHUDCrosshairWidget
+[2026.10.03-17.23.27:012][128]LogMiniExperience: Display: MiniActionResources CLASS_READY: World=L_MiniPractice Generation=1 Action=/MiniShooterCore/GameFeatureData.GameFeatureData:MiniTask19_AddWidgets Entry=Element[3] slot=UI.HUD.Match Path=/Script/FPS.MiniHUDMatchWidget
+[2026.10.03-17.23.27:012][128]LogMiniExperience: Display: Experience state NetMode=Client ID=MiniExperienceDefinition:DA_MiniPracticeExperience ExecutingActions -> Loaded
+[2026.10.03-17.23.27:012][128]LogMiniExperience: Display: MiniFlowProbe PASS: NetMode=Client ID=MiniExperienceDefinition:DA_MiniPracticeExperience LateSubscriber=1
+
+=== Task05-Valid-Server.log ===
+[2026.10.03-17.23.19:138][ 19]LogMiniExperience: Display: MiniActionResources CLASS_READY: World=L_MiniPractice Generation=1 Action=/Game/Mini/System/ActionSets/DA_MiniPracticeActionSet.DA_MiniPracticeActionSet:MiniPractice_AddActors Entry=Actor[0] Path=/Game/Mini/Targets/BP_MiniPracticeTarget.BP_MiniPracticeTarget_C
+[2026.10.03-17.23.19:138][ 19]LogMiniExperience: Display: MiniActionResources CLASS_READY: World=L_MiniPractice Generation=1 Action=/Game/Mini/System/ActionSets/DA_MiniPracticeActionSet.DA_MiniPracticeActionSet:MiniPractice_AddActors Entry=Actor[1] Path=/Game/Mini/Targets/BP_MiniPracticeTarget.BP_MiniPracticeTarget_C
+[2026.10.03-17.23.19:138][ 19]LogMiniExperience: Display: MiniActionResources CLASS_READY: World=L_MiniPractice Generation=1 Action=/Game/Mini/System/ActionSets/DA_MiniPracticeActionSet.DA_MiniPracticeActionSet:MiniPractice_AddActors Entry=Actor[2] Path=/Game/Mini/Targets/BP_MiniPracticeTarget.BP_MiniPracticeTarget_C
+[2026.10.03-17.23.19:138][ 19]LogMiniExperience: Display: MiniActionResources CLASS_READY: World=L_MiniPractice Generation=1 Action=/Game/Mini/System/ActionSets/DA_MiniPracticeActionSet.DA_MiniPracticeActionSet:MiniPractice_AddActors Entry=Actor[3] Path=/Script/FPS.MiniPracticeSupply
+[2026.10.03-17.23.19:138][ 19]LogMiniExperience: Display: MiniActionResources CLASS_READY: World=L_MiniPractice Generation=1 Action=/MiniShooterCore/GameFeatureData.GameFeatureData:MiniTask19_AddWidgets Entry=Layout[0] layer=UI.Layer.Game Path=/Script/FPS.MiniHUDLayout
+[2026.10.03-17.23.19:138][ 19]LogMiniExperience: Display: MiniActionResources CLASS_READY: World=L_MiniPractice Generation=1 Action=/MiniShooterCore/GameFeatureData.GameFeatureData:MiniTask19_AddWidgets Entry=Element[0] slot=UI.HUD.Health Path=/Script/FPS.MiniHUDHealthWidget
+[2026.10.03-17.23.19:138][ 19]LogMiniExperience: Display: MiniActionResources CLASS_READY: World=L_MiniPractice Generation=1 Action=/MiniShooterCore/GameFeatureData.GameFeatureData:MiniTask19_AddWidgets Entry=Element[1] slot=UI.HUD.Ammo Path=/Script/FPS.MiniHUDAmmoWidget
+[2026.10.03-17.23.19:138][ 19]LogMiniExperience: Display: MiniActionResources CLASS_READY: World=L_MiniPractice Generation=1 Action=/MiniShooterCore/GameFeatureData.GameFeatureData:MiniTask19_AddWidgets Entry=Element[2] slot=UI.HUD.Crosshair Path=/Script/FPS.MiniHUDCrosshairWidget
+[2026.10.03-17.23.19:138][ 19]LogMiniExperience: Display: MiniActionResources CLASS_READY: World=L_MiniPractice Generation=1 Action=/MiniShooterCore/GameFeatureData.GameFeatureData:MiniTask19_AddWidgets Entry=Element[3] slot=UI.HUD.Match Path=/Script/FPS.MiniHUDMatchWidget
+[2026.10.03-17.23.19:148][ 20]LogMiniExperience: Display: Experience state NetMode=ListenServer ID=MiniExperienceDefinition:DA_MiniPracticeExperience ExecutingActions -> Loaded
+[2026.10.03-17.23.19:148][ 20]LogMiniExperience: Display: MiniFlowProbe PASS: NetMode=ListenServer ID=MiniExperienceDefinition:DA_MiniPracticeExperience LateSubscriber=1
+
+=== Task06-Cook.log ===
+
+=== Task06-CookRegistry.log ===
+
+=== Task06-MissingFeature-Client.log ===
+[2026.10.03-17.24.06:087][ 72]LogMiniExperience: Error: Experience state NetMode=Client ID=MiniExperienceDefinition:DA_MiniMissingFeatureExperience Unloaded -> Failed Reason=GameFeature plugin 'MiniDefinitelyMissing' from 'DA_MiniMissingFeatureExperience' was not found
+
+=== Task06-MissingFeature-Server.log ===
+[2026.10.03-17.24.00:260][ 11]LogMiniExperience: Error: Experience state NetMode=ListenServer ID=MiniExperienceDefinition:DA_MiniMissingFeatureExperience LoadingFeatures -> Failed Reason=GameFeature plugin 'MiniDefinitelyMissing' from 'DA_MiniMissingFeatureExperience' was not found
+
+=== Task06-PackageConsole.log ===
+
+=== Task06-PackagedSmoke.log ===
+[2026.09.27-13.50.21:141][  1]LogMiniExperience: Display: Experience state NetMode=Standalone ID=MiniExperienceDefinition:DA_MiniPracticeExperience ExecutingActions -> Loaded
+[2026.09.27-13.50.21:141][  1]LogMiniExperience: Display: MiniFlowProbe PASS: NetMode=Standalone ID=MiniExperienceDefinition:DA_MiniPracticeExperience LateSubscriber=1
+
+=== Task06-PackageFreshConsole.log ===
+
+=== Task06-PackageLooseConsole.log ===
+
+=== Task06-ThreeWorldCycles.log ===
+[2026.10.03-17.24.12:899][ 12]LogMiniExperience: Display: MiniActionResources CLASS_READY: World=L_MiniPractice Generation=1 Action=/MiniShooterCore/GameFeatureData.GameFeatureData:MiniTask19_AddWidgets Entry=Layout[0] layer=UI.Layer.Game Path=/Script/FPS.MiniHUDLayout
+[2026.10.03-17.24.12:899][ 12]LogMiniExperience: Display: MiniActionResources CLASS_READY: World=L_MiniPractice Generation=1 Action=/MiniShooterCore/GameFeatureData.GameFeatureData:MiniTask19_AddWidgets Entry=Element[0] slot=UI.HUD.Health Path=/Script/FPS.MiniHUDHealthWidget
+[2026.10.03-17.24.12:899][ 12]LogMiniExperience: Display: MiniActionResources CLASS_READY: World=L_MiniPractice Generation=1 Action=/MiniShooterCore/GameFeatureData.GameFeatureData:MiniTask19_AddWidgets Entry=Element[1] slot=UI.HUD.Ammo Path=/Script/FPS.MiniHUDAmmoWidget
+[2026.10.03-17.24.12:899][ 12]LogMiniExperience: Display: MiniActionResources CLASS_READY: World=L_MiniPractice Generation=1 Action=/MiniShooterCore/GameFeatureData.GameFeatureData:MiniTask19_AddWidgets Entry=Element[2] slot=UI.HUD.Crosshair Path=/Script/FPS.MiniHUDCrosshairWidget
+[2026.10.03-17.24.12:899][ 12]LogMiniExperience: Display: MiniActionResources CLASS_READY: World=L_MiniPractice Generation=1 Action=/MiniShooterCore/GameFeatureData.GameFeatureData:MiniTask19_AddWidgets Entry=Element[3] slot=UI.HUD.Match Path=/Script/FPS.MiniHUDMatchWidget
+[2026.10.03-17.24.12:900][ 12]LogMiniExperience: Display: Experience state NetMode=Standalone ID=MiniExperienceDefinition:DA_MiniDiagnosticsExperience ExecutingActions -> Loaded
+[2026.10.03-17.24.12:900][ 12]LogMiniExperience: Display: MiniFlowProbe PASS: NetMode=Standalone ID=MiniExperienceDefinition:DA_MiniDiagnosticsExperience LateSubscriber=1
+[2026.10.03-17.24.13:186][363]LogMiniExperience: Display: MiniActionResources CLASS_READY: World=L_MiniPractice Generation=1 Action=/MiniShooterCore/GameFeatureData.GameFeatureData:MiniTask19_AddWidgets Entry=Layout[0] layer=UI.Layer.Game Path=/Script/FPS.MiniHUDLayout
+[2026.10.03-17.24.13:186][363]LogMiniExperience: Display: MiniActionResources CLASS_READY: World=L_MiniPractice Generation=1 Action=/MiniShooterCore/GameFeatureData.GameFeatureData:MiniTask19_AddWidgets Entry=Element[0] slot=UI.HUD.Health Path=/Script/FPS.MiniHUDHealthWidget
+[2026.10.03-17.24.13:186][363]LogMiniExperience: Display: MiniActionResources CLASS_READY: World=L_MiniPractice Generation=1 Action=/MiniShooterCore/GameFeatureData.GameFeatureData:MiniTask19_AddWidgets Entry=Element[1] slot=UI.HUD.Ammo Path=/Script/FPS.MiniHUDAmmoWidget
+[2026.10.03-17.24.13:186][363]LogMiniExperience: Display: MiniActionResources CLASS_READY: World=L_MiniPractice Generation=1 Action=/MiniShooterCore/GameFeatureData.GameFeatureData:MiniTask19_AddWidgets Entry=Element[2] slot=UI.HUD.Crosshair Path=/Script/FPS.MiniHUDCrosshairWidget
+[2026.10.03-17.24.13:186][363]LogMiniExperience: Display: MiniActionResources CLASS_READY: World=L_MiniPractice Generation=1 Action=/MiniShooterCore/GameFeatureData.GameFeatureData:MiniTask19_AddWidgets Entry=Element[3] slot=UI.HUD.Match Path=/Script/FPS.MiniHUDMatchWidget
+[2026.10.03-17.24.13:187][363]LogMiniExperience: Display: Experience state NetMode=Standalone ID=MiniExperienceDefinition:DA_MiniDiagnosticsExperience ExecutingActions -> Loaded
+[2026.10.03-17.24.13:187][363]LogMiniExperience: Display: MiniFlowProbe PASS: NetMode=Standalone ID=MiniExperienceDefinition:DA_MiniDiagnosticsExperience LateSubscriber=1
+[2026.10.03-17.24.13:444][825]LogMiniExperience: Display: MiniActionResources CLASS_READY: World=L_MiniPractice Generation=1 Action=/MiniShooterCore/GameFeatureData.GameFeatureData:MiniTask19_AddWidgets Entry=Layout[0] layer=UI.Layer.Game Path=/Script/FPS.MiniHUDLayout
+[2026.10.03-17.24.13:444][825]LogMiniExperience: Display: MiniActionResources CLASS_READY: World=L_MiniPractice Generation=1 Action=/MiniShooterCore/GameFeatureData.GameFeatureData:MiniTask19_AddWidgets Entry=Element[0] slot=UI.HUD.Health Path=/Script/FPS.MiniHUDHealthWidget
+[2026.10.03-17.24.13:444][825]LogMiniExperience: Display: MiniActionResources CLASS_READY: World=L_MiniPractice Generation=1 Action=/MiniShooterCore/GameFeatureData.GameFeatureData:MiniTask19_AddWidgets Entry=Element[1] slot=UI.HUD.Ammo Path=/Script/FPS.MiniHUDAmmoWidget
+[2026.10.03-17.24.13:444][825]LogMiniExperience: Display: MiniActionResources CLASS_READY: World=L_MiniPractice Generation=1 Action=/MiniShooterCore/GameFeatureData.GameFeatureData:MiniTask19_AddWidgets Entry=Element[2] slot=UI.HUD.Crosshair Path=/Script/FPS.MiniHUDCrosshairWidget
+[2026.10.03-17.24.13:444][825]LogMiniExperience: Display: MiniActionResources CLASS_READY: World=L_MiniPractice Generation=1 Action=/MiniShooterCore/GameFeatureData.GameFeatureData:MiniTask19_AddWidgets Entry=Element[3] slot=UI.HUD.Match Path=/Script/FPS.MiniHUDMatchWidget
+[2026.10.03-17.24.13:444][825]LogMiniExperience: Display: Experience state NetMode=Standalone ID=MiniExperienceDefinition:DA_MiniDiagnosticsExperience ExecutingActions -> Loaded
+[2026.10.03-17.24.13:444][825]LogMiniExperience: Display: MiniFlowProbe PASS: NetMode=Standalone ID=MiniExperienceDefinition:DA_MiniDiagnosticsExperience LateSubscriber=1
+
+=== Task06-Valid-Client.log ===
+[2026.10.03-17.23.53:280][110]LogMiniExperience: Display: MiniActionResources CLASS_READY: World=L_MiniPractice Generation=1 Action=/MiniShooterCore/GameFeatureData.GameFeatureData:MiniTask19_AddWidgets Entry=Layout[0] layer=UI.Layer.Game Path=/Script/FPS.MiniHUDLayout
+[2026.10.03-17.23.53:280][110]LogMiniExperience: Display: MiniActionResources CLASS_READY: World=L_MiniPractice Generation=1 Action=/MiniShooterCore/GameFeatureData.GameFeatureData:MiniTask19_AddWidgets Entry=Element[0] slot=UI.HUD.Health Path=/Script/FPS.MiniHUDHealthWidget
+[2026.10.03-17.23.53:280][110]LogMiniExperience: Display: MiniActionResources CLASS_READY: World=L_MiniPractice Generation=1 Action=/MiniShooterCore/GameFeatureData.GameFeatureData:MiniTask19_AddWidgets Entry=Element[1] slot=UI.HUD.Ammo Path=/Script/FPS.MiniHUDAmmoWidget
+[2026.10.03-17.23.53:280][110]LogMiniExperience: Display: MiniActionResources CLASS_READY: World=L_MiniPractice Generation=1 Action=/MiniShooterCore/GameFeatureData.GameFeatureData:MiniTask19_AddWidgets Entry=Element[2] slot=UI.HUD.Crosshair Path=/Script/FPS.MiniHUDCrosshairWidget
+[2026.10.03-17.23.53:280][110]LogMiniExperience: Display: MiniActionResources CLASS_READY: World=L_MiniPractice Generation=1 Action=/MiniShooterCore/GameFeatureData.GameFeatureData:MiniTask19_AddWidgets Entry=Element[3] slot=UI.HUD.Match Path=/Script/FPS.MiniHUDMatchWidget
+[2026.10.03-17.23.53:281][110]LogMiniExperience: Display: Experience state NetMode=Client ID=MiniExperienceDefinition:DA_MiniDiagnosticsExperience ExecutingActions -> Loaded
+[2026.10.03-17.23.53:281][110]LogMiniExperience: Display: MiniFlowProbe PASS: NetMode=Client ID=MiniExperienceDefinition:DA_MiniDiagnosticsExperience LateSubscriber=1
+
+=== Task06-Valid-Server.log ===
+[2026.10.03-17.23.47:575][ 16]LogMiniExperience: Display: MiniActionResources CLASS_READY: World=L_MiniPractice Generation=1 Action=/MiniShooterCore/GameFeatureData.GameFeatureData:MiniTask19_AddWidgets Entry=Layout[0] layer=UI.Layer.Game Path=/Script/FPS.MiniHUDLayout
+[2026.10.03-17.23.47:575][ 16]LogMiniExperience: Display: MiniActionResources CLASS_READY: World=L_MiniPractice Generation=1 Action=/MiniShooterCore/GameFeatureData.GameFeatureData:MiniTask19_AddWidgets Entry=Element[0] slot=UI.HUD.Health Path=/Script/FPS.MiniHUDHealthWidget
+[2026.10.03-17.23.47:575][ 16]LogMiniExperience: Display: MiniActionResources CLASS_READY: World=L_MiniPractice Generation=1 Action=/MiniShooterCore/GameFeatureData.GameFeatureData:MiniTask19_AddWidgets Entry=Element[1] slot=UI.HUD.Ammo Path=/Script/FPS.MiniHUDAmmoWidget
+[2026.10.03-17.23.47:575][ 16]LogMiniExperience: Display: MiniActionResources CLASS_READY: World=L_MiniPractice Generation=1 Action=/MiniShooterCore/GameFeatureData.GameFeatureData:MiniTask19_AddWidgets Entry=Element[2] slot=UI.HUD.Crosshair Path=/Script/FPS.MiniHUDCrosshairWidget
+[2026.10.03-17.23.47:575][ 16]LogMiniExperience: Display: MiniActionResources CLASS_READY: World=L_MiniPractice Generation=1 Action=/MiniShooterCore/GameFeatureData.GameFeatureData:MiniTask19_AddWidgets Entry=Element[3] slot=UI.HUD.Match Path=/Script/FPS.MiniHUDMatchWidget
+[2026.10.03-17.23.47:576][ 16]LogMiniExperience: Display: Experience state NetMode=ListenServer ID=MiniExperienceDefinition:DA_MiniDiagnosticsExperience ExecutingActions -> Loaded
+[2026.10.03-17.23.47:576][ 16]LogMiniExperience: Display: MiniFlowProbe PASS: NetMode=ListenServer ID=MiniExperienceDefinition:DA_MiniDiagnosticsExperience LateSubscriber=1
+
+=== Task19-Loading-WithMedia-Invalid-Client.log ===
+[2026.10.03-17.25.52:945][  5]LogMiniExperience: Error: Experience state NetMode=Client ID=MiniExperienceDefinition:DA_MiniDefinitelyMissing Unloaded -> Failed Reason=Unknown Experience ID 'MiniExperienceDefinition:DA_MiniDefinitelyMissing': no scanned asset has this ID
+[2026.10.03-17.25.52:945][  5]LogMiniExperience: Display: MiniFlowProbe FAIL_EXPECTED: NetMode=Client Reason=Unknown Experience ID 'MiniExperienceDefinition:DA_MiniDefinitelyMissing': no scanned asset has this ID
+[2026.10.03-17.25.53:327][  7]LogMiniInit: Display: MiniTask19Loading PASS: NetMode=Client State=Failed Visible=1 Failure=1 TitlePresent=1 DetailMatches=1 UIBlocks=2 ControllerBlocked=1 TickerStopped=1 PendingObserved=0 Experience=MiniExperienceDefinition:DA_MiniDefinitelyMissing Reason=Unknown Experience ID 'MiniExperienceDefinition:DA_MiniDefinitelyMissing': no scanned asset has this ID RecoveryModal=1 ReturnButton=1 ModalListener=1
+
+=== Task19-Loading-WithMedia-Invalid-Server.log ===
+[2026.10.03-17.25.42:956][  0]LogMiniExperience: Error: Experience state NetMode=ListenServer ID=MiniExperienceDefinition:DA_MiniDefinitelyMissing LoadingAssets -> Failed Reason=Unknown Experience ID 'MiniExperienceDefinition:DA_MiniDefinitelyMissing': no scanned asset has this ID
+[2026.10.03-17.25.42:959][  0]LogMiniExperience: Display: MiniFlowProbe FAIL_EXPECTED: NetMode=ListenServer Reason=Unknown Experience ID 'MiniExperienceDefinition:DA_MiniDefinitelyMissing': no scanned asset has this ID
+[2026.10.03-17.25.43:385][  2]LogMiniInit: Display: MiniTask19Loading PASS: NetMode=ListenServer State=Failed Visible=1 Failure=1 TitlePresent=1 DetailMatches=1 UIBlocks=2 ControllerBlocked=1 TickerStopped=1 PendingObserved=0 Experience=MiniExperienceDefinition:DA_MiniDefinitelyMissing Reason=Unknown Experience ID 'MiniExperienceDefinition:DA_MiniDefinitelyMissing': no scanned asset has this ID RecoveryModal=1 ReturnButton=1 ModalListener=1
+
+=== Task19-Loading-WithMedia-Valid-Client.log ===
+[2026.10.03-17.25.32:211][  8]LogMiniExperience: Display: MiniActionResources CLASS_READY: World=L_MiniPractice Generation=1 Action=/MiniShooterCore/GameFeatureData.GameFeatureData:MiniTask19_AddWidgets Entry=Layout[0] layer=UI.Layer.Game Path=/Script/FPS.MiniHUDLayout
+[2026.10.03-17.25.32:211][  8]LogMiniExperience: Display: MiniActionResources CLASS_READY: World=L_MiniPractice Generation=1 Action=/MiniShooterCore/GameFeatureData.GameFeatureData:MiniTask19_AddWidgets Entry=Element[0] slot=UI.HUD.Health Path=/Script/FPS.MiniHUDHealthWidget
+[2026.10.03-17.25.32:211][  8]LogMiniExperience: Display: MiniActionResources CLASS_READY: World=L_MiniPractice Generation=1 Action=/MiniShooterCore/GameFeatureData.GameFeatureData:MiniTask19_AddWidgets Entry=Element[1] slot=UI.HUD.Ammo Path=/Script/FPS.MiniHUDAmmoWidget
+[2026.10.03-17.25.32:211][  8]LogMiniExperience: Display: MiniActionResources CLASS_READY: World=L_MiniPractice Generation=1 Action=/MiniShooterCore/GameFeatureData.GameFeatureData:MiniTask19_AddWidgets Entry=Element[2] slot=UI.HUD.Crosshair Path=/Script/FPS.MiniHUDCrosshairWidget
+[2026.10.03-17.25.32:211][  8]LogMiniExperience: Display: MiniActionResources CLASS_READY: World=L_MiniPractice Generation=1 Action=/MiniShooterCore/GameFeatureData.GameFeatureData:MiniTask19_AddWidgets Entry=Element[3] slot=UI.HUD.Match Path=/Script/FPS.MiniHUDMatchWidget
+[2026.10.03-17.25.32:211][  8]LogMiniExperience: Display: Experience state NetMode=Client ID=MiniExperienceDefinition:DA_MiniPracticeExperience ExecutingActions -> Loaded
+[2026.10.03-17.25.32:211][  8]LogMiniExperience: Display: MiniFlowProbe PASS: NetMode=Client ID=MiniExperienceDefinition:DA_MiniPracticeExperience LateSubscriber=1
+[2026.10.03-17.25.32:655][ 10]LogMiniInit: Display: MiniTask19Loading PASS: NetMode=Client State=Loaded Visible=0 Failure=0 TitleEmpty=1 DetailEmpty=1 UIBlocks=0 ControllerBlocked=0 TickerStopped=1 PendingObserved=1 Experience=MiniExperienceDefinition:DA_MiniPracticeExperience
+
+=== Task19-Loading-WithMedia-Valid-Server.log ===
+[2026.10.03-17.25.19:647][ 22]LogMiniExperience: Display: MiniActionResources CLASS_READY: World=L_MiniPractice Generation=1 Action=/Game/Mini/System/ActionSets/DA_MiniPracticeActionSet.DA_MiniPracticeActionSet:MiniPractice_AddActors Entry=Actor[0] Path=/Game/Mini/Targets/BP_MiniPracticeTarget.BP_MiniPracticeTarget_C
+[2026.10.03-17.25.19:647][ 22]LogMiniExperience: Display: MiniActionResources CLASS_READY: World=L_MiniPractice Generation=1 Action=/Game/Mini/System/ActionSets/DA_MiniPracticeActionSet.DA_MiniPracticeActionSet:MiniPractice_AddActors Entry=Actor[1] Path=/Game/Mini/Targets/BP_MiniPracticeTarget.BP_MiniPracticeTarget_C
+[2026.10.03-17.25.19:648][ 22]LogMiniExperience: Display: MiniActionResources CLASS_READY: World=L_MiniPractice Generation=1 Action=/Game/Mini/System/ActionSets/DA_MiniPracticeActionSet.DA_MiniPracticeActionSet:MiniPractice_AddActors Entry=Actor[2] Path=/Game/Mini/Targets/BP_MiniPracticeTarget.BP_MiniPracticeTarget_C
+[2026.10.03-17.25.19:648][ 22]LogMiniExperience: Display: MiniActionResources CLASS_READY: World=L_MiniPractice Generation=1 Action=/Game/Mini/System/ActionSets/DA_MiniPracticeActionSet.DA_MiniPracticeActionSet:MiniPractice_AddActors Entry=Actor[3] Path=/Script/FPS.MiniPracticeSupply
+[2026.10.03-17.25.19:648][ 22]LogMiniExperience: Display: MiniActionResources CLASS_READY: World=L_MiniPractice Generation=1 Action=/MiniShooterCore/GameFeatureData.GameFeatureData:MiniTask19_AddWidgets Entry=Layout[0] layer=UI.Layer.Game Path=/Script/FPS.MiniHUDLayout
+[2026.10.03-17.25.19:648][ 22]LogMiniExperience: Display: MiniActionResources CLASS_READY: World=L_MiniPractice Generation=1 Action=/MiniShooterCore/GameFeatureData.GameFeatureData:MiniTask19_AddWidgets Entry=Element[0] slot=UI.HUD.Health Path=/Script/FPS.MiniHUDHealthWidget
+[2026.10.03-17.25.19:648][ 22]LogMiniExperience: Display: MiniActionResources CLASS_READY: World=L_MiniPractice Generation=1 Action=/MiniShooterCore/GameFeatureData.GameFeatureData:MiniTask19_AddWidgets Entry=Element[1] slot=UI.HUD.Ammo Path=/Script/FPS.MiniHUDAmmoWidget
+[2026.10.03-17.25.19:648][ 22]LogMiniExperience: Display: MiniActionResources CLASS_READY: World=L_MiniPractice Generation=1 Action=/MiniShooterCore/GameFeatureData.GameFeatureData:MiniTask19_AddWidgets Entry=Element[2] slot=UI.HUD.Crosshair Path=/Script/FPS.MiniHUDCrosshairWidget
+[2026.10.03-17.25.19:648][ 22]LogMiniExperience: Display: MiniActionResources CLASS_READY: World=L_MiniPractice Generation=1 Action=/MiniShooterCore/GameFeatureData.GameFeatureData:MiniTask19_AddWidgets Entry=Element[3] slot=UI.HUD.Match Path=/Script/FPS.MiniHUDMatchWidget
+[2026.10.03-17.25.19:693][ 23]LogMiniExperience: Display: Experience state NetMode=ListenServer ID=MiniExperienceDefinition:DA_MiniPracticeExperience ExecutingActions -> Loaded
+[2026.10.03-17.25.19:693][ 23]LogMiniExperience: Display: MiniFlowProbe PASS: NetMode=ListenServer ID=MiniExperienceDefinition:DA_MiniPracticeExperience LateSubscriber=1
+[2026.10.03-17.25.20:195][ 26]LogMiniInit: Display: MiniTask19Loading PASS: NetMode=ListenServer State=Loaded Visible=0 Failure=0 TitleEmpty=1 DetailEmpty=1 UIBlocks=0 ControllerBlocked=0 TickerStopped=1 PendingObserved=1 Experience=MiniExperienceDefinition:DA_MiniPracticeExperience
+
+=== Task23-Arena-ClientA.log ===
+[2026.10.03-17.28.26:201][386]LogMiniExperience: Display: MiniActionResources CLASS_READY: World=L_MiniArena Generation=1 Action=/MiniShooterCore/GameFeatureData.GameFeatureData:MiniTask19_AddWidgets Entry=Layout[0] layer=UI.Layer.Game Path=/Script/FPS.MiniHUDLayout
+[2026.10.03-17.28.26:201][386]LogMiniExperience: Display: MiniActionResources CLASS_READY: World=L_MiniArena Generation=1 Action=/MiniShooterCore/GameFeatureData.GameFeatureData:MiniTask19_AddWidgets Entry=Element[0] slot=UI.HUD.Health Path=/Script/FPS.MiniHUDHealthWidget
+[2026.10.03-17.28.26:201][386]LogMiniExperience: Display: MiniActionResources CLASS_READY: World=L_MiniArena Generation=1 Action=/MiniShooterCore/GameFeatureData.GameFeatureData:MiniTask19_AddWidgets Entry=Element[1] slot=UI.HUD.Ammo Path=/Script/FPS.MiniHUDAmmoWidget
+[2026.10.03-17.28.26:201][386]LogMiniExperience: Display: MiniActionResources CLASS_READY: World=L_MiniArena Generation=1 Action=/MiniShooterCore/GameFeatureData.GameFeatureData:MiniTask19_AddWidgets Entry=Element[2] slot=UI.HUD.Crosshair Path=/Script/FPS.MiniHUDCrosshairWidget
+[2026.10.03-17.28.26:201][386]LogMiniExperience: Display: MiniActionResources CLASS_READY: World=L_MiniArena Generation=1 Action=/MiniShooterCore/GameFeatureData.GameFeatureData:MiniTask19_AddWidgets Entry=Element[3] slot=UI.HUD.Match Path=/Script/FPS.MiniHUDMatchWidget
+[2026.10.03-17.28.26:201][386]LogMiniExperience: Display: Experience state NetMode=Client ID=MiniExperienceDefinition:DA_MiniArenaExperience ExecutingActions -> Loaded
+
+=== Task23-Arena-ClientB.log ===
+[2026.10.03-17.28.26:680][ 33]LogMiniExperience: Display: MiniActionResources CLASS_READY: World=L_MiniArena Generation=1 Action=/MiniShooterCore/GameFeatureData.GameFeatureData:MiniTask19_AddWidgets Entry=Layout[0] layer=UI.Layer.Game Path=/Script/FPS.MiniHUDLayout
+[2026.10.03-17.28.26:680][ 33]LogMiniExperience: Display: MiniActionResources CLASS_READY: World=L_MiniArena Generation=1 Action=/MiniShooterCore/GameFeatureData.GameFeatureData:MiniTask19_AddWidgets Entry=Element[0] slot=UI.HUD.Health Path=/Script/FPS.MiniHUDHealthWidget
+[2026.10.03-17.28.26:680][ 33]LogMiniExperience: Display: MiniActionResources CLASS_READY: World=L_MiniArena Generation=1 Action=/MiniShooterCore/GameFeatureData.GameFeatureData:MiniTask19_AddWidgets Entry=Element[1] slot=UI.HUD.Ammo Path=/Script/FPS.MiniHUDAmmoWidget
+[2026.10.03-17.28.26:680][ 33]LogMiniExperience: Display: MiniActionResources CLASS_READY: World=L_MiniArena Generation=1 Action=/MiniShooterCore/GameFeatureData.GameFeatureData:MiniTask19_AddWidgets Entry=Element[2] slot=UI.HUD.Crosshair Path=/Script/FPS.MiniHUDCrosshairWidget
+[2026.10.03-17.28.26:680][ 33]LogMiniExperience: Display: MiniActionResources CLASS_READY: World=L_MiniArena Generation=1 Action=/MiniShooterCore/GameFeatureData.GameFeatureData:MiniTask19_AddWidgets Entry=Element[3] slot=UI.HUD.Match Path=/Script/FPS.MiniHUDMatchWidget
+[2026.10.03-17.28.26:680][ 33]LogMiniExperience: Display: Experience state NetMode=Client ID=MiniExperienceDefinition:DA_MiniArenaExperience ExecutingActions -> Loaded
+
+=== Task23-Arena-ClientC.log ===
+[2026.10.03-17.28.28:143][175]LogMiniExperience: Display: MiniActionResources CLASS_READY: World=L_MiniArena Generation=1 Action=/MiniShooterCore/GameFeatureData.GameFeatureData:MiniTask19_AddWidgets Entry=Layout[0] layer=UI.Layer.Game Path=/Script/FPS.MiniHUDLayout
+[2026.10.03-17.28.28:143][175]LogMiniExperience: Display: MiniActionResources CLASS_READY: World=L_MiniArena Generation=1 Action=/MiniShooterCore/GameFeatureData.GameFeatureData:MiniTask19_AddWidgets Entry=Element[0] slot=UI.HUD.Health Path=/Script/FPS.MiniHUDHealthWidget
+[2026.10.03-17.28.28:143][175]LogMiniExperience: Display: MiniActionResources CLASS_READY: World=L_MiniArena Generation=1 Action=/MiniShooterCore/GameFeatureData.GameFeatureData:MiniTask19_AddWidgets Entry=Element[1] slot=UI.HUD.Ammo Path=/Script/FPS.MiniHUDAmmoWidget
+[2026.10.03-17.28.28:143][175]LogMiniExperience: Display: MiniActionResources CLASS_READY: World=L_MiniArena Generation=1 Action=/MiniShooterCore/GameFeatureData.GameFeatureData:MiniTask19_AddWidgets Entry=Element[2] slot=UI.HUD.Crosshair Path=/Script/FPS.MiniHUDCrosshairWidget
+[2026.10.03-17.28.28:143][175]LogMiniExperience: Display: MiniActionResources CLASS_READY: World=L_MiniArena Generation=1 Action=/MiniShooterCore/GameFeatureData.GameFeatureData:MiniTask19_AddWidgets Entry=Element[3] slot=UI.HUD.Match Path=/Script/FPS.MiniHUDMatchWidget
+[2026.10.03-17.28.28:143][175]LogMiniExperience: Display: Experience state NetMode=Client ID=MiniExperienceDefinition:DA_MiniArenaExperience ExecutingActions -> Loaded
+
+=== Task23-Arena-Server.log ===
+[2026.10.03-17.28.15:041][ 18]LogMiniExperience: Display: MiniActionResources CLASS_READY: World=L_MiniArena Generation=1 Action=/MiniShooterCore/GameFeatureData.GameFeatureData:MiniTask19_AddWidgets Entry=Layout[0] layer=UI.Layer.Game Path=/Script/FPS.MiniHUDLayout
+[2026.10.03-17.28.15:041][ 18]LogMiniExperience: Display: MiniActionResources CLASS_READY: World=L_MiniArena Generation=1 Action=/MiniShooterCore/GameFeatureData.GameFeatureData:MiniTask19_AddWidgets Entry=Element[0] slot=UI.HUD.Health Path=/Script/FPS.MiniHUDHealthWidget
+[2026.10.03-17.28.15:041][ 18]LogMiniExperience: Display: MiniActionResources CLASS_READY: World=L_MiniArena Generation=1 Action=/MiniShooterCore/GameFeatureData.GameFeatureData:MiniTask19_AddWidgets Entry=Element[1] slot=UI.HUD.Ammo Path=/Script/FPS.MiniHUDAmmoWidget
+[2026.10.03-17.28.15:041][ 18]LogMiniExperience: Display: MiniActionResources CLASS_READY: World=L_MiniArena Generation=1 Action=/MiniShooterCore/GameFeatureData.GameFeatureData:MiniTask19_AddWidgets Entry=Element[2] slot=UI.HUD.Crosshair Path=/Script/FPS.MiniHUDCrosshairWidget
+[2026.10.03-17.28.15:041][ 18]LogMiniExperience: Display: MiniActionResources CLASS_READY: World=L_MiniArena Generation=1 Action=/MiniShooterCore/GameFeatureData.GameFeatureData:MiniTask19_AddWidgets Entry=Element[3] slot=UI.HUD.Match Path=/Script/FPS.MiniHUDMatchWidget
+[2026.10.03-17.28.15:047][ 18]LogMiniExperience: Display: Experience state NetMode=ListenServer ID=MiniExperienceDefinition:DA_MiniArenaExperience ExecutingActions -> Loaded
+[2026.10.03-17.30.35:770][731]LogMiniInit: Display: MiniTask23Probe ARENA_PASS: MapDefaultArena=1 Starts=8 Routes=3 Listen=1 Clients=3 CompletedRounds=2 RealGEKills=20 EnvironmentDeaths=4 WarmupFall=1 ProtectedFall=1 PostFall=2 BlockedAndReleased=1 SharedRecoveryCleanup=1 SameLifeRecovery=1 Respawn3=1 ProtectionNoRefresh=1 HUD=1
+
+=== Task23-Practice-Server.log ===
+[2026.10.03-17.30.44:284][ 13]LogMiniExperience: Display: MiniActionResources CLASS_READY: World=L_MiniPractice Generation=1 Action=/Game/Mini/System/ActionSets/DA_MiniPracticeActionSet.DA_MiniPracticeActionSet:MiniPractice_AddActors Entry=Actor[0] Path=/Game/Mini/Targets/BP_MiniPracticeTarget.BP_MiniPracticeTarget_C
+[2026.10.03-17.30.44:284][ 13]LogMiniExperience: Display: MiniActionResources CLASS_READY: World=L_MiniPractice Generation=1 Action=/Game/Mini/System/ActionSets/DA_MiniPracticeActionSet.DA_MiniPracticeActionSet:MiniPractice_AddActors Entry=Actor[1] Path=/Game/Mini/Targets/BP_MiniPracticeTarget.BP_MiniPracticeTarget_C
+[2026.10.03-17.30.44:284][ 13]LogMiniExperience: Display: MiniActionResources CLASS_READY: World=L_MiniPractice Generation=1 Action=/Game/Mini/System/ActionSets/DA_MiniPracticeActionSet.DA_MiniPracticeActionSet:MiniPractice_AddActors Entry=Actor[2] Path=/Game/Mini/Targets/BP_MiniPracticeTarget.BP_MiniPracticeTarget_C
+[2026.10.03-17.30.44:284][ 13]LogMiniExperience: Display: MiniActionResources CLASS_READY: World=L_MiniPractice Generation=1 Action=/Game/Mini/System/ActionSets/DA_MiniPracticeActionSet.DA_MiniPracticeActionSet:MiniPractice_AddActors Entry=Actor[3] Path=/Script/FPS.MiniPracticeSupply
+[2026.10.03-17.30.44:284][ 13]LogMiniExperience: Display: MiniActionResources CLASS_READY: World=L_MiniPractice Generation=1 Action=/MiniShooterCore/GameFeatureData.GameFeatureData:MiniTask19_AddWidgets Entry=Layout[0] layer=UI.Layer.Game Path=/Script/FPS.MiniHUDLayout
+[2026.10.03-17.30.44:284][ 13]LogMiniExperience: Display: MiniActionResources CLASS_READY: World=L_MiniPractice Generation=1 Action=/MiniShooterCore/GameFeatureData.GameFeatureData:MiniTask19_AddWidgets Entry=Element[0] slot=UI.HUD.Health Path=/Script/FPS.MiniHUDHealthWidget
+[2026.10.03-17.30.44:284][ 13]LogMiniExperience: Display: MiniActionResources CLASS_READY: World=L_MiniPractice Generation=1 Action=/MiniShooterCore/GameFeatureData.GameFeatureData:MiniTask19_AddWidgets Entry=Element[1] slot=UI.HUD.Ammo Path=/Script/FPS.MiniHUDAmmoWidget
+[2026.10.03-17.30.44:284][ 13]LogMiniExperience: Display: MiniActionResources CLASS_READY: World=L_MiniPractice Generation=1 Action=/MiniShooterCore/GameFeatureData.GameFeatureData:MiniTask19_AddWidgets Entry=Element[2] slot=UI.HUD.Crosshair Path=/Script/FPS.MiniHUDCrosshairWidget
+[2026.10.03-17.30.44:284][ 13]LogMiniExperience: Display: MiniActionResources CLASS_READY: World=L_MiniPractice Generation=1 Action=/MiniShooterCore/GameFeatureData.GameFeatureData:MiniTask19_AddWidgets Entry=Element[3] slot=UI.HUD.Match Path=/Script/FPS.MiniHUDMatchWidget
+[2026.10.03-17.30.44:290][ 14]LogMiniExperience: Display: Experience state NetMode=Standalone ID=MiniExperienceDefinition:DA_MiniPracticeExperience ExecutingActions -> Loaded
+[2026.10.03-17.30.46:409][977]LogMiniInit: Display: MiniTask23Probe PRACTICE_PASS: MapDefaultPractice=1 TrainingTargets=3 RealGE=1 RealFall=1 Respawn3=1 Ground=1 ArenaRules=0 MatchSource=0 PhaseSource=0 FFAHUD=0 Protection=0

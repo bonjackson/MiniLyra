@@ -1,0 +1,6 @@
+Actual Dedicated initial ensure; local Travel requested a UI manager deliberately not created by CommonGame on dedicated instances.
+Fix: ShouldCreateSubsystem skips local Travel for IsDedicatedServerInstance. Role matrix checks it is absent; rerun required.
+[2026.10.03-17.40.29:145][  0]LogSubsystemCollection: Failed to initialize subsystem dependency (MiniUIManagerSubsystem)
+[2026.10.03-17.40.30:076][  0]LogOutputDevice: Error: Ensure condition failed: false  [File:D:\build\++UE5\Sync\Engine\Source\Runtime\Engine\Private\Subsystems\SubsystemCollection.cpp] [Line: 109]
+[2026.10.03-17.40.30:076][  0]LogOutputDevice: Error: Failed a call to GetSubsystem from within Initialize of another subsystem as the requested type /Script/FPS.MiniUIManagerSubsystem was not present in the set of classes we expected to initialize
+[2026.10.03-17.40.30:076][  0]LogOutputDevice: Error: [Callstack] 0x00000247dbf12841 UnrealEditor-FPS.dll!UMiniTravelSubsystem::BindPolicy() [F:\FPS\FPS\Source\FPS\System\MiniTravelSubsystem.cpp:117]

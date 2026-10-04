@@ -1,0 +1,4 @@
+Final Task26 builds, actual ExitCode=0 for both.
+Editor: Scripts/BuildProject.ps1 -Target FPSEditor -DisableAdaptiveUnity; 32.12 seconds.
+Game: Scripts/BuildProject.ps1 -Target FPS -DisableAdaptiveUnity; 93.87 seconds.
+These include the full fault/roles/network additions, Dedicated local Travel skip, explicit Modal wrapping, flying fixture and complete Q release.

@@ -2,6 +2,8 @@
 
 #include "Components/GameStateComponent.h"
 #include "Engine/AssetManagerTypes.h"
+#include "Containers/Ticker.h"
+#include "GameFeatures/MiniRequiredActionResources.h"
 #include "MiniExperienceManagerComponent.generated.h"
 
 struct FStreamableHandle;
@@ -18,6 +20,7 @@ enum class EMiniExperienceLoadState : uint8
 	Unloaded,
 	LoadingAssets,
 	LoadingFeatures,
+	LoadingActionResources,
 	ExecutingActions,
 	Loaded,
 	Failed,
@@ -60,6 +63,9 @@ public:
 	void CallOrRegister_OnExperienceFailed(FOnMiniExperienceFailed::FDelegate&& Delegate);
 
 private:
+#if !UE_BUILD_SHIPPING
+	friend class UMiniTask26ProbeSubsystem;
+#endif
 	UFUNCTION()
 	void OnRep_CurrentExperienceId();
 
@@ -72,6 +78,15 @@ private:
 	void CompleteExperienceLoad();
 	void ActivateNextGameFeature(uint32 ExpectedGeneration);
 	void HandleGameFeatureActivated(const TSharedRef<FMiniFeatureActivationLease>& Lease, uint32 ExpectedGeneration, bool bSucceeded, const FString& Error);
+	void BeginRequiredActionResources();
+	void HandleRequiredClassesLoaded(TWeakObjectPtr<UWorld> World, uint32 ExpectedGeneration);
+	void HandleRequiredClassesCanceled(TWeakObjectPtr<UWorld> World, uint32 ExpectedGeneration);
+	void HandleRequiredActionFailure(UWorld* World, UGameFeatureAction* Action, uint64 ActionGeneration,
+		const FString& Reason, TWeakObjectPtr<UWorld> ExpectedWorld, uint32 ExpectedGeneration);
+	void ClearRequiredActionObservers();
+	bool TickExperienceLoad(float DeltaSeconds);
+	void FinishActionsWhenReady();
+	void PublishExperienceLoaded();
 	void ExecuteExperienceActions();
 	void CleanupExperienceActionsAndFeatures();
 	void FailExperience(const FString& Reason);
@@ -81,7 +96,7 @@ private:
 	UPROPERTY(ReplicatedUsing = OnRep_CurrentExperienceId)
 	FPrimaryAssetId CurrentExperienceId;
 
-	// A pre-ID selection error must reach clients too; an invalid/default ID cannot trigger OnRep.
+	// Any authoritative terminal failure must reach clients, including before ID and after Loaded.
 	UPROPERTY(ReplicatedUsing = OnRep_SelectionFailureReason)
 	FString SelectionFailureReason;
 
@@ -91,6 +106,18 @@ private:
 	EMiniExperienceLoadState LoadState = EMiniExperienceLoadState::Unloaded;
 	FString FailureReason;
 	TSharedPtr<FStreamableHandle> AssetLoadHandle;
+	TSharedPtr<FStreamableHandle> RequiredActionLoadHandle;
+	TArray<FMiniRequiredActionClassRequest> RequiredActionClassRequests;
+	UPROPERTY(Transient)
+	TArray<TObjectPtr<UGameFeatureAction>> RequiredActions;
+	struct FRequiredActionObserver
+	{
+		TWeakObjectPtr<UGameFeatureAction> Action;
+		FDelegateHandle Handle;
+	};
+	TArray<FRequiredActionObserver> RequiredActionObservers;
+	FTSTicker::FDelegateHandle ExperienceLoadTicker;
+	double ExperienceLoadDeadline = 0.0;
 	TArray<FString> GameFeaturePluginURLs;
 	TArray<TSharedPtr<FMiniFeatureActivationLease>> GameFeatureLeases;
 	int32 NextGameFeatureIndex = 0;

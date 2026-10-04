@@ -1,0 +1,236 @@
+Final Task26 regression and media supplements. All listed runner invocations actual Exit0.
+VerifyTask24.ps1 -Mode All -WithMedia -TimeoutSeconds 420: Flow, Failures, Capacity, HostLoss, Quit, HostFailureListen, HostFailureCreate PASS.
+HostLoss actual host process terminated by runner; client actual timeout recovered. Quit actual normal exit. Reviewed HostLoss and ServerFull modal PNGs.
+VerifyTask26Roles.ps1 -Mode LateUIFailure -ServerKind Listen -WithMedia -TimeoutSeconds 240: three real rendered processes, identical complete authority reason, all Exit0. Reviewed server and Client1 failure screenshots: no overlap or clipping.
+VerifyTask26Faults.ps1 -Mode FailedFrontQuit -WithMedia -TimeoutSeconds 180: actual Slate click / normal Exit0. Reviewed final failure layout.
+The final build also has successful Task05, Task06, Task19Loading media and Task23 All regression, recorded in initial/final evidence. No cross-machine claim.
+
+=== Task24-WithMedia-Capacity-ClientA.log ===
+[2026.10.04-01.57.22:091][ 22]LogMiniInit: Display: MiniTask24Probe NEW_WORLD_PASS: Peer=ClientA NewWorld=1 NewPlayerState=1 NewASC=1 OldUIReleased=1
+[2026.10.04-01.57.46:373][742]LogMiniInit: Display: MiniTask24Probe NEW_WORLD_PASS: Peer=ClientA NewWorld=1 NewPlayerState=1 NewASC=1 OldUIReleased=1
+[2026.10.04-01.57.46:373][742]LogMiniInit: Display: MiniTask24Probe CAPACITY_RELEASE_CLIENT_PASS: Peer=ClientA ActualEscapeMenu=1 ActualReturnClick=1 Disconnected=1 FrontEnd=1 Gate=1
+
+=== Task24-WithMedia-Capacity-ClientB.log ===
+[2026.10.04-01.57.22:204][ 21]LogMiniInit: Display: MiniTask24Probe NEW_WORLD_PASS: Peer=ClientB NewWorld=1 NewPlayerState=1 NewASC=1 OldUIReleased=1
+[2026.10.04-01.57.46:560][751]LogMiniInit: Display: MiniTask24Probe CAPACITY_RETAINED_CLIENT_PASS: Peer=ClientB ActualCapacityFour=1 FifthRejected=1 Refilled=1 SameWorld=1 SamePlayerState=1 SameASC=1 HUD=1
+
+=== Task24-WithMedia-Capacity-ClientC.log ===
+[2026.10.04-01.57.23:502][ 19]LogMiniInit: Display: MiniTask24Probe NEW_WORLD_PASS: Peer=ClientC NewWorld=1 NewPlayerState=1 NewASC=1 OldUIReleased=1
+[2026.10.04-01.57.46:554][710]LogMiniInit: Display: MiniTask24Probe CAPACITY_RETAINED_CLIENT_PASS: Peer=ClientC ActualCapacityFour=1 FifthRejected=1 Refilled=1 SameWorld=1 SamePlayerState=1 SameASC=1 HUD=1
+
+=== Task24-WithMedia-Capacity-Overflow.log ===
+[2026.10.04-01.57.44:398][  0]LogMiniInit: Display: MiniTask24Probe WIDGET_REBUILD: Peer=Overflow Widget=/Engine/Transient.GameEngine_0:MiniGameInstance_0.MiniPrimaryGameLayout_0.WidgetTree.MiniActivatableWidget_0 LocalPlayer=MiniLocalPlayer_0 World=L_MiniFrontEnd Active=0
+[2026.10.04-01.57.44:965][  0]LogMiniInit: Display: MiniTask24Probe WAIT: Mode=Capacity Role=Overflow Peer=Overflow Step=0 Reason=FrontEndReady World=L_MiniFrontEnd Net=0 Pawn=None Input=0 Busy=0 Error= Cleanup=0 NetworkFailures=0
+[2026.10.04-01.57.45:139][  4]LogMiniInit: Display: MiniTask24Probe WIDGET_REBUILD: Peer=Overflow Widget=/Engine/Transient.GameEngine_0:MiniGameInstance_0.MiniPrimaryGameLayout_0.WidgetTree.MiniFrontEndWidget_0 LocalPlayer=MiniLocalPlayer_0 World=L_MiniFrontEnd Active=0
+[2026.10.04-01.57.45:531][  6]LogMiniInit: Display: MiniTask24Probe SCREENSHOT_SAVED: Peer=Overflow Stage=MainMenu Path=F:\FPS\FPS\Saved\Screenshots/Task24-Capacity-Overflow-MainMenu.png ActualPNG=1
+[2026.10.04-01.57.45:540][  6]LogMiniInit: Display: MiniTask24Probe UI_CLICK: Peer=Overflow Action=AddressEntry MouseDown=1 MouseUp=1 X=853.5 Y=500.0 Window=1 MouseMove=1 TargetHover=1 TargetPressed=-1 TargetCapture=-1 AppActive=1 ProbeBackgroundCapture=1
+[2026.10.04-01.57.45:540][  6]LogMiniInit: Display: MiniTask24Probe UI_KEY: Peer=Overflow Key=A Control=1 Routed=1 Handled=1 Focus=SEditableText RouterMode=0
+[2026.10.04-01.57.45:540][  6]LogMiniInit: Display: MiniTask24Probe UI_KEY: Peer=Overflow Key=BackSpace Control=0 Routed=1 Handled=1 Focus=SEditableText RouterMode=0
+[2026.10.04-01.57.45:541][  6]LogMiniInit: Display: MiniTask24Probe ADDRESS_TYPED: Peer=Overflow Address=127.0.0.1:18924 FocusMouse=1 SelectAllKey=1 CharacterEvents=15 ExactText=1
+[2026.10.04-01.57.45:566][  7]LogMiniInit: Display: MiniTask24Probe WIDGET_REBUILD: Peer=Overflow Widget=/Engine/Transient.GameEngine_0:MiniGameInstance_0.MiniPrimaryGameLayout_0.WidgetTree.MiniConnectionStatusWidget_0 LocalPlayer=MiniLocalPlayer_0 World=L_MiniFrontEnd Active=0
+[2026.10.04-01.57.45:567][  7]LogMiniInit: Display: MiniTask24Probe UI_KEY: Peer=Overflow Key=Enter Control=0 Routed=1 Handled=1 Focus=SEditableText RouterMode=0
+[2026.10.04-01.57.45:731][ 12]LogMiniInit: Display: MiniTask24Probe REAL_NETWORK_FAILURE: Peer=Overflow Type=8 Driver=IpNetDriver_0 Reason=MINI_SERVER_FULL Count=1
+[2026.10.04-01.57.45:733][ 12]LogMiniInit: Display: MiniTask24Probe ERROR_UI: Peer=Overflow Code=MINI_SERVER_FULL Title=服务器已满 Detail=这场对局最多支持 4 名玩家，请稍后重试。 FrontEnd=1 Modal=1 Gates=2 Listeners=1
+[2026.10.04-01.57.45:767][ 13]LogMiniInit: Display: MiniTask24Probe OLD_WORLD_RELEASED: Peer=Overflow World=L_MiniFrontEnd FrontListeners=0 ModalListeners=0 HUD=0 Menu=0 UIGates=0 Cleanup=1
+[2026.10.04-01.57.45:848][ 13]LogMiniInit: Display: MiniTask24Probe WIDGET_REBUILD: Peer=Overflow Widget=/Engine/Transient.GameEngine_0:MiniGameInstance_0.MiniPrimaryGameLayout_0.WidgetTree.MiniActivatableWidget_0 LocalPlayer=MiniLocalPlayer_0 World=L_MiniFrontEnd Active=0
+[2026.10.04-01.57.45:849][ 13]LogMiniInit: Display: MiniTask24Probe WIDGET_REBUILD: Peer=Overflow Widget=/Engine/Transient.GameEngine_0:MiniGameInstance_0.MiniPrimaryGameLayout_0.WidgetTree.MiniConnectionStatusWidget_0 LocalPlayer=MiniLocalPlayer_0 World=L_MiniFrontEnd Active=0
+[2026.10.04-01.57.45:876][ 14]LogMiniInit: Display: MiniTask24Probe WIDGET_REBUILD: Peer=Overflow Widget=/Engine/Transient.GameEngine_0:MiniGameInstance_0.MiniPrimaryGameLayout_0.WidgetTree.MiniFrontEndWidget_0 LocalPlayer=MiniLocalPlayer_0 World=L_MiniFrontEnd Active=0
+[2026.10.04-01.57.45:909][ 15]LogMiniInit: Display: MiniTask24Probe ERROR_UI: Peer=Overflow Code=MINI_SERVER_FULL Title=服务器已满 Detail=这场对局最多支持 4 名玩家，请稍后重试。 FrontEnd=1 Modal=1 Gates=2 Listeners=1
+[2026.10.04-01.57.45:909][ 15]LogMiniInit: Display: MiniTask24Probe SCREENSHOT_SAVED: Peer=Overflow Stage=ServerFull Path=F:\FPS\FPS\Saved\Screenshots/Task24-Capacity-Overflow-ServerFull.png ActualPNG=1
+[2026.10.04-01.57.45:912][ 15]LogMiniInit: Display: MiniTask24Probe UI_CLICK: Peer=Overflow Action=CloseButton MouseDown=1 MouseUp=1 X=853.5 Y=504.7 Window=1 MouseMove=1 TargetHover=1 TargetPressed=1 TargetCapture=1 AppActive=1 ProbeBackgroundCapture=1
+[2026.10.04-01.57.46:177][ 23]LogMiniInit: Display: MiniTask24Probe UI_CLICK: Peer=Overflow Action=AddressEntry MouseDown=1 MouseUp=1 X=853.5 Y=500.0 Window=1 MouseMove=1 TargetHover=1 TargetPressed=-1 TargetCapture=-1 AppActive=1 ProbeBackgroundCapture=1
+[2026.10.04-01.57.46:177][ 23]LogMiniInit: Display: MiniTask24Probe UI_KEY: Peer=Overflow Key=A Control=1 Routed=1 Handled=1 Focus=SEditableText RouterMode=0
+[2026.10.04-01.57.46:178][ 23]LogMiniInit: Display: MiniTask24Probe UI_KEY: Peer=Overflow Key=BackSpace Control=0 Routed=1 Handled=1 Focus=SEditableText RouterMode=0
+[2026.10.04-01.57.46:178][ 23]LogMiniInit: Display: MiniTask24Probe ADDRESS_TYPED: Peer=Overflow Address=127.0.0.1:18924 FocusMouse=1 SelectAllKey=1 CharacterEvents=15 ExactText=1
+[2026.10.04-01.57.46:209][ 24]LogMiniInit: Display: MiniTask24Probe WIDGET_REBUILD: Peer=Overflow Widget=/Engine/Transient.GameEngine_0:MiniGameInstance_0.MiniPrimaryGameLayout_0.WidgetTree.MiniConnectionStatusWidget_0 LocalPlayer=MiniLocalPlayer_0 World=L_MiniFrontEnd Active=0
+[2026.10.04-01.57.46:210][ 24]LogMiniInit: Display: MiniTask24Probe UI_KEY: Peer=Overflow Key=Enter Control=0 Routed=1 Handled=1 Focus=SEditableText RouterMode=0
+[2026.10.04-01.57.46:410][ 30]LogMiniInit: Display: MiniTask24Probe OLD_WORLD_RELEASED: Peer=Overflow World=L_MiniFrontEnd FrontListeners=0 ModalListeners=0 HUD=0 Menu=0 UIGates=0 Cleanup=2
+[2026.10.04-01.57.46:553][ 32]LogMiniInit: Display: MiniTask24Probe WIDGET_REBUILD: Peer=Overflow Widget=/Engine/Transient.GameEngine_0:MiniGameInstance_0.MiniPrimaryGameLayout_0.WidgetTree.MiniActivatableWidget_0 LocalPlayer=MiniLocalPlayer_0 World=L_MiniArena Active=0
+[2026.10.04-01.57.46:553][ 32]LogMiniInit: Display: MiniTask24Probe WIDGET_REBUILD: Peer=Overflow Widget=/Engine/Transient.GameEngine_0:MiniGameInstance_0.MiniPrimaryGameLayout_0.WidgetTree.MiniConnectionStatusWidget_0 LocalPlayer=MiniLocalPlayer_0 World=L_MiniArena Active=0
+[2026.10.04-01.57.46:887][ 35]LogMiniInit: Display: MiniTask24Probe WIDGET_REBUILD: Peer=Overflow Widget=/Engine/Transient.GameEngine_0:MiniGameInstance_0.MiniPrimaryGameLayout_0.WidgetTree.MiniHUDLayout_0 LocalPlayer=MiniLocalPlayer_0 World=L_MiniArena Active=0
+[2026.10.04-01.57.46:920][ 36]LogMiniInit: Display: MiniTask24Probe NEW_WORLD_PASS: Peer=Overflow NewWorld=1 NewPlayerState=1 NewASC=1 OldUIReleased=1
+[2026.10.04-01.57.46:920][ 36]LogMiniInit: Display: MiniTask24Probe CLIENT_CHECKPOINT: Peer=Overflow Owner=4 Name=CapacityRefilled Round=1 Life=1 World=L_MiniArena HUD=1 Gates=0
+[2026.10.04-01.57.46:920][ 36]LogMiniInit: Display: MiniTask24Probe CAPACITY_OVERFLOW_PASS: Peer=Overflow ActualFifthLoginRejected=1 Code=MINI_SERVER_FULL UserReason=1 ActualClose=1 ActualRejoinAfterSlotReleased=1 HUD=1
+
+=== Task24-WithMedia-Capacity-Server.log ===
+[2026.10.04-01.57.03:900][  6]LogMiniInit: Display: MiniTask24Probe FRONT_END_PASS: Peer=Server DefaultMap=1 NoPawn=1 NoCombat=1 Menu=1 InputGate=1
+[2026.10.04-01.57.03:901][  6]LogMiniInit: Display: MiniTask24Probe UI_CLICK: Peer=Server Action=HostArenaButton MouseDown=1 MouseUp=1 X=853.5 Y=448.5 Window=1 MouseMove=1 TargetHover=1 TargetPressed=1 TargetCapture=1 AppActive=1 ProbeBackgroundCapture=1
+[2026.10.04-01.57.04:527][ 22]LogMiniInit: Display: MiniTask24Probe NEW_WORLD_PASS: Peer=Server NewWorld=1 NewPlayerState=1 NewASC=1 OldUIReleased=1
+[2026.10.04-01.57.04:527][ 22]LogMiniInit: Display: MiniTask24Probe SERVER_HOST_READY: Mode=Capacity Peer=Server ActualSlateHost=1 ProductionArena=1 Listen=1 UIGates=0
+[2026.10.04-01.57.46:150][267]LogMiniInit: Display: MiniTask24Probe CAPACITY_SLOT_RELEASED: ActualLogout=1 Remaining=3 OverflowMayRejoin=1
+[2026.10.04-01.57.46:926][290]LogMiniInit: Display: MiniTask24Probe CAPACITY_SERVER_PASS: Peer=Server RealFourLogins=1 ActualFifthRejected=1 ActualMenuLeave=1 OverflowRejoined=1 RemainingPSASCUnchanged=3 SameWorld=1 ClientHUD=3
+
+=== Task24-WithMedia-Failures-Client.log ===
+[2026.10.04-01.56.30:839][  9]LogMiniInit: Display: MiniTask24Probe KEYBOARD_ERROR_CLOSE_PASS: Peer=Client FocusedCloseButton=1 ActualEnter=1 ErrorCleared=1
+[2026.10.04-01.56.30:977][ 13]LogMiniInit: Display: MiniTask24Probe PENDING_UI_PASS: Peer=Client RealPendingDriver=1 ButtonsDisabled=1 CancelVisible=1 Gates=2 DuplicateAPIsRejected=1
+[2026.10.04-01.56.31:181][ 17]LogMiniInit: Display: MiniTask24Probe NEW_WORLD_PASS: Peer=Client NewWorld=1 NewPlayerState=1 NewASC=1 OldUIReleased=1
+[2026.10.04-01.56.31:181][ 17]LogMiniInit: Display: MiniTask24Probe CANCEL_PENDING_PASS: Peer=Client ActualSlateCancel=1 PendingDriverRemoved=1 NewFrontEndWorldPSASC=1 FrontGate=1 ButtonsEnabled=1
+[2026.10.04-01.56.31:283][ 20]LogMiniInit: Display: MiniTask24Probe PENDING_RETRY_PASS: Peer=Client ActualAddressRetyped=1 NewPendingDriver=1 PreviousCancelDidNotBlockRetry=1
+[2026.10.04-01.56.52:236][639]LogMiniInit: Display: MiniTask24Probe NEW_WORLD_PASS: Peer=Client NewWorld=1 NewPlayerState=1 NewASC=1 OldUIReleased=1
+[2026.10.04-01.56.52:236][639]LogMiniInit: Display: MiniTask24Probe CLIENT_CHECKPOINT: Peer=Client Owner=1 Name=FailuresRecoveredArena Round=1 Life=2 World=L_MiniArena HUD=1 Gates=0
+[2026.10.04-01.56.52:236][639]LogMiniInit: Display: MiniTask24Probe CLIENT_AUTHORITY_GATE_PASS: RestartRejected=1 FrontEndOnlyAPIsRejected=1 GenerationUnchanged=1
+[2026.10.04-01.56.52:614][647]LogMiniInit: Display: MiniTask24Probe NEW_WORLD_PASS: Peer=Client NewWorld=1 NewPlayerState=1 NewASC=1 OldUIReleased=1
+[2026.10.04-01.56.52:614][647]LogMiniInit: Display: MiniTask24Probe FAILURES_CLIENT_PASS: Peer=Client InvalidAddressUI=1 ErrorFocusedKeyboardClose=1 ActualPendingCancel=1 RetryAfterCancel=1 RealUnreachableDriverFailure=1 PendingGates=1 RecoveredUIJoin=1 ActualMenuReturn=1 FrontEnd=1
+
+=== Task24-WithMedia-Failures-Server.log ===
+[2026.10.04-01.56.17:439][  6]LogMiniInit: Display: MiniTask24Probe FRONT_END_PASS: Peer=Server DefaultMap=1 NoPawn=1 NoCombat=1 Menu=1 InputGate=1
+[2026.10.04-01.56.17:440][  6]LogMiniInit: Display: MiniTask24Probe UI_CLICK: Peer=Server Action=HostArenaButton MouseDown=1 MouseUp=1 X=853.5 Y=448.5 Window=1 MouseMove=1 TargetHover=1 TargetPressed=1 TargetCapture=1 AppActive=1 ProbeBackgroundCapture=1
+[2026.10.04-01.56.18:061][ 22]LogMiniInit: Display: MiniTask24Probe NEW_WORLD_PASS: Peer=Server NewWorld=1 NewPlayerState=1 NewASC=1 OldUIReleased=1
+[2026.10.04-01.56.18:061][ 22]LogMiniInit: Display: MiniTask24Probe SERVER_HOST_READY: Mode=Failures Peer=Server ActualSlateHost=1 ProductionArena=1 Listen=1 UIGates=0
+[2026.10.04-01.56.52:270][ 48]LogMiniInit: Display: MiniTask24Probe SERVER_CLIENT_ACK: Owner=1 Checkpoint=FailuresRecoveredArena Round=1 Life=2 HUD=1 UIGates=0
+[2026.10.04-01.56.52:271][ 48]LogMiniInit: Display: MiniTask24Probe FAILURES_SERVER_PASS: Peer=Server RealUIHost=1 RecoveredClientJoined=1 ProductionArena=1 ClientHUD=1
+
+=== Task24-WithMedia-Flow-Client.log ===
+[2026.10.04-01.55.38:824][  0]LogMiniInit: Display: MiniTask24Probe WAIT: Mode=Flow Role=Client Peer=Client Step=0 Reason=FrontEndReady World=L_MiniFrontEnd Net=0 Pawn=None Input=0 Busy=0 Error= Cleanup=0 NetworkFailures=0
+[2026.10.04-01.55.39:370][  6]LogMiniInit: Display: MiniTask24Probe SCREENSHOT_SAVED: Peer=Client Stage=MainMenu Path=F:\FPS\FPS\Saved\Screenshots/Task24-Flow-Client-MainMenu.png ActualPNG=1
+[2026.10.04-01.55.40:054][ 19]LogMiniInit: Display: MiniTask24Probe NEW_WORLD_PASS: Peer=Client NewWorld=1 NewPlayerState=1 NewASC=1 OldUIReleased=1
+[2026.10.04-01.55.43:855][133]LogMiniInit: Display: MiniTask24Probe WAIT: Mode=Flow Role=Client Peer=Client Step=2 Reason=GameReady World=L_MiniArena Net=3 Pawn=BP_MiniCharacter_C_0 Input=0 Busy=0 Error= Cleanup=1 NetworkFailures=0
+[2026.10.04-01.55.46:824][221]LogMiniInit: Display: MiniTask24Probe SCREENSHOT_SAVED: Peer=Client Stage=BeforeMenu Path=F:\FPS\FPS\Saved\Screenshots/Task24-Flow-Client-BeforeMenu.png ActualPNG=1
+[2026.10.04-01.55.46:892][223]LogMiniInit: Display: MiniTask24Probe SCREENSHOT_SAVED: Peer=Client Stage=GameMenu Path=F:\FPS\FPS\Saved\Screenshots/Task24-Flow-Client-GameMenu.png ActualPNG=1
+[2026.10.04-01.55.47:096][227]LogMiniInit: Display: MiniTask24Probe NEW_WORLD_PASS: Peer=Client NewWorld=1 NewPlayerState=1 NewASC=1 OldUIReleased=1
+[2026.10.04-01.55.48:874][279]LogMiniInit: Display: MiniTask24Probe WAIT: Mode=Flow Role=Client Peer=Client Step=5 Reason=GameReady World=L_MiniArena Net=3 Pawn=None Input=0 Busy=0 Error= Cleanup=3 NetworkFailures=0
+[2026.10.04-01.55.52:107][376]LogMiniInit: Display: MiniTask24Probe NEW_WORLD_PASS: Peer=Client NewWorld=1 NewPlayerState=1 NewASC=1 OldUIReleased=1
+[2026.10.04-01.55.53:874][429]LogMiniInit: Display: MiniTask24Probe WAIT: Mode=Flow Role=Client Peer=Client Step=6 Reason=OwnerCheckpoint World=L_MiniArena Net=3 Pawn=BP_MiniCharacter_C_2 Input=1 Busy=0 Error= Cleanup=3 NetworkFailures=0
+[2026.10.04-01.55.58:908][580]LogMiniInit: Display: MiniTask24Probe WAIT: Mode=Flow Role=Client Peer=Client Step=6 Reason=OwnerCheckpoint World=L_MiniArena Net=3 Pawn=BP_MiniCharacter_C_4 Input=1 Busy=0 Error= Cleanup=3 NetworkFailures=0
+[2026.10.04-01.56.04:624][749]LogMiniInit: Display: MiniTask24Probe WAIT: Mode=Flow Role=Client Peer=Client Step=7 Reason=GameReady World=L_MiniArena Net=3 Pawn=BP_MiniCharacter_C_0 Input=0 Busy=1 Error= Cleanup=4 NetworkFailures=0
+[2026.10.04-01.56.04:640][750]LogMiniInit: Display: MiniTask24Probe NEW_WORLD_PASS: Peer=Client NewWorld=1 NewPlayerState=1 NewASC=1 OldUIReleased=1
+[2026.10.04-01.56.04:927][757]LogMiniInit: Display: MiniTask24Probe ERROR_UI: Peer=Client Code=MINI_HOST_LEFT Title=对局已结束 Detail=主机已结束对局。 FrontEnd=1 Modal=1 Gates=2 Listeners=1
+[2026.10.04-01.56.04:960][758]LogMiniInit: Display: MiniTask24Probe ERROR_UI: Peer=Client Code=MINI_HOST_LEFT Title=对局已结束 Detail=主机已结束对局。 FrontEnd=1 Modal=1 Gates=2 Listeners=1
+[2026.10.04-01.56.04:960][758]LogMiniInit: Display: MiniTask24Probe SCREENSHOT_SAVED: Peer=Client Stage=HostLeft Path=F:\FPS\FPS\Saved\Screenshots/Task24-Flow-Client-HostLeft.png ActualPNG=1
+[2026.10.04-01.56.04:960][758]LogMiniInit: Display: MiniTask24Probe NEW_WORLD_PASS: Peer=Client NewWorld=1 NewPlayerState=1 NewASC=1 OldUIReleased=1
+[2026.10.04-01.56.04:960][758]LogMiniInit: Display: MiniTask24Probe ERROR_CLOSE_STATE: ButtonBound=1 ModalListener=1 Code=MINI_HOST_LEFT
+[2026.10.04-01.56.05:300][767]LogMiniInit: Display: MiniTask24Probe NEW_WORLD_PASS: Peer=Client NewWorld=1 NewPlayerState=1 NewASC=1 OldUIReleased=1
+[2026.10.04-01.56.05:300][767]LogMiniInit: Display: MiniTask24Probe PRACTICE_BUTTON_PASS: Peer=Client RealSlateClick=1 DefaultPracticeExperience=1 Targets=3 Arena=0 RealGE=1
+[2026.10.04-01.56.05:751][779]LogMiniInit: Display: MiniTask24Probe NEW_WORLD_PASS: Peer=Client NewWorld=1 NewPlayerState=1 NewASC=1 OldUIReleased=1
+[2026.10.04-01.56.05:751][779]LogMiniInit: Display: MiniTask24Probe FLOW_CLIENT_PASS: Peer=Client RealSlateHostJoinMenu=1 OrdinaryTravel=1 NewWorldPSASC=1 TrainingAndReturn=1 OldUIListeners=0 ActiveFrontGate=1
+
+=== Task24-WithMedia-Flow-Server.log ===
+[2026.10.04-01.55.25:348][  0]LogMiniInit: Display: MiniTask24Probe WAIT: Mode=Flow Role=Server Peer=Server Step=0 Reason=FrontEndReady World=L_MiniFrontEnd Net=0 Pawn=None Input=0 Busy=0 Error= Cleanup=0 NetworkFailures=0
+[2026.10.04-01.55.25:902][  6]LogMiniInit: Display: MiniTask24Probe SCREENSHOT_SAVED: Peer=Server Stage=MainMenu Path=F:\FPS\FPS\Saved\Screenshots/Task24-Flow-Server-MainMenu.png ActualPNG=1
+[2026.10.04-01.55.25:902][  6]LogMiniInit: Display: MiniTask24Probe FRONT_END_PASS: Peer=Server DefaultMap=1 NoPawn=1 NoCombat=1 Menu=1 InputGate=1
+[2026.10.04-01.55.25:919][  6]LogMiniInit: Display: MiniTask24Probe UI_CLICK: Peer=Server Action=HostArenaButton MouseDown=1 MouseUp=1 X=853.5 Y=448.5 Window=1 MouseMove=1 TargetHover=1 TargetPressed=1 TargetCapture=1 AppActive=1 ProbeBackgroundCapture=1
+[2026.10.04-01.55.26:828][ 29]LogMiniInit: Display: MiniTask24Probe NEW_WORLD_PASS: Peer=Server NewWorld=1 NewPlayerState=1 NewASC=1 OldUIReleased=1
+[2026.10.04-01.55.26:828][ 29]LogMiniInit: Display: MiniTask24Probe SERVER_HOST_READY: Mode=Flow Peer=Server ActualSlateHost=1 ProductionArena=1 Listen=1 UIGates=0
+[2026.10.04-01.55.46:982][633]LogMiniInit: Display: MiniTask24Probe FLOW_CLIENT_LEFT: ActualLogout=1 HostRemained=1 Count=1
+[2026.10.04-01.55.59:187][998]LogMiniInit: Display: MiniTask24Probe SCREENSHOT_SAVED: Peer=Server Stage=BeforeMenu Path=F:\FPS\FPS\Saved\Screenshots/Task24-Flow-Server-BeforeMenu.png ActualPNG=1
+[2026.10.04-01.55.59:188][998]LogMiniInit: Display: MiniTask24Probe WAIT: Mode=Flow Role=Server Peer=Server Step=60 Reason=EscapeOpenedMenu World=L_MiniArena Net=2 Pawn=BP_MiniCharacter_C_6 Input=1 Busy=0 Error= Cleanup=1 NetworkFailures=0
+[2026.10.04-01.55.59:252][  0]LogMiniInit: Display: MiniTask24Probe SCREENSHOT_SAVED: Peer=Server Stage=GameMenu Path=F:\FPS\FPS\Saved\Screenshots/Task24-Flow-Server-GameMenu.png ActualPNG=1
+[2026.10.04-01.56.03:376][122]LogMiniInit: Display: MiniTask24Probe NEW_WORLD_PASS: Peer=Server NewWorld=1 NewPlayerState=1 NewASC=1 OldUIReleased=1
+[2026.10.04-01.56.04:643][160]LogMiniInit: Display: MiniTask24Probe ORDINARY_RESTART_PASS: ServerNewWorld=1 NewPlayerStates=1 NewASCs=1 PriorScoreCleared=1 ClientsReconnected=1 HUD=1
+[2026.10.04-01.56.04:676][161]LogMiniInit: Display: MiniTask24Probe WAIT: Mode=Flow Role=Server Peer=Server Step=70 Reason=EscapeOpenedMenu World=L_MiniArena Net=2 Pawn=BP_MiniCharacter_C_2 Input=1 Busy=0 Error= Cleanup=2 NetworkFailures=0
+[2026.10.04-01.56.04:940][166]LogMiniInit: Display: MiniTask24Probe NEW_WORLD_PASS: Peer=Server NewWorld=1 NewPlayerState=1 NewASC=1 OldUIReleased=1
+[2026.10.04-01.56.05:231][174]LogMiniInit: Display: MiniTask24Probe NEW_WORLD_PASS: Peer=Server NewWorld=1 NewPlayerState=1 NewASC=1 OldUIReleased=1
+[2026.10.04-01.56.05:231][174]LogMiniInit: Display: MiniTask24Probe PRACTICE_BUTTON_PASS: Peer=Server RealSlateClick=1 DefaultPracticeExperience=1 Targets=3 Arena=0 RealGE=1
+[2026.10.04-01.56.05:701][186]LogMiniInit: Display: MiniTask24Probe NEW_WORLD_PASS: Peer=Server NewWorld=1 NewPlayerState=1 NewASC=1 OldUIReleased=1
+[2026.10.04-01.56.05:701][186]LogMiniInit: Display: MiniTask24Probe FLOW_SERVER_PASS: Peer=Server RealSlateHostJoinMenu=1 OrdinaryTravel=1 NewWorldPSASC=1 TrainingAndReturn=1 OldUIListeners=0 ActiveFrontGate=1
+
+=== Task24-WithMedia-HostFailureCreate-Server.log ===
+[2026.10.04-02.00.13:395][  0]LogMiniInit: Display: MiniTask24Probe WAIT: Mode=HostFailureCreate Role=Server Peer=Server Step=0 Reason=FrontEndReady World=L_MiniFrontEnd Net=0 Pawn=None Input=0 Busy=0 Error= Cleanup=0 NetworkFailures=0
+[2026.10.04-02.00.13:930][  6]LogMiniInit: Display: MiniTask24Probe SCREENSHOT_SAVED: Peer=Server Stage=MainMenu Path=F:\FPS\FPS\Saved\Screenshots/Task24-HostFailureCreate-Server-MainMenu.png ActualPNG=1
+[2026.10.04-02.00.13:932][  6]LogMiniInit: Display: MiniTask24Probe UI_CLICK: Peer=Server Action=HostArenaButton MouseDown=1 MouseUp=1 X=853.5 Y=448.5 Window=1 MouseMove=1 TargetHover=1 TargetPressed=1 TargetCapture=1 AppActive=1 ProbeBackgroundCapture=1
+[2026.10.04-02.00.14:352][ 10]LogMiniInit: Display: MiniTask24Probe ERROR_UI: Peer=Server Code=MINI_HOST_FAILED Title=无法创建服务器 Detail=服务器未能启动，请关闭占用同一端口的程序后重试。若问题持续，请重新启动游戏。 FrontEnd=1 Modal=1 Gates=2 Listeners=1
+[2026.10.04-02.00.14:386][ 11]LogMiniInit: Display: MiniTask24Probe ERROR_UI: Peer=Server Code=MINI_HOST_FAILED Title=无法创建服务器 Detail=服务器未能启动，请关闭占用同一端口的程序后重试。若问题持续，请重新启动游戏。 FrontEnd=1 Modal=1 Gates=2 Listeners=1
+[2026.10.04-02.00.14:386][ 11]LogMiniInit: Display: MiniTask24Probe SCREENSHOT_SAVED: Peer=Server Stage=HostFailure Path=F:\FPS\FPS\Saved\Screenshots/Task24-HostFailureCreate-Server-HostFailure.png ActualPNG=1
+[2026.10.04-02.00.14:386][ 11]LogMiniInit: Display: MiniTask24Probe NEW_WORLD_PASS: Peer=Server NewWorld=1 NewPlayerState=1 NewASC=1 OldUIReleased=1
+[2026.10.04-02.00.14:386][ 11]LogMiniInit: Display: MiniTask24Probe HOST_FAILURE_MODAL: Mode=HostFailureCreate RealDriverFailure=1 FrontEnd=1 FriendlyReason=1 Gates=2
+[2026.10.04-02.00.14:386][ 11]LogMiniInit: Display: MiniTask24Probe ERROR_CLOSE_STATE: ButtonBound=1 ModalListener=1 Code=MINI_HOST_FAILED
+[2026.10.04-02.00.14:744][ 21]LogMiniInit: Display: MiniTask24Probe NEW_WORLD_PASS: Peer=Server NewWorld=1 NewPlayerState=1 NewASC=1 OldUIReleased=1
+[2026.10.04-02.00.14:745][ 21]LogMiniInit: Display: MiniTask24Probe PRACTICE_BUTTON_PASS: Peer=Server RealSlateClick=1 DefaultPracticeExperience=1 Targets=3 Arena=0 RealGE=1
+[2026.10.04-02.00.14:878][ 24]LogMiniInit: Display: MiniTask24Probe SCREENSHOT_SAVED: Peer=Server Stage=BeforeMenu Path=F:\FPS\FPS\Saved\Screenshots/Task24-HostFailureCreate-Server-BeforeMenu.png ActualPNG=1
+[2026.10.04-02.00.15:045][ 29]LogMiniInit: Display: MiniTask24Probe SCREENSHOT_SAVED: Peer=Server Stage=GameMenu Path=F:\FPS\FPS\Saved\Screenshots/Task24-HostFailureCreate-Server-GameMenu.png ActualPNG=1
+[2026.10.04-02.00.15:232][ 33]LogMiniInit: Display: MiniTask24Probe NEW_WORLD_PASS: Peer=Server NewWorld=1 NewPlayerState=1 NewASC=1 OldUIReleased=1
+[2026.10.04-02.00.15:232][ 33]LogMiniInit: Display: MiniTask24Probe HOST_FAILURE_CREATE_PASS: Peer=Server ActualNullDriverHostFailure=1 FriendlyError=1 ActualClosePracticeAndReturn=1 NewWorldPSASC=1 OldUIListeners=0 ActiveFrontGate=1
+
+=== Task24-WithMedia-HostFailureListen-Server.log ===
+[2026.10.04-02.00.03:577][  0]LogMiniInit: Display: MiniTask24Probe WAIT: Mode=HostFailureListen Role=Server Peer=Server Step=0 Reason=FrontEndReady World=L_MiniFrontEnd Net=0 Pawn=None Input=0 Busy=0 Error= Cleanup=0 NetworkFailures=0
+[2026.10.04-02.00.04:105][  6]LogMiniInit: Display: MiniTask24Probe SCREENSHOT_SAVED: Peer=Server Stage=MainMenu Path=F:\FPS\FPS\Saved\Screenshots/Task24-HostFailureListen-Server-MainMenu.png ActualPNG=1
+[2026.10.04-02.00.04:106][  6]LogMiniInit: Display: MiniTask24Probe UI_CLICK: Peer=Server Action=HostArenaButton MouseDown=1 MouseUp=1 X=853.5 Y=448.5 Window=1 MouseMove=1 TargetHover=1 TargetPressed=1 TargetCapture=1 AppActive=1 ProbeBackgroundCapture=1
+[2026.10.04-02.00.04:531][ 10]LogMiniInit: Display: MiniTask24Probe ERROR_UI: Peer=Server Code=MINI_HOST_FAILED Title=无法创建服务器 Detail=服务器未能启动，请关闭占用同一端口的程序后重试。若问题持续，请重新启动游戏。 FrontEnd=1 Modal=1 Gates=2 Listeners=1
+[2026.10.04-02.00.04:565][ 11]LogMiniInit: Display: MiniTask24Probe ERROR_UI: Peer=Server Code=MINI_HOST_FAILED Title=无法创建服务器 Detail=服务器未能启动，请关闭占用同一端口的程序后重试。若问题持续，请重新启动游戏。 FrontEnd=1 Modal=1 Gates=2 Listeners=1
+[2026.10.04-02.00.04:565][ 11]LogMiniInit: Display: MiniTask24Probe SCREENSHOT_SAVED: Peer=Server Stage=HostFailure Path=F:\FPS\FPS\Saved\Screenshots/Task24-HostFailureListen-Server-HostFailure.png ActualPNG=1
+[2026.10.04-02.00.04:565][ 11]LogMiniInit: Display: MiniTask24Probe NEW_WORLD_PASS: Peer=Server NewWorld=1 NewPlayerState=1 NewASC=1 OldUIReleased=1
+[2026.10.04-02.00.04:565][ 11]LogMiniInit: Display: MiniTask24Probe HOST_FAILURE_MODAL: Mode=HostFailureListen RealDriverFailure=1 FrontEnd=1 FriendlyReason=1 Gates=2
+[2026.10.04-02.00.04:565][ 11]LogMiniInit: Display: MiniTask24Probe ERROR_CLOSE_STATE: ButtonBound=1 ModalListener=1 Code=MINI_HOST_FAILED
+[2026.10.04-02.00.04:699][ 15]LogMiniInit: Display: MiniTask24Probe UI_CLICK: Peer=Server Action=HostArenaButton MouseDown=1 MouseUp=1 X=853.5 Y=448.5 Window=1 MouseMove=1 TargetHover=1 TargetPressed=1 TargetCapture=1 AppActive=1 ProbeBackgroundCapture=1
+[2026.10.04-02.00.04:835][ 17]LogMiniInit: Display: MiniTask24Probe NEW_WORLD_PASS: Peer=Server NewWorld=1 NewPlayerState=1 NewASC=1 OldUIReleased=1
+[2026.10.04-02.00.04:835][ 17]LogMiniInit: Display: MiniTask24Probe HOST_RETRY_READY: ActualSlateRetry=1 Listen=1 PreviousFailureDidNotBlockRetry=1
+[2026.10.04-02.00.04:976][ 20]LogMiniInit: Display: MiniTask24Probe SCREENSHOT_SAVED: Peer=Server Stage=BeforeMenu Path=F:\FPS\FPS\Saved\Screenshots/Task24-HostFailureListen-Server-BeforeMenu.png ActualPNG=1
+[2026.10.04-02.00.05:275][ 29]LogMiniInit: Display: MiniTask24Probe SCREENSHOT_SAVED: Peer=Server Stage=GameMenu Path=F:\FPS\FPS\Saved\Screenshots/Task24-HostFailureListen-Server-GameMenu.png ActualPNG=1
+[2026.10.04-02.00.05:478][ 33]LogMiniInit: Display: MiniTask24Probe NEW_WORLD_PASS: Peer=Server NewWorld=1 NewPlayerState=1 NewASC=1 OldUIReleased=1
+[2026.10.04-02.00.05:478][ 33]LogMiniInit: Display: MiniTask24Probe HOST_FAILURE_LISTEN_PASS: Peer=Server ActualBindFailure=1 FriendlyError=1 ActualCloseAndHostRetry=1 Listen=1 MenuReturn=1 FrontEnd=1 OldUIReleased=1
+
+=== Task24-WithMedia-HostLoss-Client.log ===
+[2026.10.04-01.58.12:771][  0]LogMiniInit: Display: MiniTask24Probe WAIT: Mode=HostLoss Role=Client Peer=Client Step=0 Reason=FrontEndReady World=L_MiniFrontEnd Net=0 Pawn=None Input=0 Busy=0 Error= Cleanup=0 NetworkFailures=0
+[2026.10.04-01.58.13:319][  6]LogMiniInit: Display: MiniTask24Probe SCREENSHOT_SAVED: Peer=Client Stage=MainMenu Path=F:\FPS\FPS\Saved\Screenshots/Task24-HostLoss-Client-MainMenu.png ActualPNG=1
+[2026.10.04-01.58.14:080][ 21]LogMiniInit: Display: MiniTask24Probe NEW_WORLD_PASS: Peer=Client NewWorld=1 NewPlayerState=1 NewASC=1 OldUIReleased=1
+[2026.10.04-01.58.14:080][ 21]LogMiniInit: Display: MiniTask24Probe CLIENT_CHECKPOINT: Peer=Client Owner=1 Name=HostLossArmed Round=1 Life=2 World=L_MiniArena HUD=1 Gates=0
+[2026.10.04-01.58.14:080][ 21]LogMiniInit: Display: MiniTask24Probe HOST_LOSS_ARMED: Peer=Client ActualUIJoin=1 Arena=1 HUD=1 ExternalHostTerminationMayProceed=1
+[2026.10.04-01.59.14:798][839]LogMiniInit: Display: MiniTask24Probe WAIT: Mode=HostLoss Role=Client Peer=Client Step=2 Reason=FrontEndReady World=L_MiniFrontEnd Net=0 Pawn=None Input=0 Busy=0 Error=MINI_CONNECTION_TIMEOUT Cleanup=2 NetworkFailures=1
+[2026.10.04-01.59.14:869][842]LogMiniInit: Display: MiniTask24Probe SCREENSHOT_SAVED: Peer=Client Stage=HostLoss Path=F:\FPS\FPS\Saved\Screenshots/Task24-HostLoss-Client-HostLoss.png ActualPNG=1
+[2026.10.04-01.59.14:869][842]LogMiniInit: Display: MiniTask24Probe NEW_WORLD_PASS: Peer=Client NewWorld=1 NewPlayerState=1 NewASC=1 OldUIReleased=1
+[2026.10.04-01.59.14:902][843]LogMiniInit: Display: MiniTask24Probe HOSTLOSS_CLIENT_PASS: Peer=Client ActualDriverFailure=1 HostLossReason=1 NewFrontEndWorld=1 ErrorModal=1 RealCloseClick=1 InteractiveFrontEnd=1
+
+=== Task24-WithMedia-HostLoss-Server.log ===
+[2026.10.04-01.58.01:497][  0]LogMiniInit: Display: MiniTask24Probe WAIT: Mode=HostLoss Role=Server Peer=Server Step=0 Reason=FrontEndReady World=L_MiniFrontEnd Net=0 Pawn=None Input=0 Busy=0 Error= Cleanup=0 NetworkFailures=0
+[2026.10.04-01.58.02:033][  6]LogMiniInit: Display: MiniTask24Probe SCREENSHOT_SAVED: Peer=Server Stage=MainMenu Path=F:\FPS\FPS\Saved\Screenshots/Task24-HostLoss-Server-MainMenu.png ActualPNG=1
+[2026.10.04-01.58.02:033][  6]LogMiniInit: Display: MiniTask24Probe FRONT_END_PASS: Peer=Server DefaultMap=1 NoPawn=1 NoCombat=1 Menu=1 InputGate=1
+[2026.10.04-01.58.02:034][  6]LogMiniInit: Display: MiniTask24Probe UI_CLICK: Peer=Server Action=HostArenaButton MouseDown=1 MouseUp=1 X=853.5 Y=448.5 Window=1 MouseMove=1 TargetHover=1 TargetPressed=1 TargetCapture=1 AppActive=1 ProbeBackgroundCapture=1
+[2026.10.04-01.58.02:652][ 22]LogMiniInit: Display: MiniTask24Probe NEW_WORLD_PASS: Peer=Server NewWorld=1 NewPlayerState=1 NewASC=1 OldUIReleased=1
+[2026.10.04-01.58.02:652][ 22]LogMiniInit: Display: MiniTask24Probe SERVER_HOST_READY: Mode=HostLoss Peer=Server ActualSlateHost=1 ProductionArena=1 Listen=1 UIGates=0
+[2026.10.04-01.58.14:093][365]LogMiniInit: Display: MiniTask24Probe SERVER_CLIENT_ACK: Owner=1 Checkpoint=HostLossArmed Round=1 Life=2 HUD=1 UIGates=0
+[2026.10.04-01.58.14:094][365]LogMiniInit: Display: MiniTask24Probe HOST_LOSS_ARMED: Peer=Server Listen=1 ClientHUD=1 ExternalHostTerminationMayProceed=1
+
+=== Task24-WithMedia-Quit-Client.log ===
+[2026.10.04-01.59.39:119][ 19]LogMiniInit: Display: MiniTask24Probe NEW_WORLD_PASS: Peer=Client NewWorld=1 NewPlayerState=1 NewASC=1 OldUIReleased=1
+
+=== Task24-WithMedia-Quit-FrontEndExit.log ===
+[2026.10.04-01.59.53:740][  0]LogMiniInit: Display: MiniTask24Probe WAIT: Mode=Quit Role=Overflow Peer=FrontEndExit Step=0 Reason=FrontEndReady World=L_MiniFrontEnd Net=0 Pawn=None Input=0 Busy=0 Error= Cleanup=0 NetworkFailures=0
+
+=== Task24-WithMedia-Quit-Server.log ===
+[2026.10.04-01.59.25:063][  6]LogMiniInit: Display: MiniTask24Probe FRONT_END_PASS: Peer=Server DefaultMap=1 NoPawn=1 NoCombat=1 Menu=1 InputGate=1
+[2026.10.04-01.59.25:064][  6]LogMiniInit: Display: MiniTask24Probe UI_CLICK: Peer=Server Action=HostArenaButton MouseDown=1 MouseUp=1 X=853.5 Y=448.5 Window=1 MouseMove=1 TargetHover=1 TargetPressed=1 TargetCapture=1 AppActive=1 ProbeBackgroundCapture=1
+[2026.10.04-01.59.25:717][ 23]LogMiniInit: Display: MiniTask24Probe NEW_WORLD_PASS: Peer=Server NewWorld=1 NewPlayerState=1 NewASC=1 OldUIReleased=1
+[2026.10.04-01.59.25:717][ 23]LogMiniInit: Display: MiniTask24Probe SERVER_HOST_READY: Mode=Quit Peer=Server ActualSlateHost=1 ProductionArena=1 Listen=1 UIGates=0
+
+=== Task26Roles-WithMedia-LateUIFailure-Listen-Client1.log ===
+LogCsvProfiler: Display: Metadata set : commandline="" F:\FPS\FPS\FPS.uproject 127.0.0.1:18936 -game -MiniProbeTask26Role=Client -MiniTask26RoleScenario=LateUIFailure -MiniTask26RolePeer=Listen-Client1 -MiniTask26RoleFinishFile=F:\FPS\FPS\Saved\Task26Roles\1712564cdb1a4689a5fa87b17ef4f939\LateUIFailure-Listen-finish.signal -MiniTask26RoleInjectFile=F:\FPS\FPS\Saved\Task26Roles\1712564cdb1a4689a5fa87b17ef4f939\LateUIFailure-Listen-inject.signal -MiniTask26RoleTimeoutSeconds=240 -unattended -nosplash -nop4 -ddc=InstalledNoZenLocalFallback -LocalDataCachePath=F:\FPS\FPS\DerivedDataCache -abslog=F:\FPS\FPS\Saved\Logs\Task26Roles-WithMedia-LateUIFailure-Listen-Client1.log -MiniTask26RoleMedia -MiniTask26RoleMediaOutput=F:\FPS\FPS\Saved\Screenshots -windowed -ResX=960 -ResY=540 -ExecCmds="t.MaxFPS 30,sg.GlobalIlluminationQuality 0,sg.ReflectionQuality 0,sg.ShadowQuality 1,r.MotionBlurQuality 0"""
+LogInit: Command Line: 127.0.0.1:18936 -game -MiniProbeTask26Role=Client -MiniTask26RoleScenario=LateUIFailure -MiniTask26RolePeer=Listen-Client1 -MiniTask26RoleFinishFile=F:\FPS\FPS\Saved\Task26Roles\1712564cdb1a4689a5fa87b17ef4f939\LateUIFailure-Listen-finish.signal -MiniTask26RoleInjectFile=F:\FPS\FPS\Saved\Task26Roles\1712564cdb1a4689a5fa87b17ef4f939\LateUIFailure-Listen-inject.signal -MiniTask26RoleTimeoutSeconds=240 -unattended -nosplash -nop4 -ddc=InstalledNoZenLocalFallback -LocalDataCachePath=F:\FPS\FPS\DerivedDataCache -abslog=F:\FPS\FPS\Saved\Logs\Task26Roles-WithMedia-LateUIFailure-Listen-Client1.log -MiniTask26RoleMedia -MiniTask26RoleMediaOutput=F:\FPS\FPS\Saved\Screenshots -windowed -ResX=960 -ResY=540 -ExecCmds="t.MaxFPS 30,sg.GlobalIlluminationQuality 0,sg.ReflectionQuality 0,sg.ShadowQuality 1,r.MotionBlurQuality 0"
+[2026.10.04-02.05.23:737][  0]LogMiniInit: Display: MiniTask26Role START: Role=Client Peer=Listen-Client1 Scenario=LateUIFailure Target=/Game/Mini/Maps/L_MiniPractice OptIn=1
+[2026.10.04-02.05.25:543][  5]LogMiniInit: Display: MiniTask26Role CLAIM: Role=Client Peer=Listen-Client1 Scenario=LateUIFailure World=L_MiniPractice NetMode=3 Count=1
+[2026.10.04-02.05.25:641][  8]LogMiniInit: Display: MiniTask26Role LOADED: Role=Client Peer=Listen-Client1 Scenario=LateUIFailure Count=1 ID=MiniExperienceDefinition:DA_MiniPracticeExperience
+[2026.10.04-02.05.26:171][ 12]LogMiniInit: Display: MiniTask26Role SCREENSHOT_SAVED: Role=Client Peer=Listen-Client1 Scenario=LateUIFailure Stage=Ready Path=F:\FPS\FPS\Saved\Screenshots/Task26Roles-LateUIFailure-Listen-Client1-Ready.png
+[2026.10.04-02.05.26:171][ 12]LogMiniInit: Display: MiniTask26Role READY: Role=Client Peer=Listen-Client1 Scenario=LateUIFailure Loaded=1 Failed=0 ResourceScope=1 ActorsReady=1 AuthorityActors=0 ClientActorSkip=1 LocalUI=1 HUDWidgets=4 LocalInput=1
+[2026.10.04-02.05.27:043][ 38]LogMiniInit: Display: MiniTask26Role FAILED_OBSERVED: Role=Client Peer=Listen-Client1 Scenario=LateUIFailure Count=1 Loaded=1 ReasonB64=UmVxdWlyZWQgQWN0aW9uICcvTWluaVNob290ZXJDb3JlL0dhbWVGZWF0dXJlRGF0YS5HYW1lRmVhdHVyZURhdGE6TWluaVRhc2sxOV9BZGRXaWRnZXRzJyBmYWlsZWQgaW4gV29ybGQgJ0xfTWluaVByYWN0aWNlJyAoZ2VuZXJhdGlvbiAxKTogcmVxdWlyZWQgd2lkZ2V0IGNsYXNzIG9yIHRhZyBpcyBpbnZhbGlk Reason=Required Action '/MiniShooterCore/GameFeatureData.GameFeatureData:MiniTask19_AddWidgets' failed in World 'L_MiniPractice' (generation 1): required widget class or tag is invalid
+[2026.10.04-02.05.27:084][ 39]LogMiniInit: Display: MiniTask26Role SCREENSHOT_SAVED: Role=Client Peer=Listen-Client1 Scenario=LateUIFailure Stage=Failure Path=F:\FPS\FPS\Saved\Screenshots/Task26Roles-LateUIFailure-Listen-Client1-Failure.png
+[2026.10.04-02.05.27:084][ 39]LogMiniInit: Display: MiniTask26Role FAILURE_VERIFIED: Role=Client Peer=Listen-Client1 Scenario=LateUIFailure Loaded=1 Failed=1 AuthorityMutation=0 NativeModal=1 Pawn=3 ActionResources=0 ReasonB64=UmVxdWlyZWQgQWN0aW9uICcvTWluaVNob290ZXJDb3JlL0dhbWVGZWF0dXJlRGF0YS5HYW1lRmVhdHVyZURhdGE6TWluaVRhc2sxOV9BZGRXaWRnZXRzJyBmYWlsZWQgaW4gV29ybGQgJ0xfTWluaVByYWN0aWNlJyAoZ2VuZXJhdGlvbiAxKTogcmVxdWlyZWQgd2lkZ2V0IGNsYXNzIG9yIHRhZyBpcyBpbnZhbGlk
+[2026.10.04-02.05.27:617][ 55]LogMiniInit: Display: MiniTask26Role PASS: Role=Client Peer=Listen-Client1 Scenario=LateUIFailure Claimed=1 Loaded=1 Failed=1 Mutations=0
+
+=== Task26Roles-WithMedia-LateUIFailure-Listen-Client2.log ===
+LogCsvProfiler: Display: Metadata set : commandline="" F:\FPS\FPS\FPS.uproject 127.0.0.1:18936 -game -MiniProbeTask26Role=Client -MiniTask26RoleScenario=LateUIFailure -MiniTask26RolePeer=Listen-Client2 -MiniTask26RoleFinishFile=F:\FPS\FPS\Saved\Task26Roles\1712564cdb1a4689a5fa87b17ef4f939\LateUIFailure-Listen-finish.signal -MiniTask26RoleInjectFile=F:\FPS\FPS\Saved\Task26Roles\1712564cdb1a4689a5fa87b17ef4f939\LateUIFailure-Listen-inject.signal -MiniTask26RoleTimeoutSeconds=240 -unattended -nosplash -nop4 -ddc=InstalledNoZenLocalFallback -LocalDataCachePath=F:\FPS\FPS\DerivedDataCache -abslog=F:\FPS\FPS\Saved\Logs\Task26Roles-WithMedia-LateUIFailure-Listen-Client2.log -MiniTask26RoleMedia -MiniTask26RoleMediaOutput=F:\FPS\FPS\Saved\Screenshots -windowed -ResX=960 -ResY=540 -ExecCmds="t.MaxFPS 30,sg.GlobalIlluminationQuality 0,sg.ReflectionQuality 0,sg.ShadowQuality 1,r.MotionBlurQuality 0"""
+LogInit: Command Line: 127.0.0.1:18936 -game -MiniProbeTask26Role=Client -MiniTask26RoleScenario=LateUIFailure -MiniTask26RolePeer=Listen-Client2 -MiniTask26RoleFinishFile=F:\FPS\FPS\Saved\Task26Roles\1712564cdb1a4689a5fa87b17ef4f939\LateUIFailure-Listen-finish.signal -MiniTask26RoleInjectFile=F:\FPS\FPS\Saved\Task26Roles\1712564cdb1a4689a5fa87b17ef4f939\LateUIFailure-Listen-inject.signal -MiniTask26RoleTimeoutSeconds=240 -unattended -nosplash -nop4 -ddc=InstalledNoZenLocalFallback -LocalDataCachePath=F:\FPS\FPS\DerivedDataCache -abslog=F:\FPS\FPS\Saved\Logs\Task26Roles-WithMedia-LateUIFailure-Listen-Client2.log -MiniTask26RoleMedia -MiniTask26RoleMediaOutput=F:\FPS\FPS\Saved\Screenshots -windowed -ResX=960 -ResY=540 -ExecCmds="t.MaxFPS 30,sg.GlobalIlluminationQuality 0,sg.ReflectionQuality 0,sg.ShadowQuality 1,r.MotionBlurQuality 0"
+[2026.10.04-02.05.23:738][  0]LogMiniInit: Display: MiniTask26Role START: Role=Client Peer=Listen-Client2 Scenario=LateUIFailure Target=/Game/Mini/Maps/L_MiniPractice OptIn=1
+[2026.10.04-02.05.25:590][  5]LogMiniInit: Display: MiniTask26Role CLAIM: Role=Client Peer=Listen-Client2 Scenario=LateUIFailure World=L_MiniPractice NetMode=3 Count=1
+[2026.10.04-02.05.25:689][  8]LogMiniInit: Display: MiniTask26Role LOADED: Role=Client Peer=Listen-Client2 Scenario=LateUIFailure Count=1 ID=MiniExperienceDefinition:DA_MiniPracticeExperience
+[2026.10.04-02.05.26:219][ 12]LogMiniInit: Display: MiniTask26Role SCREENSHOT_SAVED: Role=Client Peer=Listen-Client2 Scenario=LateUIFailure Stage=Ready Path=F:\FPS\FPS\Saved\Screenshots/Task26Roles-LateUIFailure-Listen-Client2-Ready.png
+[2026.10.04-02.05.26:219][ 12]LogMiniInit: Display: MiniTask26Role READY: Role=Client Peer=Listen-Client2 Scenario=LateUIFailure Loaded=1 Failed=0 ResourceScope=1 ActorsReady=1 AuthorityActors=0 ClientActorSkip=1 LocalUI=1 HUDWidgets=4 LocalInput=1
+[2026.10.04-02.05.27:026][ 36]LogMiniInit: Display: MiniTask26Role FAILED_OBSERVED: Role=Client Peer=Listen-Client2 Scenario=LateUIFailure Count=1 Loaded=1 ReasonB64=UmVxdWlyZWQgQWN0aW9uICcvTWluaVNob290ZXJDb3JlL0dhbWVGZWF0dXJlRGF0YS5HYW1lRmVhdHVyZURhdGE6TWluaVRhc2sxOV9BZGRXaWRnZXRzJyBmYWlsZWQgaW4gV29ybGQgJ0xfTWluaVByYWN0aWNlJyAoZ2VuZXJhdGlvbiAxKTogcmVxdWlyZWQgd2lkZ2V0IGNsYXNzIG9yIHRhZyBpcyBpbnZhbGlk Reason=Required Action '/MiniShooterCore/GameFeatureData.GameFeatureData:MiniTask19_AddWidgets' failed in World 'L_MiniPractice' (generation 1): required widget class or tag is invalid
+[2026.10.04-02.05.27:067][ 37]LogMiniInit: Display: MiniTask26Role SCREENSHOT_SAVED: Role=Client Peer=Listen-Client2 Scenario=LateUIFailure Stage=Failure Path=F:\FPS\FPS\Saved\Screenshots/Task26Roles-LateUIFailure-Listen-Client2-Failure.png
+[2026.10.04-02.05.27:067][ 37]LogMiniInit: Display: MiniTask26Role FAILURE_VERIFIED: Role=Client Peer=Listen-Client2 Scenario=LateUIFailure Loaded=1 Failed=1 AuthorityMutation=0 NativeModal=1 Pawn=3 ActionResources=0 ReasonB64=UmVxdWlyZWQgQWN0aW9uICcvTWluaVNob290ZXJDb3JlL0dhbWVGZWF0dXJlRGF0YS5HYW1lRmVhdHVyZURhdGE6TWluaVRhc2sxOV9BZGRXaWRnZXRzJyBmYWlsZWQgaW4gV29ybGQgJ0xfTWluaVByYWN0aWNlJyAoZ2VuZXJhdGlvbiAxKTogcmVxdWlyZWQgd2lkZ2V0IGNsYXNzIG9yIHRhZyBpcyBpbnZhbGlk
+[2026.10.04-02.05.27:634][ 54]LogMiniInit: Display: MiniTask26Role PASS: Role=Client Peer=Listen-Client2 Scenario=LateUIFailure Claimed=1 Loaded=1 Failed=1 Mutations=0
+
+=== Task26Roles-WithMedia-LateUIFailure-Listen-Server.log ===
+LogCsvProfiler: Display: Metadata set : commandline="" F:\FPS\FPS\FPS.uproject /Game/Mini/Maps/L_MiniPractice?listen -game -port=18936 -MiniProbeTask26Role=Listen -MiniTask26RoleScenario=LateUIFailure -MiniTask26RolePeer=Listen-Server -MiniTask26RoleFinishFile=F:\FPS\FPS\Saved\Task26Roles\1712564cdb1a4689a5fa87b17ef4f939\LateUIFailure-Listen-finish.signal -MiniTask26RoleInjectFile=F:\FPS\FPS\Saved\Task26Roles\1712564cdb1a4689a5fa87b17ef4f939\LateUIFailure-Listen-inject.signal -MiniTask26RoleTimeoutSeconds=240 -unattended -nosplash -nop4 -ddc=InstalledNoZenLocalFallback -LocalDataCachePath=F:\FPS\FPS\DerivedDataCache -abslog=F:\FPS\FPS\Saved\Logs\Task26Roles-WithMedia-LateUIFailure-Listen-Server.log -MiniTask26RoleMedia -MiniTask26RoleMediaOutput=F:\FPS\FPS\Saved\Screenshots -windowed -ResX=960 -ResY=540 -ExecCmds="t.MaxFPS 30,sg.GlobalIlluminationQuality 0,sg.ReflectionQuality 0,sg.ShadowQuality 1,r.MotionBlurQuality 0"""
+LogInit: Command Line: /Game/Mini/Maps/L_MiniPractice?listen -game -port=18936 -MiniProbeTask26Role=Listen -MiniTask26RoleScenario=LateUIFailure -MiniTask26RolePeer=Listen-Server -MiniTask26RoleFinishFile=F:\FPS\FPS\Saved\Task26Roles\1712564cdb1a4689a5fa87b17ef4f939\LateUIFailure-Listen-finish.signal -MiniTask26RoleInjectFile=F:\FPS\FPS\Saved\Task26Roles\1712564cdb1a4689a5fa87b17ef4f939\LateUIFailure-Listen-inject.signal -MiniTask26RoleTimeoutSeconds=240 -unattended -nosplash -nop4 -ddc=InstalledNoZenLocalFallback -LocalDataCachePath=F:\FPS\FPS\DerivedDataCache -abslog=F:\FPS\FPS\Saved\Logs\Task26Roles-WithMedia-LateUIFailure-Listen-Server.log -MiniTask26RoleMedia -MiniTask26RoleMediaOutput=F:\FPS\FPS\Saved\Screenshots -windowed -ResX=960 -ResY=540 -ExecCmds="t.MaxFPS 30,sg.GlobalIlluminationQuality 0,sg.ReflectionQuality 0,sg.ShadowQuality 1,r.MotionBlurQuality 0"
+[2026.10.04-02.05.07:689][  0]LogMiniInit: Display: MiniTask26Role START: Role=Listen Peer=Listen-Server Scenario=LateUIFailure Target=/Game/Mini/Maps/L_MiniPractice OptIn=1
+[2026.10.04-02.05.08:725][  0]LogMiniInit: Display: MiniTask26Role CLAIM: Role=Listen Peer=Listen-Server Scenario=LateUIFailure World=L_MiniPractice NetMode=2 Count=1
+[2026.10.04-02.05.09:712][ 24]LogMiniInit: Display: MiniTask26Role LOADED: Role=Listen Peer=Listen-Server Scenario=LateUIFailure Count=1 ID=MiniExperienceDefinition:DA_MiniPracticeExperience
+[2026.10.04-02.05.10:304][ 29]LogMiniInit: Display: MiniTask26Role SCREENSHOT_SAVED: Role=Listen Peer=Listen-Server Scenario=LateUIFailure Stage=Ready Path=F:\FPS\FPS\Saved\Screenshots/Task26Roles-LateUIFailure-Listen-Server-Ready.png
+[2026.10.04-02.05.10:305][ 29]LogMiniInit: Display: MiniTask26Role READY: Role=Listen Peer=Listen-Server Scenario=LateUIFailure Loaded=1 Failed=0 ResourceScope=1 ActorsReady=1 AuthorityActors=4 ClientActorSkip=0 LocalUI=1 HUDWidgets=4 LocalInput=1
+[2026.10.04-02.05.26:996][529]LogMiniInit: Display: MiniTask26Role FAILED_OBSERVED: Role=Listen Peer=Listen-Server Scenario=LateUIFailure Count=1 Loaded=1 ReasonB64=UmVxdWlyZWQgQWN0aW9uICcvTWluaVNob290ZXJDb3JlL0dhbWVGZWF0dXJlRGF0YS5HYW1lRmVhdHVyZURhdGE6TWluaVRhc2sxOV9BZGRXaWRnZXRzJyBmYWlsZWQgaW4gV29ybGQgJ0xfTWluaVByYWN0aWNlJyAoZ2VuZXJhdGlvbiAxKTogcmVxdWlyZWQgd2lkZ2V0IGNsYXNzIG9yIHRhZyBpcyBpbnZhbGlk Reason=Required Action '/MiniShooterCore/GameFeatureData.GameFeatureData:MiniTask19_AddWidgets' failed in World 'L_MiniPractice' (generation 1): required widget class or tag is invalid
+[2026.10.04-02.05.27:056][531]LogMiniInit: Display: MiniTask26Role SCREENSHOT_SAVED: Role=Listen Peer=Listen-Server Scenario=LateUIFailure Stage=Failure Path=F:\FPS\FPS\Saved\Screenshots/Task26Roles-LateUIFailure-Listen-Server-Failure.png
+[2026.10.04-02.05.27:056][531]LogMiniInit: Display: MiniTask26Role FAILURE_VERIFIED: Role=Listen Peer=Listen-Server Scenario=LateUIFailure Loaded=1 Failed=1 AuthorityMutation=1 NativeModal=1 Pawn=3 ActionResources=0 ReasonB64=UmVxdWlyZWQgQWN0aW9uICcvTWluaVNob290ZXJDb3JlL0dhbWVGZWF0dXJlRGF0YS5HYW1lRmVhdHVyZURhdGE6TWluaVRhc2sxOV9BZGRXaWRnZXRzJyBmYWlsZWQgaW4gV29ybGQgJ0xfTWluaVByYWN0aWNlJyAoZ2VuZXJhdGlvbiAxKTogcmVxdWlyZWQgd2lkZ2V0IGNsYXNzIG9yIHRhZyBpcyBpbnZhbGlk
+[2026.10.04-02.05.27:622][548]LogMiniInit: Display: MiniTask26Role PASS: Role=Listen Peer=Listen-Server Scenario=LateUIFailure Claimed=1 Loaded=1 Failed=1 Mutations=1
+[2026.10.04-02.06.18:620][  2]LogMiniInit: Display: MiniTask26Probe CLASS_PATH_INJECTED: Mode=FailedFrontQuit World=L_MiniFrontEnd Action=/Game/Mini/System/Experiences/DA_MiniFrontEndExperience.DA_MiniFrontEndExperience:MiniFrontEnd_AddWidgets Entry=Layout[0] layer=UI.Layer.Menu Path=/Game/Mini/Diagnostics/Task26/MissingFailedFrontQuit.MissingFailedFrontQuit_C Central=1
+[2026.10.04-02.06.18:687][  4]LogMiniInit: Display: MiniTask26Probe FAILED_OBSERVED: Mode=FailedFrontQuit World=L_MiniFrontEnd Target=1 Count=1 Loaded=0 Reason=Required Action '/Game/Mini/System/Experiences/DA_MiniFrontEndExperience.DA_MiniFrontEndExperience:MiniFrontEnd_AddWidgets' Layout[0] layer=UI.Layer.Menu class '/Game/Mini/Diagnostics/Task26/MissingFailedFrontQuit.MissingFailedFrontQuit_C' is missing or invalid
+[2026.10.04-02.06.19:070][  6]LogMiniInit: Display: MiniTask26Probe SCREENSHOT_SAVED: Mode=FailedFrontQuit Stage=ExpectedFailure Path=F:\FPS\FPS\Saved\Screenshots/Task26-FailedFrontQuit-ExpectedFailure.png
+[2026.10.04-02.06.19:073][  6]LogMiniInit: Display: MiniTask26Probe PASS: Mode=FailedFrontQuit Claimed=1 Mutations=1 TargetLoaded=0 TargetFailed=1 PendingObserved=0 Holds=0 RejectedOtherWorld=0 WorldRecords=1 LateFeatureActivated=0 LateFeatureDeactivated=0

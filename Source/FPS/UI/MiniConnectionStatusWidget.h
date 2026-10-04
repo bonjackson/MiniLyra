@@ -34,9 +34,11 @@ private:
 	UFUNCTION() void HandleCancelClicked();
 	UFUNCTION() void HandleCloseClicked();
 	UFUNCTION() void HandleReturnClicked();
+	UFUNCTION() void HandleQuitClicked();
 	UPROPERTY(Transient) TObjectPtr<UButton> CancelButton;
 	UPROPERTY(Transient) TObjectPtr<UButton> CloseButton;
 	UPROPERTY(Transient) TObjectPtr<UButton> ReturnButton;
+	UPROPERTY(Transient) TObjectPtr<UButton> QuitButton;
 	UPROPERTY(Transient) TObjectPtr<UTextBlock> TitleText;
 	UPROPERTY(Transient) TObjectPtr<UTextBlock> DetailText;
 	UPROPERTY(Transient) TObjectPtr<UTextBlock> AddressText;

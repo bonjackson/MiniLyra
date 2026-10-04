@@ -168,6 +168,9 @@ bool UMiniLoadingStatusWidget::RefreshStatus()
 	case EMiniExperienceLoadState::LoadingFeatures:
 		Detail = LOCTEXT("LoadingFeatures", "正在准备玩法功能…");
 		break;
+	case EMiniExperienceLoadState::LoadingActionResources:
+		Detail = LOCTEXT("LoadingActionResources", "正在准备界面与地图资源…");
+		break;
 	case EMiniExperienceLoadState::ExecutingActions:
 		Detail = LOCTEXT("ExecutingActions", "正在初始化玩法…");
 		break;

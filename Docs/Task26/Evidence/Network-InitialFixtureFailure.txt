@@ -1,0 +1,11 @@
+Initial network fixture failed: authority-only MOVE_None did not stop autonomous client prediction. Three remote Pawns fell and died through the real production KillZ/environment GE path before the firing suite.
+Fix only in opt-in fixture: authority and owning client use MOVE_Flying with movement Tick retained, matching existing weapon probes. Inactive positions also stay over the map (Y=900/1100/1300). Production movement, protection, death and fire validation remain unchanged.
+[2026.10.04-01.34.44:570][465]LogMiniInit: Display: MiniTask26Net FOUR_PEERS_READY: Players=4 RealConnections=3 RTT20Each=1 LateJoin=1 FixedTargetFixture=1 ProductionSpawnProtectionUnchanged=1
+[2026.10.04-01.34.47:303][547]LogMiniExperience: Display: MiniMatch DEATH_ACCEPTED: Round=1 Victim=257 Life=2 Killer=-1 Cause=2
+[2026.10.04-01.34.47:315][547]LogMiniInit: Display: MiniFall ENVIRONMENT_DEATH: Pawn=/Game/Mini/Maps/L_MiniArena.L_MiniArena:PersistentLevel.BP_MiniCharacter_C_3 Round=1 Life=2
+[2026.10.04-01.34.47:315][547]LogMiniExperience: Display: MiniMatch DEATH_ACCEPTED: Round=1 Victim=258 Life=1 Killer=-1 Cause=2
+[2026.10.04-01.34.47:315][547]LogMiniInit: Display: MiniFall ENVIRONMENT_DEATH: Pawn=/Game/Mini/Maps/L_MiniArena.L_MiniArena:PersistentLevel.BP_MiniCharacter_C_4 Round=1 Life=1
+[2026.10.04-01.34.47:316][547]LogMiniExperience: Display: MiniMatch DEATH_ACCEPTED: Round=1 Victim=259 Life=1 Killer=-1 Cause=2
+[2026.10.04-01.34.47:316][547]LogMiniInit: Display: MiniFall ENVIRONMENT_DEATH: Pawn=/Game/Mini/Maps/L_MiniArena.L_MiniArena:PersistentLevel.BP_MiniCharacter_C_5 Round=1 Life=1
+[2026.10.04-01.34.48:602][586]LogMiniInit: Display: MiniTask26Net COMMAND: Owner=1 Phase=1 Serial=1 Shots=0 Ammo=0 GE=0
+[2026.10.04-01.35.23:604][636]LogMiniInit: Error: MiniTask26Net FAIL: Owner=1 Phase=1 Serial=1 Reason=real client RPC stage timed out

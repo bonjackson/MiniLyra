@@ -43,6 +43,12 @@ UMiniExperienceManagerComponent* MiniTravelExperience(UWorld* World)
 }
 }
 
+bool UMiniTravelSubsystem::ShouldCreateSubsystem(UObject* Outer) const
+{
+	const UGameInstance* Instance = Cast<UGameInstance>(Outer);
+	return Super::ShouldCreateSubsystem(Outer) && Instance && !Instance->IsDedicatedServerInstance();
+}
+
 void UMiniTravelSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
@@ -356,7 +362,12 @@ void UMiniTravelSubsystem::ReturnToFrontEnd()
 void UMiniTravelSubsystem::QuitGame()
 {
 	if (!bInitialized) { return; }
-	if (IsFrontEndReady() && !State.bBusy)
+	const UWorld* World = GetWorld();
+	const UMiniExperienceManagerComponent* Manager = MiniTravelExperience(GetWorld());
+	// A permanently broken front-end resource must still have a native exit path.
+	const bool bFailedStandaloneFrontEnd = World && World->GetNetMode() == NM_Standalone &&
+		MiniTravelMatchesMap(World, MiniTravelFrontEndMap) && Manager && Manager->GetLoadState() == EMiniExperienceLoadState::Failed;
+	if (!State.bBusy && (IsFrontEndReady() || bFailedStandaloneFrontEnd))
 	{
 		RequestExit();
 		return;

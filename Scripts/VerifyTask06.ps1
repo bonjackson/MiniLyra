@@ -173,12 +173,15 @@ try {
             $serverText.Contains("GameFeature plugin 'MiniDefinitelyMissing'") -and
             $serverText.Contains('MiniFlowProbe FAIL: NetMode=ListenServer')
         $clientPassed = $clientText.Contains("Experience ID replicated NetMode=Client ID=$missingId") -and
-            $clientText.Contains("ID=$missingId LoadingFeatures -> Failed") -and
+            # Replicated authority failure may arrive before local asset/feature loading.
+            ([regex]::Matches($clientText, ('Experience state NetMode=Client ID=' + [regex]::Escape($missingId) +
+                ' (Unloaded|LoadingAssets|LoadingFeatures) -> Failed Reason=GameFeature plugin ''MiniDefinitelyMissing''')).Count -eq 1) -and
             $clientText.Contains("GameFeature plugin 'MiniDefinitelyMissing'") -and
             $clientText.Contains('MiniFlowProbe FAIL: NetMode=Client')
         if ($serverPassed -and $clientPassed) {
             if ($serverText.Contains(' -> Loaded') -or $clientText.Contains(' -> Loaded') -or
-                $serverText.Contains('MiniFeatureMarker ADDED') -or $clientText.Contains('MiniFeatureMarker ADDED')) {
+                $serverText.Contains('MiniFeatureMarker ADDED') -or $clientText.Contains('MiniFeatureMarker ADDED') -or
+                $serverText.Contains('MiniSpawn COMMITTED:') -or $clientText.Contains('MiniSpawn COMMITTED:')) {
                 throw "Missing-feature Experience advanced to Loaded or injected a marker. Logs: $serverLog; $clientLog"
             }
             Write-Host 'Task 06 required-plugin failure passed on both processes.'

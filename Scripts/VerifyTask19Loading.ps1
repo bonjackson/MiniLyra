@@ -65,8 +65,12 @@ function Test-LoadingTerminal([string]$Text, [string]$NetMode, [bool]$InvalidExp
             ' State=Failed Visible=1 Failure=1 TitlePresent=1 DetailMatches=1 UIBlocks=2 ControllerBlocked=1 TickerStopped=1 PendingObserved=[01] Experience=' +
             [regex]::Escape($invalidId) + ' Reason=Unknown Experience ID'
         $flow = '(?m)MiniFlowProbe FAIL_EXPECTED: NetMode=' + $NetMode + '\b.*Unknown Experience ID'
+        $transition = 'Experience state NetMode=' + [regex]::Escape($NetMode) +
+            ' ID=' + [regex]::Escape($invalidId) +
+            " (Unloaded|LoadingAssets) -> Failed Reason=Unknown Experience ID '" + [regex]::Escape($invalidId) + "': no scanned asset has this ID"
         $terminalMatches = $Text -match $pattern -and $Text -match $flow -and
-            $Text.Contains('LoadingAssets -> Failed Reason=Unknown Experience ID') -and
+            [regex]::Matches($Text, $transition).Count -eq 1 -and
+            $Text -notmatch ('ID=' + [regex]::Escape($invalidId) + ' .* -> Loaded|MiniSpawn COMMITTED') -and
             $Text.Contains('RecoveryModal=1 ReturnButton=1 ModalListener=1')
         if ($NetMode -eq 'Client') {
             $terminalMatches = $terminalMatches -and $Text.Contains("Experience ID replicated NetMode=Client ID=$invalidId")

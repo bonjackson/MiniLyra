@@ -249,3 +249,9 @@ void UMiniHUDLayout::NativeDestruct()
 	ClearGameplayUI();
 	Super::NativeDestruct();
 }
+
+bool UMiniHUDLayout::HasAttachedExtensionWidget(const FUIExtensionHandle& Handle) const
+{
+	const UMiniHUDDataWidget* Widget = ExtensionWidgets.FindRef(Handle);
+	return bHUDActive && Widget && Widget->GetParent() != nullptr;
+}

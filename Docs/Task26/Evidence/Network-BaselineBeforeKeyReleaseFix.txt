@@ -1,0 +1,22 @@
+Baseline gameplay ran to SERVER_PASS and all four peers Exit0, but runner correctly rejected missing CLIENT_INPUT release records for Q.
+Diagnostic fix: remove Switch slot-ready early ACK so the real simulated Q key is released and logged before acknowledgment. This is not final full-run acceptance.
+=== Task26-Network-Baseline-ClientA.log ===
+[2026.10.04-01.42.39:002][ 30]LogMiniInit: Display: MiniTask26Net RTT_SUMMARY: Owner=1 Samples=20 MedianMs=32.926 P95Ms=33.075 ConfigLag=0 ActualMeasured=1
+[2026.10.04-01.42.50:917][386]LogMiniInit: Display: MiniTask26Net CLIENT_INPUT: Owner=1 Phase=1 Key=LeftMouseButton RealEnhancedInput=1
+[2026.10.04-01.42.56:623][558]LogMiniInit: Display: MiniTask26Net CLIENT_INPUT: Owner=1 Phase=8 Key=R RealEnhancedInput=1
+[2026.10.04-01.43.00:090][662]LogMiniInit: Display: MiniTask26Net CLIENT_INPUT: Owner=1 Phase=10 Key=Q RealEnhancedInput=1
+[2026.10.04-01.43.30:156][564]LogMiniInit: Display: MiniTask26Net CLIENT_PASS: Owner=1 RTT20=1 RealInput=1 RealOwnerRPC=1 ScoreHUD=1 RestoredDriverAndConnection=1
+=== Task26-Network-Baseline-ClientB.log ===
+[2026.10.04-01.42.40:330][ 29]LogMiniInit: Display: MiniTask26Net RTT_SUMMARY: Owner=2 Samples=20 MedianMs=32.912 P95Ms=33.012 ConfigLag=0 ActualMeasured=1
+[2026.10.04-01.43.03:206][715]LogMiniInit: Display: MiniTask26Net CLIENT_INPUT: Owner=2 Phase=1 Key=LeftMouseButton RealEnhancedInput=1
+[2026.10.04-01.43.08:873][885]LogMiniInit: Display: MiniTask26Net CLIENT_INPUT: Owner=2 Phase=8 Key=R RealEnhancedInput=1
+[2026.10.04-01.43.30:140][523]LogMiniInit: Display: MiniTask26Net CLIENT_PASS: Owner=2 RTT20=1 RealInput=1 RealOwnerRPC=1 ScoreHUD=1 RestoredDriverAndConnection=1
+=== Task26-Network-Baseline-ClientC.log ===
+[2026.10.04-01.42.46:048][ 36]LogMiniInit: Display: MiniTask26Net RTT_SUMMARY: Owner=3 Samples=20 MedianMs=32.950 P95Ms=33.027 ConfigLag=0 ActualMeasured=1
+[2026.10.04-01.43.15:350][915]LogMiniInit: Display: MiniTask26Net CLIENT_INPUT: Owner=3 Phase=1 Key=LeftMouseButton RealEnhancedInput=1
+[2026.10.04-01.43.21:016][ 85]LogMiniInit: Display: MiniTask26Net CLIENT_INPUT: Owner=3 Phase=8 Key=R RealEnhancedInput=1
+[2026.10.04-01.43.30:149][359]LogMiniInit: Display: MiniTask26Net CLIENT_PASS: Owner=3 RTT20=1 RealInput=1 RealOwnerRPC=1 ScoreHUD=1 RestoredDriverAndConnection=1
+=== Task26-Network-Baseline-Server.log ===
+[2026.10.04-01.43.26:923][735]LogMiniInit: Display: MiniTask26Net REAL_GE_SCORE: Owner=3 Kills=1 Deaths=1 DuplicateRejected=1 OldRoundRejected=1 ClientReportedKillRPC=0
+[2026.10.04-01.43.29:923][825]LogMiniInit: Display: MiniTask26Net RESPAWN_VERIFIED: OldLife=2 NewLife=3 Delay=2.998 OldLifeNoticeRejected=1 Slots=4
+[2026.10.04-01.43.30:126][828]LogMiniInit: Display: MiniTask26Net SERVER_PASS: Players=4 OwnerSuites=3 RTT20Each=1 DriverConnectionReadback=1 LateJoin=1 RealInputGA=1 RealOwnerServerFire=1 RealGE=1 ScoreOnce=1 Respawn=1 RestoreAllFields=1 NoRewind=1
