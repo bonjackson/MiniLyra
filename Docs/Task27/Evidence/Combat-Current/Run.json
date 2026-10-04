@@ -1,0 +1,15 @@
+{
+  "RunId": "f03873ad276b4b7ca80aa487b0eb510a",
+  "Mode": "Combat",
+  "Profile": "Current",
+  "MaxFPS": 60.0,
+  "WarmupSeconds": 2.0,
+  "SampleSeconds": 45.0,
+  "RestartSampleSeconds": 10.0,
+  "Restarts": 5,
+  "Port": 18927,
+  "Media": false,
+  "UTC": "2026-10-04T02:30:58.5391235Z",
+  "Near60Definition": "Mean FPS >= 59 and wall-frame P95 <= 18ms; tolerance is separate from strict 60FPS/16.667ms.",
+  "Target60Definition": "Mean FPS >= 60 and wall-frame P95 <= 16.666667ms; Over16_67Percent remains visible."
+}

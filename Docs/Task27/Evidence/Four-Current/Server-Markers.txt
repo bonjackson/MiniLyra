@@ -1,0 +1,28 @@
+[2026.10.04-02.20.49:081][  0]LogMiniInit: Display: MiniTask27Probe WORLD: Peer=Server Cycle=1 Map=L_MiniArena NetMode=2 NewWorld=1
+[2026.10.04-02.20.49:082][  0]LogMiniInit: Display: MiniTask27Probe WAIT: Mode=Four Peer=Server Cycle=1 Stage=0 Reason=ProductionGameplayReadyAndNormalRendering
+[2026.10.04-02.20.49:448][ 15]LogMiniInit: Display: MiniTask27Probe SERVER_JOIN_READY: Peer=Server Cycle=1 ActualListen=1 ProductionLoaded=1 NetDriver=IpNetDriver_0
+[2026.10.04-02.20.54:086][293]LogMiniInit: Display: MiniTask27Probe WAIT: Mode=Four Peer=Server Cycle=1 Stage=0 Reason=ProductionGameplayReadyAndNormalRendering
+[2026.10.04-02.20.59:102][593]LogMiniInit: Display: MiniTask27Probe WAIT: Mode=Four Peer=Server Cycle=1 Stage=0 Reason=ProductionGameplayReadyAndNormalRendering
+[2026.10.04-02.21.04:103][893]LogMiniInit: Display: MiniTask27Probe WAIT: Mode=Four Peer=Server Cycle=1 Stage=0 Reason=ProductionGameplayReadyAndNormalRendering
+[2026.10.04-02.21.08:139][124]LogMiniInit: Display: MiniTask27Probe RENDER: Peer=Server Cycle=1 Viewport=1920x1080 RHI=D3D12 Adapter=NVIDIA GeForce RTX 4070 Laptop GPU Driver=592.82 Vendor=4318 ScreenPercentage=100 VSync=0 DynamicRes=0 BackgroundIdle=0 MaxFPS=60.0 EditorCompiled=1 AppActive=0 Profile=Current
+[2026.10.04-02.21.08:139][124]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=Server Cycle=1 Name=sg.ViewDistanceQuality Value=3.000
+[2026.10.04-02.21.08:139][124]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=Server Cycle=1 Name=sg.AntiAliasingQuality Value=3.000
+[2026.10.04-02.21.08:139][124]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=Server Cycle=1 Name=sg.ShadowQuality Value=1.000
+[2026.10.04-02.21.08:140][124]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=Server Cycle=1 Name=sg.GlobalIlluminationQuality Value=0.000
+[2026.10.04-02.21.08:140][124]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=Server Cycle=1 Name=sg.ReflectionQuality Value=0.000
+[2026.10.04-02.21.08:140][124]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=Server Cycle=1 Name=sg.PostProcessQuality Value=3.000
+[2026.10.04-02.21.08:140][124]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=Server Cycle=1 Name=sg.TextureQuality Value=3.000
+[2026.10.04-02.21.08:140][124]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=Server Cycle=1 Name=sg.EffectsQuality Value=3.000
+[2026.10.04-02.21.08:140][124]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=Server Cycle=1 Name=sg.FoliageQuality Value=3.000
+[2026.10.04-02.21.08:140][124]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=Server Cycle=1 Name=sg.ShadingQuality Value=3.000
+[2026.10.04-02.21.08:140][124]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=Server Cycle=1 Name=r.Lumen.DiffuseIndirect.Allow Value=0.000
+[2026.10.04-02.21.08:140][124]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=Server Cycle=1 Name=r.Lumen.Reflections.Allow Value=0.000
+[2026.10.04-02.21.08:140][124]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=Server Cycle=1 Name=r.RayTracing Value=0.000
+[2026.10.04-02.21.08:140][124]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=Server Cycle=1 Name=r.Shadow.Virtual.Enable Value=0.000
+[2026.10.04-02.21.09:343][125]LogMiniInit: Display: MiniTask27Probe SCREENSHOT_SAVED: Peer=Server Size=1920x1080 Path=F:\FPS\FPS\Saved\Task27Results\1291df69326c473e98ce07ac1a0e173b\Four/Server-1080p.png
+[2026.10.04-02.21.19:397][477]LogMiniInit: Display: MiniTask27Probe SNAPSHOT: Peer=Server Cycle=1 Stage=SettledBegin Actors=69 Components=125 Objects=45236 OldWorldWeakAlive=0 WorkingSetMiB=469.46 CommittedMiB=3455.47 HUD=1 Widgets=4 Bindings=16 Listeners=6 Specs=4
+[2026.10.04-02.21.19:398][477]LogMiniInit: Display: MiniTask27Probe READY: Peer=Server Cycle=1 ActualRoster=4 NewPSASC=1 WarmupSeconds=10.0
+[2026.10.04-02.21.20:826][525]LogMiniInit: Display: MiniTask27Probe SAMPLE_BEGIN: Peer=Server Cycle=1 Round=1 WarmupSeconds=10.0 DurationSeconds=30.0
+[2026.10.04-02.21.50:830][474]LogMiniInit: Display: MiniTask27Probe SNAPSHOT: Peer=Server Cycle=1 Stage=SettledEnd Actors=69 Components=125 Objects=44996 OldWorldWeakAlive=0 WorkingSetMiB=549.52 CommittedMiB=3450.86 HUD=1 Widgets=4 Bindings=16 Listeners=6 Specs=4
+[2026.10.04-02.21.50:835][474]LogMiniInit: Display: MiniTask27Probe SAMPLE_END: Peer=Server Cycle=1 Frames=887 UniqueGPUFrames=887 GPUDisjoint=0 MeasuredSeconds=27.997 FPS=31.682 FrameMedianMS=31.708 FrameP95MS=34.907 FrameP99MS=38.156 GameP95MS=3.936 RenderP95MS=34.930 RHIP95MS=2.263 GPUP95MS=31.920 Over16_67Percent=100.00 Target60Met=0 Near60TargetMet=0 Near60MinimumFPS=59 Near60MaximumP95MS=18
+[2026.10.04-02.21.50:886][476]LogMiniInit: Display: MiniTask27Probe CAPTURE_PASS: Mode=Four Peer=Server Cycles=1 ActualRestarts=0 NormalRendered=1 MemoryTrendMeasured=0 TargetAssessmentInSampleEnd=1

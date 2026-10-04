@@ -1,0 +1,42 @@
+{
+  "UTC": "2026-10-04T02:27:04.0397801Z",
+  "CPU": [
+    {
+      "Name": "13th Gen Intel(R) Core(TM) i7-13650HX",
+      "NumberOfCores": 14,
+      "NumberOfLogicalProcessors": 20
+    }
+  ],
+  "OS": {
+    "Caption": "Microsoft Windows 11 家庭版 中文版",
+    "Version": "10.0.26200",
+    "BuildNumber": "26200",
+    "TotalVisibleMemorySize": 16463352
+  },
+  "RAM": {
+    "TotalPhysicalMemory": 16858472448
+  },
+  "EnumeratedGPUs": [
+    {
+      "Name": "Intel(R) UHD Graphics",
+      "DriverVersion": "31.0.101.4953",
+      "AdapterRAM": 1073741824
+    },
+    {
+      "Name": "NVIDIA GeForce RTX 4070 Laptop GPU",
+      "DriverVersion": "32.0.15.9282",
+      "AdapterRAM": 4293918720
+    }
+  ],
+  "Battery": [
+    {
+      "BatteryStatus": 2,
+      "EstimatedChargeRemaining": 100
+    }
+  ],
+  "ActivePowerPlan": null,
+  "Revision": "e63ac1e8d9a041bb7e1fc3776e6e8113fb9ad0b0",
+  "ActualGPU": "Read per-peer MiniTask27Probe RENDER markers; WMI enumeration does not select the UE adapter.",
+  "Execution": "UnrealEditor Development -game",
+  "Conditions": "Four local rendered 1920x1080 processes share CPU/GPU/RAM. Windows may overlap; do not minimize them."
+}

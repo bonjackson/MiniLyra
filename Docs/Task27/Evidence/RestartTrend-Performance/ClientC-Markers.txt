@@ -1,0 +1,133 @@
+[2026.10.04-02.27.37:647][  5]LogMiniInit: Display: MiniTask27Probe WORLD: Peer=ClientC Cycle=1 Map=L_MiniArena NetMode=3 NewWorld=1
+[2026.10.04-02.27.37:647][  5]LogMiniInit: Display: MiniTask27Probe WAIT: Mode=RestartTrend Peer=ClientC Cycle=1 Stage=0 Reason=ProductionGameplayReadyAndNormalRendering
+[2026.10.04-02.27.37:840][  9]LogMiniInit: Display: MiniTask27Probe RENDER: Peer=ClientC Cycle=1 Viewport=1920x1080 RHI=D3D12 Adapter=NVIDIA GeForce RTX 4070 Laptop GPU Driver=592.82 Vendor=4318 ScreenPercentage=100 VSync=0 DynamicRes=0 BackgroundIdle=0 MaxFPS=60.0 EditorCompiled=1 AppActive=1 Profile=Performance
+[2026.10.04-02.27.37:841][  9]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=1 Name=sg.ViewDistanceQuality Value=3.000
+[2026.10.04-02.27.37:841][  9]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=1 Name=sg.AntiAliasingQuality Value=2.000
+[2026.10.04-02.27.37:841][  9]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=1 Name=sg.ShadowQuality Value=1.000
+[2026.10.04-02.27.37:841][  9]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=1 Name=sg.GlobalIlluminationQuality Value=0.000
+[2026.10.04-02.27.37:841][  9]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=1 Name=sg.ReflectionQuality Value=0.000
+[2026.10.04-02.27.37:841][  9]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=1 Name=sg.PostProcessQuality Value=3.000
+[2026.10.04-02.27.37:841][  9]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=1 Name=sg.TextureQuality Value=3.000
+[2026.10.04-02.27.37:841][  9]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=1 Name=sg.EffectsQuality Value=3.000
+[2026.10.04-02.27.37:841][  9]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=1 Name=sg.FoliageQuality Value=3.000
+[2026.10.04-02.27.37:841][  9]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=1 Name=sg.ShadingQuality Value=3.000
+[2026.10.04-02.27.37:841][  9]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=1 Name=r.Lumen.DiffuseIndirect.Allow Value=0.000
+[2026.10.04-02.27.37:841][  9]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=1 Name=r.Lumen.Reflections.Allow Value=0.000
+[2026.10.04-02.27.37:841][  9]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=1 Name=r.RayTracing Value=0.000
+[2026.10.04-02.27.37:841][  9]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=1 Name=r.Shadow.Virtual.Enable Value=0.000
+[2026.10.04-02.27.48:022][461]LogMiniInit: Display: MiniTask27Probe SNAPSHOT: Peer=ClientC Cycle=1 Stage=SettledBegin Actors=56 Components=112 Objects=45006 OldWorldWeakAlive=0 WorkingSetMiB=905.64 CommittedMiB=3190.81 HUD=1 Widgets=4 Bindings=16 Listeners=6 Specs=4
+[2026.10.04-02.27.48:023][461]LogMiniInit: Display: MiniTask27Probe READY: Peer=ClientC Cycle=1 ActualRoster=4 NewPSASC=1 WarmupSeconds=10.0
+[2026.10.04-02.27.48:098][465]LogMiniInit: Display: MiniTask27Probe SAMPLE_BEGIN: Peer=ClientC Cycle=1 Round=1 WarmupSeconds=10.0 DurationSeconds=10.0
+[2026.10.04-02.27.58:121][910]LogMiniInit: Display: MiniTask27Probe SNAPSHOT: Peer=ClientC Cycle=1 Stage=SettledEnd Actors=56 Components=112 Objects=45006 OldWorldWeakAlive=0 WorkingSetMiB=825.61 CommittedMiB=3160.40 HUD=1 Widgets=4 Bindings=16 Listeners=6 Specs=4
+[2026.10.04-02.27.58:123][910]LogMiniInit: Display: MiniTask27Probe SAMPLE_END: Peer=ClientC Cycle=1 Frames=356 UniqueGPUFrames=356 GPUDisjoint=0 MeasuredSeconds=8.002 FPS=44.491 FrameMedianMS=21.998 FrameP95MS=26.417 FrameP99MS=29.158 GameP95MS=3.408 RenderP95MS=26.642 RHIP95MS=2.296 GPUP95MS=23.131 Over16_67Percent=100.00 Target60Met=0 Near60TargetMet=0 Near60MinimumFPS=59 Near60MaximumP95MS=18
+[2026.10.04-02.28.03:786][150]LogMiniInit: Display: MiniTask27Probe WORLD: Peer=ClientC Cycle=2 Map=L_MiniArena NetMode=3 NewWorld=1
+[2026.10.04-02.28.03:786][150]LogMiniInit: Display: MiniTask27Probe WAIT: Mode=RestartTrend Peer=ClientC Cycle=2 Stage=0 Reason=ProductionGameplayReadyAndNormalRendering
+[2026.10.04-02.28.03:799][151]LogMiniInit: Display: MiniTask27Probe RENDER: Peer=ClientC Cycle=2 Viewport=1920x1080 RHI=D3D12 Adapter=NVIDIA GeForce RTX 4070 Laptop GPU Driver=592.82 Vendor=4318 ScreenPercentage=100 VSync=0 DynamicRes=0 BackgroundIdle=0 MaxFPS=60.0 EditorCompiled=1 AppActive=1 Profile=Performance
+[2026.10.04-02.28.03:799][151]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=2 Name=sg.ViewDistanceQuality Value=3.000
+[2026.10.04-02.28.03:799][151]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=2 Name=sg.AntiAliasingQuality Value=2.000
+[2026.10.04-02.28.03:799][151]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=2 Name=sg.ShadowQuality Value=1.000
+[2026.10.04-02.28.03:800][151]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=2 Name=sg.GlobalIlluminationQuality Value=0.000
+[2026.10.04-02.28.03:800][151]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=2 Name=sg.ReflectionQuality Value=0.000
+[2026.10.04-02.28.03:800][151]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=2 Name=sg.PostProcessQuality Value=3.000
+[2026.10.04-02.28.03:800][151]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=2 Name=sg.TextureQuality Value=3.000
+[2026.10.04-02.28.03:800][151]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=2 Name=sg.EffectsQuality Value=3.000
+[2026.10.04-02.28.03:800][151]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=2 Name=sg.FoliageQuality Value=3.000
+[2026.10.04-02.28.03:800][151]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=2 Name=sg.ShadingQuality Value=3.000
+[2026.10.04-02.28.03:800][151]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=2 Name=r.Lumen.DiffuseIndirect.Allow Value=0.000
+[2026.10.04-02.28.03:800][151]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=2 Name=r.Lumen.Reflections.Allow Value=0.000
+[2026.10.04-02.28.03:800][151]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=2 Name=r.RayTracing Value=0.000
+[2026.10.04-02.28.03:800][151]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=2 Name=r.Shadow.Virtual.Enable Value=0.000
+[2026.10.04-02.28.13:831][588]LogMiniInit: Display: MiniTask27Probe SNAPSHOT: Peer=ClientC Cycle=2 Stage=SettledBegin Actors=56 Components=112 Objects=44969 OldWorldWeakAlive=0 WorkingSetMiB=637.30 CommittedMiB=3194.84 HUD=1 Widgets=4 Bindings=16 Listeners=6 Specs=4
+[2026.10.04-02.28.13:832][588]LogMiniInit: Display: MiniTask27Probe READY: Peer=ClientC Cycle=2 ActualRoster=4 NewPSASC=1 WarmupSeconds=10.0
+[2026.10.04-02.28.13:857][589]LogMiniInit: Display: MiniTask27Probe SAMPLE_BEGIN: Peer=ClientC Cycle=2 Round=1 WarmupSeconds=10.0 DurationSeconds=10.0
+[2026.10.04-02.28.23:860][ 22]LogMiniInit: Display: MiniTask27Probe SNAPSHOT: Peer=ClientC Cycle=2 Stage=SettledEnd Actors=56 Components=112 Objects=44969 OldWorldWeakAlive=0 WorkingSetMiB=592.34 CommittedMiB=3187.04 HUD=1 Widgets=4 Bindings=16 Listeners=6 Specs=4
+[2026.10.04-02.28.23:862][ 22]LogMiniInit: Display: MiniTask27Probe SAMPLE_END: Peer=ClientC Cycle=2 Frames=351 UniqueGPUFrames=351 GPUDisjoint=0 MeasuredSeconds=8.019 FPS=43.773 FrameMedianMS=22.804 FrameP95MS=26.091 FrameP99MS=29.029 GameP95MS=3.173 RenderP95MS=25.985 RHIP95MS=2.099 GPUP95MS=22.744 Over16_67Percent=100.00 Target60Met=0 Near60TargetMet=0 Near60MinimumFPS=59 Near60MaximumP95MS=18
+[2026.10.04-02.28.29:314][256]LogMiniInit: Display: MiniTask27Probe WORLD: Peer=ClientC Cycle=3 Map=L_MiniArena NetMode=3 NewWorld=1
+[2026.10.04-02.28.29:314][256]LogMiniInit: Display: MiniTask27Probe WAIT: Mode=RestartTrend Peer=ClientC Cycle=3 Stage=0 Reason=ProductionGameplayReadyAndNormalRendering
+[2026.10.04-02.28.29:341][258]LogMiniInit: Display: MiniTask27Probe RENDER: Peer=ClientC Cycle=3 Viewport=1920x1080 RHI=D3D12 Adapter=NVIDIA GeForce RTX 4070 Laptop GPU Driver=592.82 Vendor=4318 ScreenPercentage=100 VSync=0 DynamicRes=0 BackgroundIdle=0 MaxFPS=60.0 EditorCompiled=1 AppActive=1 Profile=Performance
+[2026.10.04-02.28.29:341][258]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=3 Name=sg.ViewDistanceQuality Value=3.000
+[2026.10.04-02.28.29:341][258]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=3 Name=sg.AntiAliasingQuality Value=2.000
+[2026.10.04-02.28.29:341][258]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=3 Name=sg.ShadowQuality Value=1.000
+[2026.10.04-02.28.29:341][258]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=3 Name=sg.GlobalIlluminationQuality Value=0.000
+[2026.10.04-02.28.29:341][258]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=3 Name=sg.ReflectionQuality Value=0.000
+[2026.10.04-02.28.29:341][258]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=3 Name=sg.PostProcessQuality Value=3.000
+[2026.10.04-02.28.29:341][258]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=3 Name=sg.TextureQuality Value=3.000
+[2026.10.04-02.28.29:341][258]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=3 Name=sg.EffectsQuality Value=3.000
+[2026.10.04-02.28.29:341][258]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=3 Name=sg.FoliageQuality Value=3.000
+[2026.10.04-02.28.29:342][258]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=3 Name=sg.ShadingQuality Value=3.000
+[2026.10.04-02.28.29:342][258]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=3 Name=r.Lumen.DiffuseIndirect.Allow Value=0.000
+[2026.10.04-02.28.29:342][258]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=3 Name=r.Lumen.Reflections.Allow Value=0.000
+[2026.10.04-02.28.29:342][258]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=3 Name=r.RayTracing Value=0.000
+[2026.10.04-02.28.29:342][258]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=3 Name=r.Shadow.Virtual.Enable Value=0.000
+[2026.10.04-02.28.39:352][704]LogMiniInit: Display: MiniTask27Probe SNAPSHOT: Peer=ClientC Cycle=3 Stage=SettledBegin Actors=56 Components=112 Objects=44969 OldWorldWeakAlive=0 WorkingSetMiB=594.15 CommittedMiB=3203.68 HUD=1 Widgets=4 Bindings=16 Listeners=6 Specs=4
+[2026.10.04-02.28.39:352][704]LogMiniInit: Display: MiniTask27Probe READY: Peer=ClientC Cycle=3 ActualRoster=4 NewPSASC=1 WarmupSeconds=10.0
+[2026.10.04-02.28.39:416][707]LogMiniInit: Display: MiniTask27Probe SAMPLE_BEGIN: Peer=ClientC Cycle=3 Round=1 WarmupSeconds=10.0 DurationSeconds=10.0
+[2026.10.04-02.28.49:430][146]LogMiniInit: Display: MiniTask27Probe SNAPSHOT: Peer=ClientC Cycle=3 Stage=SettledEnd Actors=56 Components=112 Objects=44969 OldWorldWeakAlive=0 WorkingSetMiB=591.87 CommittedMiB=3199.43 HUD=1 Widgets=4 Bindings=16 Listeners=6 Specs=4
+[2026.10.04-02.28.49:435][146]LogMiniInit: Display: MiniTask27Probe SAMPLE_END: Peer=ClientC Cycle=3 Frames=350 UniqueGPUFrames=350 GPUDisjoint=0 MeasuredSeconds=7.988 FPS=43.817 FrameMedianMS=22.874 FrameP95MS=25.197 FrameP99MS=27.257 GameP95MS=3.019 RenderP95MS=25.211 RHIP95MS=2.208 GPUP95MS=22.505 Over16_67Percent=100.00 Target60Met=0 Near60TargetMet=0 Near60MinimumFPS=59 Near60MaximumP95MS=18
+[2026.10.04-02.28.54:892][373]LogMiniInit: Display: MiniTask27Probe WORLD: Peer=ClientC Cycle=4 Map=L_MiniArena NetMode=3 NewWorld=1
+[2026.10.04-02.28.54:892][373]LogMiniInit: Display: MiniTask27Probe WAIT: Mode=RestartTrend Peer=ClientC Cycle=4 Stage=0 Reason=ProductionGameplayReadyAndNormalRendering
+[2026.10.04-02.28.54:917][375]LogMiniInit: Display: MiniTask27Probe RENDER: Peer=ClientC Cycle=4 Viewport=1920x1080 RHI=D3D12 Adapter=NVIDIA GeForce RTX 4070 Laptop GPU Driver=592.82 Vendor=4318 ScreenPercentage=100 VSync=0 DynamicRes=0 BackgroundIdle=0 MaxFPS=60.0 EditorCompiled=1 AppActive=1 Profile=Performance
+[2026.10.04-02.28.54:917][375]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=4 Name=sg.ViewDistanceQuality Value=3.000
+[2026.10.04-02.28.54:917][375]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=4 Name=sg.AntiAliasingQuality Value=2.000
+[2026.10.04-02.28.54:917][375]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=4 Name=sg.ShadowQuality Value=1.000
+[2026.10.04-02.28.54:917][375]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=4 Name=sg.GlobalIlluminationQuality Value=0.000
+[2026.10.04-02.28.54:917][375]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=4 Name=sg.ReflectionQuality Value=0.000
+[2026.10.04-02.28.54:917][375]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=4 Name=sg.PostProcessQuality Value=3.000
+[2026.10.04-02.28.54:917][375]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=4 Name=sg.TextureQuality Value=3.000
+[2026.10.04-02.28.54:917][375]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=4 Name=sg.EffectsQuality Value=3.000
+[2026.10.04-02.28.54:917][375]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=4 Name=sg.FoliageQuality Value=3.000
+[2026.10.04-02.28.54:917][375]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=4 Name=sg.ShadingQuality Value=3.000
+[2026.10.04-02.28.54:917][375]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=4 Name=r.Lumen.DiffuseIndirect.Allow Value=0.000
+[2026.10.04-02.28.54:917][375]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=4 Name=r.Lumen.Reflections.Allow Value=0.000
+[2026.10.04-02.28.54:917][375]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=4 Name=r.RayTracing Value=0.000
+[2026.10.04-02.28.54:917][375]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=4 Name=r.Shadow.Virtual.Enable Value=0.000
+[2026.10.04-02.29.04:940][825]LogMiniInit: Display: MiniTask27Probe SNAPSHOT: Peer=ClientC Cycle=4 Stage=SettledBegin Actors=56 Components=112 Objects=44969 OldWorldWeakAlive=0 WorkingSetMiB=563.59 CommittedMiB=3215.46 HUD=1 Widgets=4 Bindings=16 Listeners=6 Specs=4
+[2026.10.04-02.29.04:940][825]LogMiniInit: Display: MiniTask27Probe READY: Peer=ClientC Cycle=4 ActualRoster=4 NewPSASC=1 WarmupSeconds=10.0
+[2026.10.04-02.29.04:957][826]LogMiniInit: Display: MiniTask27Probe SAMPLE_BEGIN: Peer=ClientC Cycle=4 Round=1 WarmupSeconds=10.0 DurationSeconds=10.0
+[2026.10.04-02.29.14:964][273]LogMiniInit: Display: MiniTask27Probe SNAPSHOT: Peer=ClientC Cycle=4 Stage=SettledEnd Actors=56 Components=112 Objects=44969 OldWorldWeakAlive=0 WorkingSetMiB=542.32 CommittedMiB=3207.21 HUD=1 Widgets=4 Bindings=16 Listeners=6 Specs=4
+[2026.10.04-02.29.14:970][273]LogMiniInit: Display: MiniTask27Probe SAMPLE_END: Peer=ClientC Cycle=4 Frames=358 UniqueGPUFrames=358 GPUDisjoint=0 MeasuredSeconds=7.999 FPS=44.754 FrameMedianMS=22.370 FrameP95MS=25.093 FrameP99MS=26.095 GameP95MS=3.481 RenderP95MS=24.883 RHIP95MS=2.651 GPUP95MS=21.188 Over16_67Percent=100.00 Target60Met=0 Near60TargetMet=0 Near60MinimumFPS=59 Near60MaximumP95MS=18
+[2026.10.04-02.29.20:480][511]LogMiniInit: Display: MiniTask27Probe WORLD: Peer=ClientC Cycle=5 Map=L_MiniArena NetMode=3 NewWorld=1
+[2026.10.04-02.29.20:480][511]LogMiniInit: Display: MiniTask27Probe WAIT: Mode=RestartTrend Peer=ClientC Cycle=5 Stage=0 Reason=ProductionGameplayReadyAndNormalRendering
+[2026.10.04-02.29.20:491][512]LogMiniInit: Display: MiniTask27Probe RENDER: Peer=ClientC Cycle=5 Viewport=1920x1080 RHI=D3D12 Adapter=NVIDIA GeForce RTX 4070 Laptop GPU Driver=592.82 Vendor=4318 ScreenPercentage=100 VSync=0 DynamicRes=0 BackgroundIdle=0 MaxFPS=60.0 EditorCompiled=1 AppActive=1 Profile=Performance
+[2026.10.04-02.29.20:491][512]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=5 Name=sg.ViewDistanceQuality Value=3.000
+[2026.10.04-02.29.20:491][512]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=5 Name=sg.AntiAliasingQuality Value=2.000
+[2026.10.04-02.29.20:491][512]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=5 Name=sg.ShadowQuality Value=1.000
+[2026.10.04-02.29.20:491][512]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=5 Name=sg.GlobalIlluminationQuality Value=0.000
+[2026.10.04-02.29.20:491][512]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=5 Name=sg.ReflectionQuality Value=0.000
+[2026.10.04-02.29.20:491][512]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=5 Name=sg.PostProcessQuality Value=3.000
+[2026.10.04-02.29.20:491][512]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=5 Name=sg.TextureQuality Value=3.000
+[2026.10.04-02.29.20:493][512]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=5 Name=sg.EffectsQuality Value=3.000
+[2026.10.04-02.29.20:493][512]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=5 Name=sg.FoliageQuality Value=3.000
+[2026.10.04-02.29.20:493][512]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=5 Name=sg.ShadingQuality Value=3.000
+[2026.10.04-02.29.20:493][512]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=5 Name=r.Lumen.DiffuseIndirect.Allow Value=0.000
+[2026.10.04-02.29.20:493][512]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=5 Name=r.Lumen.Reflections.Allow Value=0.000
+[2026.10.04-02.29.20:493][512]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=5 Name=r.RayTracing Value=0.000
+[2026.10.04-02.29.20:493][512]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=5 Name=r.Shadow.Virtual.Enable Value=0.000
+[2026.10.04-02.29.30:555][964]LogMiniInit: Display: MiniTask27Probe SNAPSHOT: Peer=ClientC Cycle=5 Stage=SettledBegin Actors=56 Components=112 Objects=44969 OldWorldWeakAlive=0 WorkingSetMiB=561.31 CommittedMiB=3219.13 HUD=1 Widgets=4 Bindings=16 Listeners=6 Specs=4
+[2026.10.04-02.29.30:556][964]LogMiniInit: Display: MiniTask27Probe READY: Peer=ClientC Cycle=5 ActualRoster=4 NewPSASC=1 WarmupSeconds=10.0
+[2026.10.04-02.29.30:598][966]LogMiniInit: Display: MiniTask27Probe SAMPLE_BEGIN: Peer=ClientC Cycle=5 Round=1 WarmupSeconds=10.0 DurationSeconds=10.0
+[2026.10.04-02.29.40:608][413]LogMiniInit: Display: MiniTask27Probe SNAPSHOT: Peer=ClientC Cycle=5 Stage=SettledEnd Actors=56 Components=112 Objects=44969 OldWorldWeakAlive=0 WorkingSetMiB=560.11 CommittedMiB=3211.22 HUD=1 Widgets=4 Bindings=16 Listeners=6 Specs=4
+[2026.10.04-02.29.40:614][413]LogMiniInit: Display: MiniTask27Probe SAMPLE_END: Peer=ClientC Cycle=5 Frames=358 UniqueGPUFrames=358 GPUDisjoint=0 MeasuredSeconds=7.996 FPS=44.774 FrameMedianMS=22.205 FrameP95MS=24.991 FrameP99MS=25.626 GameP95MS=3.113 RenderP95MS=24.890 RHIP95MS=2.339 GPUP95MS=21.345 Over16_67Percent=100.00 Target60Met=0 Near60TargetMet=0 Near60MinimumFPS=59 Near60MaximumP95MS=18
+[2026.10.04-02.29.46:052][644]LogMiniInit: Display: MiniTask27Probe WORLD: Peer=ClientC Cycle=6 Map=L_MiniArena NetMode=3 NewWorld=1
+[2026.10.04-02.29.46:052][644]LogMiniInit: Display: MiniTask27Probe WAIT: Mode=RestartTrend Peer=ClientC Cycle=6 Stage=0 Reason=ProductionGameplayReadyAndNormalRendering
+[2026.10.04-02.29.46:078][646]LogMiniInit: Display: MiniTask27Probe RENDER: Peer=ClientC Cycle=6 Viewport=1920x1080 RHI=D3D12 Adapter=NVIDIA GeForce RTX 4070 Laptop GPU Driver=592.82 Vendor=4318 ScreenPercentage=100 VSync=0 DynamicRes=0 BackgroundIdle=0 MaxFPS=60.0 EditorCompiled=1 AppActive=1 Profile=Performance
+[2026.10.04-02.29.46:078][646]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=6 Name=sg.ViewDistanceQuality Value=3.000
+[2026.10.04-02.29.46:078][646]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=6 Name=sg.AntiAliasingQuality Value=2.000
+[2026.10.04-02.29.46:078][646]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=6 Name=sg.ShadowQuality Value=1.000
+[2026.10.04-02.29.46:078][646]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=6 Name=sg.GlobalIlluminationQuality Value=0.000
+[2026.10.04-02.29.46:078][646]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=6 Name=sg.ReflectionQuality Value=0.000
+[2026.10.04-02.29.46:078][646]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=6 Name=sg.PostProcessQuality Value=3.000
+[2026.10.04-02.29.46:078][646]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=6 Name=sg.TextureQuality Value=3.000
+[2026.10.04-02.29.46:078][646]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=6 Name=sg.EffectsQuality Value=3.000
+[2026.10.04-02.29.46:078][646]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=6 Name=sg.FoliageQuality Value=3.000
+[2026.10.04-02.29.46:078][646]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=6 Name=sg.ShadingQuality Value=3.000
+[2026.10.04-02.29.46:078][646]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=6 Name=r.Lumen.DiffuseIndirect.Allow Value=0.000
+[2026.10.04-02.29.46:078][646]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=6 Name=r.Lumen.Reflections.Allow Value=0.000
+[2026.10.04-02.29.46:078][646]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=6 Name=r.RayTracing Value=0.000
+[2026.10.04-02.29.46:078][646]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=6 Name=r.Shadow.Virtual.Enable Value=0.000
+[2026.10.04-02.29.56:094][ 88]LogMiniInit: Display: MiniTask27Probe SNAPSHOT: Peer=ClientC Cycle=6 Stage=SettledBegin Actors=56 Components=112 Objects=44969 OldWorldWeakAlive=0 WorkingSetMiB=570.43 CommittedMiB=3224.07 HUD=1 Widgets=4 Bindings=16 Listeners=6 Specs=4
+[2026.10.04-02.29.56:095][ 88]LogMiniInit: Display: MiniTask27Probe READY: Peer=ClientC Cycle=6 ActualRoster=4 NewPSASC=1 WarmupSeconds=10.0
+[2026.10.04-02.29.56:135][ 90]LogMiniInit: Display: MiniTask27Probe SAMPLE_BEGIN: Peer=ClientC Cycle=6 Round=1 WarmupSeconds=10.0 DurationSeconds=10.0
+[2026.10.04-02.30.06:140][532]LogMiniInit: Display: MiniTask27Probe SNAPSHOT: Peer=ClientC Cycle=6 Stage=SettledEnd Actors=56 Components=112 Objects=44969 OldWorldWeakAlive=0 WorkingSetMiB=565.12 CommittedMiB=3216.19 HUD=1 Widgets=4 Bindings=16 Listeners=6 Specs=4
+[2026.10.04-02.30.06:147][532]LogMiniInit: Display: MiniTask27Probe SAMPLE_END: Peer=ClientC Cycle=6 Frames=353 UniqueGPUFrames=353 GPUDisjoint=0 MeasuredSeconds=7.995 FPS=44.150 FrameMedianMS=22.674 FrameP95MS=25.354 FrameP99MS=26.120 GameP95MS=3.141 RenderP95MS=25.204 RHIP95MS=2.231 GPUP95MS=22.426 Over16_67Percent=100.00 Target60Met=0 Near60TargetMet=0 Near60MinimumFPS=59 Near60MaximumP95MS=18
+[2026.10.04-02.30.06:162][533]LogMiniInit: Display: MiniTask27Probe CAPTURE_PASS: Mode=RestartTrend Peer=ClientC Cycles=6 ActualRestarts=5 NormalRendered=1 MemoryTrendMeasured=1 TargetAssessmentInSampleEnd=1

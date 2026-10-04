@@ -1,0 +1,57 @@
+"Scenario","Profile","Peer","Cycle","Frames","UniqueGPUFrames","GPUDisjoint","MeasuredSeconds","MeanFPS","FrameMedianMS","FrameP95MS","FrameP99MS","Over16_67Percent","Over33_33Percent","GameMedianMS","GameP95MS","RenderMedianMS","RenderP95MS","RHIMedianMS","RHIP95MS","GPUMedianMS","GPUP95MS","GPUP99MS","Target60Met","Near60TargetMet","NetworkSeconds","InBytes","OutBytes","InBytesPerSecond","OutBytesPerSecond","WorkingSetBytes","CommittedBytes","GlobalObjects","DiagnosticArrayStringBytes","RenderReadback","SettingsReadback"
+"Combat","Current","Server","1","3659","3659","0","111.3256422870001","32.86753999197249","30.636098","34.397598","37.670102","99.59005192675595","11.970483738726427","3.1359","4.719","30.6364","34.178001","1.8398","2.5781","26.0435","31.6446","33.5191","False","False","127.09539100000003","909499","658925","7156.03447807167","5184.491701984692","463687680","3655319552","45199","351484","[2026.10.04-02.31.36:897][394]LogMiniInit: Display: MiniTask27Probe RENDER: Peer=Server Cycle=1 Viewport=1920x1080 RHI=D3D12 Adapter=NVIDIA GeForce RTX 4070 Laptop GPU Driver=592.82 Vendor=4318 ScreenPercentage=100 VSync=0 DynamicRes=0 BackgroundIdle=0 MaxFPS=60.0 EditorCompiled=1 AppActive=0 Profile=Current","[2026.10.04-02.31.36:897][394]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=Server Cycle=1 Name=sg.ViewDistanceQuality Value=3.000
+[2026.10.04-02.31.36:897][394]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=Server Cycle=1 Name=sg.AntiAliasingQuality Value=3.000
+[2026.10.04-02.31.36:897][394]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=Server Cycle=1 Name=sg.ShadowQuality Value=1.000
+[2026.10.04-02.31.36:897][394]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=Server Cycle=1 Name=sg.GlobalIlluminationQuality Value=0.000
+[2026.10.04-02.31.36:897][394]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=Server Cycle=1 Name=sg.ReflectionQuality Value=0.000
+[2026.10.04-02.31.36:897][394]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=Server Cycle=1 Name=sg.PostProcessQuality Value=3.000
+[2026.10.04-02.31.36:897][394]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=Server Cycle=1 Name=sg.TextureQuality Value=3.000
+[2026.10.04-02.31.36:897][394]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=Server Cycle=1 Name=sg.EffectsQuality Value=3.000
+[2026.10.04-02.31.36:897][394]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=Server Cycle=1 Name=sg.FoliageQuality Value=3.000
+[2026.10.04-02.31.36:897][394]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=Server Cycle=1 Name=sg.ShadingQuality Value=3.000
+[2026.10.04-02.31.36:897][394]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=Server Cycle=1 Name=r.Lumen.DiffuseIndirect.Allow Value=0.000
+[2026.10.04-02.31.36:897][394]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=Server Cycle=1 Name=r.Lumen.Reflections.Allow Value=0.000
+[2026.10.04-02.31.36:897][394]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=Server Cycle=1 Name=r.RayTracing Value=0.000
+[2026.10.04-02.31.36:897][394]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=Server Cycle=1 Name=r.Shadow.Virtual.Enable Value=0.000"
+"Combat","Current","ClientA","1","5751","5748","0","110.54960888199993","52.021893683392285","16.751099","28.352201","30.057199","61.72839506172839","0.10432968179447052","2.4548","3.5791","2.9647","28.179701","1.821","2.4895","4.6672","25.0729","26.8866","False","False","126.68006899999996","214558","398368","1693.6997405645561","3144.6777945787203","413204480","3444449280","44984","478150","[2026.10.04-02.31.37:692][ 10]LogMiniInit: Display: MiniTask27Probe RENDER: Peer=ClientA Cycle=1 Viewport=1920x1080 RHI=D3D12 Adapter=NVIDIA GeForce RTX 4070 Laptop GPU Driver=592.82 Vendor=4318 ScreenPercentage=100 VSync=0 DynamicRes=0 BackgroundIdle=0 MaxFPS=60.0 EditorCompiled=1 AppActive=1 Profile=Current","[2026.10.04-02.31.37:692][ 10]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientA Cycle=1 Name=sg.ViewDistanceQuality Value=3.000
+[2026.10.04-02.31.37:692][ 10]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientA Cycle=1 Name=sg.AntiAliasingQuality Value=3.000
+[2026.10.04-02.31.37:692][ 10]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientA Cycle=1 Name=sg.ShadowQuality Value=1.000
+[2026.10.04-02.31.37:692][ 10]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientA Cycle=1 Name=sg.GlobalIlluminationQuality Value=0.000
+[2026.10.04-02.31.37:692][ 10]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientA Cycle=1 Name=sg.ReflectionQuality Value=0.000
+[2026.10.04-02.31.37:692][ 10]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientA Cycle=1 Name=sg.PostProcessQuality Value=3.000
+[2026.10.04-02.31.37:692][ 10]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientA Cycle=1 Name=sg.TextureQuality Value=3.000
+[2026.10.04-02.31.37:692][ 10]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientA Cycle=1 Name=sg.EffectsQuality Value=3.000
+[2026.10.04-02.31.37:692][ 10]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientA Cycle=1 Name=sg.FoliageQuality Value=3.000
+[2026.10.04-02.31.37:692][ 10]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientA Cycle=1 Name=sg.ShadingQuality Value=3.000
+[2026.10.04-02.31.37:692][ 10]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientA Cycle=1 Name=r.Lumen.DiffuseIndirect.Allow Value=0.000
+[2026.10.04-02.31.37:692][ 10]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientA Cycle=1 Name=r.Lumen.Reflections.Allow Value=0.000
+[2026.10.04-02.31.37:692][ 10]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientA Cycle=1 Name=r.RayTracing Value=0.000
+[2026.10.04-02.31.37:692][ 10]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientA Cycle=1 Name=r.Shadow.Virtual.Enable Value=0.000"
+"Combat","Current","ClientB","1","3635","3635","0","110.46380170999991","32.90670738947541","30.6498","34.109402","37.131403","99.8624484181568","10.041265474552958","2.6079","4.0255","30.651501","33.894001","1.8352","2.6341","25.8406","31.2437","32.7011","False","False","126.59584399999994","209600","250933","1655.6625666163266","1982.1582768546502","463040512","3580350464","44973","351110","[2026.10.04-02.31.37:772][ 10]LogMiniInit: Display: MiniTask27Probe RENDER: Peer=ClientB Cycle=1 Viewport=1920x1080 RHI=D3D12 Adapter=NVIDIA GeForce RTX 4070 Laptop GPU Driver=592.82 Vendor=4318 ScreenPercentage=100 VSync=0 DynamicRes=0 BackgroundIdle=0 MaxFPS=60.0 EditorCompiled=1 AppActive=0 Profile=Current","[2026.10.04-02.31.37:772][ 10]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientB Cycle=1 Name=sg.ViewDistanceQuality Value=3.000
+[2026.10.04-02.31.37:772][ 10]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientB Cycle=1 Name=sg.AntiAliasingQuality Value=3.000
+[2026.10.04-02.31.37:772][ 10]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientB Cycle=1 Name=sg.ShadowQuality Value=1.000
+[2026.10.04-02.31.37:772][ 10]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientB Cycle=1 Name=sg.GlobalIlluminationQuality Value=0.000
+[2026.10.04-02.31.37:772][ 10]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientB Cycle=1 Name=sg.ReflectionQuality Value=0.000
+[2026.10.04-02.31.37:772][ 10]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientB Cycle=1 Name=sg.PostProcessQuality Value=3.000
+[2026.10.04-02.31.37:772][ 10]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientB Cycle=1 Name=sg.TextureQuality Value=3.000
+[2026.10.04-02.31.37:772][ 10]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientB Cycle=1 Name=sg.EffectsQuality Value=3.000
+[2026.10.04-02.31.37:772][ 10]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientB Cycle=1 Name=sg.FoliageQuality Value=3.000
+[2026.10.04-02.31.37:772][ 10]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientB Cycle=1 Name=sg.ShadingQuality Value=3.000
+[2026.10.04-02.31.37:772][ 10]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientB Cycle=1 Name=r.Lumen.DiffuseIndirect.Allow Value=0.000
+[2026.10.04-02.31.37:772][ 10]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientB Cycle=1 Name=r.Lumen.Reflections.Allow Value=0.000
+[2026.10.04-02.31.37:772][ 10]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientB Cycle=1 Name=r.RayTracing Value=0.000
+[2026.10.04-02.31.37:772][ 10]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientB Cycle=1 Name=r.Shadow.Virtual.Enable Value=0.000"
+"Combat","Current","ClientC","1","3651","3651","0","110.51536749600027","33.03612956933013","30.506302","34.097999","37.275802","99.89044097507532","10.7915639550808","2.6521","3.9652","30.5364","33.9655","1.8562","2.6166","25.5183","31.3491","32.8325","False","False","126.53289200000003","210981","261615","1667.4004416179782","2067.565167166178","388468736","3462365184","44984","351110","[2026.10.04-02.31.37:744][ 11]LogMiniInit: Display: MiniTask27Probe RENDER: Peer=ClientC Cycle=1 Viewport=1920x1080 RHI=D3D12 Adapter=NVIDIA GeForce RTX 4070 Laptop GPU Driver=592.82 Vendor=4318 ScreenPercentage=100 VSync=0 DynamicRes=0 BackgroundIdle=0 MaxFPS=60.0 EditorCompiled=1 AppActive=0 Profile=Current","[2026.10.04-02.31.37:744][ 11]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=1 Name=sg.ViewDistanceQuality Value=3.000
+[2026.10.04-02.31.37:744][ 11]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=1 Name=sg.AntiAliasingQuality Value=3.000
+[2026.10.04-02.31.37:744][ 11]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=1 Name=sg.ShadowQuality Value=1.000
+[2026.10.04-02.31.37:744][ 11]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=1 Name=sg.GlobalIlluminationQuality Value=0.000
+[2026.10.04-02.31.37:744][ 11]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=1 Name=sg.ReflectionQuality Value=0.000
+[2026.10.04-02.31.37:744][ 11]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=1 Name=sg.PostProcessQuality Value=3.000
+[2026.10.04-02.31.37:744][ 11]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=1 Name=sg.TextureQuality Value=3.000
+[2026.10.04-02.31.37:744][ 11]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=1 Name=sg.EffectsQuality Value=3.000
+[2026.10.04-02.31.37:744][ 11]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=1 Name=sg.FoliageQuality Value=3.000
+[2026.10.04-02.31.37:744][ 11]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=1 Name=sg.ShadingQuality Value=3.000
+[2026.10.04-02.31.37:744][ 11]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=1 Name=r.Lumen.DiffuseIndirect.Allow Value=0.000
+[2026.10.04-02.31.37:744][ 11]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=1 Name=r.Lumen.Reflections.Allow Value=0.000
+[2026.10.04-02.31.37:744][ 11]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=1 Name=r.RayTracing Value=0.000
+[2026.10.04-02.31.37:744][ 11]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=ClientC Cycle=1 Name=r.Shadow.Virtual.Enable Value=0.000"

@@ -1,0 +1,3 @@
+Cycle,Stage,WallSeconds,Round,Actors,Components,PlayerStates,Pawns,Controllers,OwnedInventoryEntries,GlobalObjects,ClaimedObjectSlots,OldWorldWeakAlive,WorkingSetBytes,CommittedBytes,PeakWorkingSetBytes,PeakCommittedBytes,HUDLayouts,HUDWidgets,HUDExtensionPoints,VMBindings,HUDMessageListeners,HeroBindings,AbilitySpecs,RootInputGates,DiagnosticArrayStringBytes
+1,SettledBegin,15.033974,1,56,112,4,4,1,2,45006,55648,0,983040000,3388411904,1608687616,3414769664,1,4,4,16,6,16,4,0,980
+1,SettledEnd,45.426624,1,56,112,4,4,1,2,45006,55648,0,651735040,3351470080,1608687616,3414769664,1,4,4,16,6,16,4,0,96310

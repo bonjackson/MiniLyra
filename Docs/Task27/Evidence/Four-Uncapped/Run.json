@@ -1,0 +1,15 @@
+{
+  "RunId": "83bae35fd580442e85e6a665feb6678c",
+  "Mode": "Four",
+  "Profile": "Current",
+  "MaxFPS": 0.0,
+  "WarmupSeconds": 10.0,
+  "SampleSeconds": 30.0,
+  "RestartSampleSeconds": 10.0,
+  "Restarts": 5,
+  "Port": 18927,
+  "Media": false,
+  "UTC": "2026-10-04T02:22:56.0831246Z",
+  "Near60Definition": "Mean FPS >= 59 and wall-frame P95 <= 18ms; tolerance is separate from strict 60FPS/16.667ms.",
+  "Target60Definition": "Mean FPS >= 60 and wall-frame P95 <= 16.666667ms; Over16_67Percent remains visible."
+}

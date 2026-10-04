@@ -122,6 +122,12 @@ bool AMiniPlayerController::InputKey(const FInputKeyEventArgs& Params)
 		}
 		return true;
 	}
+	FString Task27Mode;
+	if (!Params.IsSimulatedInput() && FParse::Param(FCommandLine::Get(), TEXT("MiniTask27IsolateInput")) &&
+		FParse::Value(FCommandLine::Get(), TEXT("MiniProbeTask27="), Task27Mode))
+	{
+		return true;
+	}
 #endif
 	return Super::InputKey(Params);
 }

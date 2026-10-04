@@ -1,0 +1,24 @@
+[2026.10.04-02.19.41:729][  0]LogMiniInit: Display: MiniTask27Probe WORLD: Peer=Server Cycle=1 Map=L_MiniPractice NetMode=0 NewWorld=1
+[2026.10.04-02.19.41:729][  0]LogMiniInit: Display: MiniTask27Probe WAIT: Mode=Practice Peer=Server Cycle=1 Stage=0 Reason=ProductionGameplayReadyAndNormalRendering
+[2026.10.04-02.19.42:281][ 25]LogMiniInit: Display: MiniTask27Probe RENDER: Peer=Server Cycle=1 Viewport=1920x1080 RHI=D3D12 Adapter=NVIDIA GeForce RTX 4070 Laptop GPU Driver=592.82 Vendor=4318 ScreenPercentage=100 VSync=0 DynamicRes=0 BackgroundIdle=0 MaxFPS=60.0 EditorCompiled=1 AppActive=1 Profile=Current
+[2026.10.04-02.19.42:281][ 25]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=Server Cycle=1 Name=sg.ViewDistanceQuality Value=3.000
+[2026.10.04-02.19.42:281][ 25]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=Server Cycle=1 Name=sg.AntiAliasingQuality Value=3.000
+[2026.10.04-02.19.42:281][ 25]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=Server Cycle=1 Name=sg.ShadowQuality Value=1.000
+[2026.10.04-02.19.42:281][ 25]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=Server Cycle=1 Name=sg.GlobalIlluminationQuality Value=0.000
+[2026.10.04-02.19.42:281][ 25]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=Server Cycle=1 Name=sg.ReflectionQuality Value=0.000
+[2026.10.04-02.19.42:281][ 25]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=Server Cycle=1 Name=sg.PostProcessQuality Value=3.000
+[2026.10.04-02.19.42:281][ 25]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=Server Cycle=1 Name=sg.TextureQuality Value=3.000
+[2026.10.04-02.19.42:281][ 25]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=Server Cycle=1 Name=sg.EffectsQuality Value=3.000
+[2026.10.04-02.19.42:281][ 25]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=Server Cycle=1 Name=sg.FoliageQuality Value=3.000
+[2026.10.04-02.19.42:281][ 25]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=Server Cycle=1 Name=sg.ShadingQuality Value=3.000
+[2026.10.04-02.19.42:281][ 25]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=Server Cycle=1 Name=r.Lumen.DiffuseIndirect.Allow Value=0.000
+[2026.10.04-02.19.42:281][ 25]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=Server Cycle=1 Name=r.Lumen.Reflections.Allow Value=0.000
+[2026.10.04-02.19.42:281][ 25]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=Server Cycle=1 Name=r.RayTracing Value=0.000
+[2026.10.04-02.19.42:281][ 25]LogMiniInit: Display: MiniTask27Probe SETTING: Peer=Server Cycle=1 Name=r.Shadow.Virtual.Enable Value=0.000
+[2026.10.04-02.19.42:957][ 32]LogMiniInit: Display: MiniTask27Probe SCREENSHOT_SAVED: Peer=Server Size=1920x1080 Path=F:\FPS\FPS\Saved\Task27Results\e4b6728e7c634ba58765f9f5f0092f9c\Practice/Server-1080p.png
+[2026.10.04-02.19.52:961][632]LogMiniInit: Display: MiniTask27Probe SNAPSHOT: Peer=Server Cycle=1 Stage=SettledBegin Actors=42 Components=68 Objects=44929 OldWorldWeakAlive=0 WorkingSetMiB=2580.41 CommittedMiB=3427.55 HUD=1 Widgets=4 Bindings=16 Listeners=6 Specs=4
+[2026.10.04-02.19.52:962][632]LogMiniInit: Display: MiniTask27Probe READY: Peer=Server Cycle=1 ActualRoster=1 NewPSASC=1 WarmupSeconds=10.0
+[2026.10.04-02.19.52:962][632]LogMiniInit: Display: MiniTask27Probe SAMPLE_BEGIN: Peer=Server Cycle=1 Round=0 WarmupSeconds=10.0 DurationSeconds=15.0
+[2026.10.04-02.20.07:959][532]LogMiniInit: Display: MiniTask27Probe SNAPSHOT: Peer=Server Cycle=1 Stage=SettledEnd Actors=42 Components=68 Objects=44929 OldWorldWeakAlive=0 WorkingSetMiB=2582.65 CommittedMiB=3417.38 HUD=1 Widgets=4 Bindings=16 Listeners=6 Specs=4
+[2026.10.04-02.20.07:971][532]LogMiniInit: Display: MiniTask27Probe SAMPLE_END: Peer=Server Cycle=1 Frames=779 UniqueGPUFrames=779 GPUDisjoint=0 MeasuredSeconds=12.984 FPS=59.997 FrameMedianMS=16.666 FrameP95MS=16.830 FrameP99MS=17.009 GameP95MS=2.344 RenderP95MS=3.102 RHIP95MS=2.206 GPUP95MS=5.056 Over16_67Percent=49.68 Target60Met=0 Near60TargetMet=1 Near60MinimumFPS=59 Near60MaximumP95MS=18
+[2026.10.04-02.20.07:971][532]LogMiniInit: Display: MiniTask27Probe CAPTURE_PASS: Mode=Practice Peer=Server Cycles=1 ActualRestarts=0 NormalRendered=1 MemoryTrendMeasured=0 TargetAssessmentInSampleEnd=1

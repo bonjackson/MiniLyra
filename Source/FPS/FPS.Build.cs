@@ -15,7 +15,7 @@ public class FPS : ModuleRules
 		});
 		PrivateDependencyModuleNames.AddRange(new string[]
 		{
-			"ModularGameplay", "AudioMixer", "SlateCore", "Slate"
+			"ModularGameplay", "AudioMixer", "SlateCore", "Slate", "RHI", "RenderCore"
 		});
 		if (Target.bBuildEditor)
 		{

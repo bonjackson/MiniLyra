@@ -14,7 +14,7 @@
 
 所有地图切换采用普通旅行，`bUseSeamlessTravel=false`；新 World 重建 PlayerState／ASC 和对局统计。GameInstance 的 `MiniTravelSubsystem` 仅持久保存请求与失败提示，按 World／请求 generation／实际 Driver 归属过滤回调。主机返回通过可靠通知保存 `MINI_HOST_LEFT` 后沿引擎返回链恢复客户端前端；创建驱动失败／绑定失败以及真实连接失败都显示可关闭的中文 Modal。游戏中退出先完成前端旅行，再正常退出进程。最终七场景媒体专项与三个实际退出进程通过，见 [任务 24](Task24/FrontEndTravel.md)。生产 cook 与 Cue 路径提示留任务 28 收敛。
 
-任务25确认同World重生保留PlayerState ASC并替换Pawn／life／物品GUID，普通旅行创建新PS／ASC；Loaded迟订阅立即一次，重复初始化不叠加能力／输入／HUD绑定。死亡仅停止尸体Movement Tick与owning客户端预测，活paused recovery仍由真实Tick恢复。默认及最终媒体六模式、四人40次死亡／重生、三完整往返、退出重连及真主机丢失、四类待恢复工作回收和08／09／10／23回归通过；旧活动能力、Avatar、输入及UI监听归零。详见[任务25](Task25/Lifecycle.md)。任务26补齐必需Action软类屏障、authority场景Ready与真实UI挂载观察、Loaded后权威失败复制、60秒期限及坏前端退出；Dedicated跳过本地Travel／UI。19故障、四角色、三端失败与正常／弱网RPC及既有回归通过，见[任务26](Task26/FaultNetworkRegression.md)。下一入口为任务27性能与资源。
+任务25确认同World重生保留PlayerState ASC并替换Pawn／life／物品GUID，普通旅行创建新PS／ASC；Loaded迟订阅立即一次，重复初始化不叠加能力／输入／HUD绑定。死亡仅停止尸体Movement Tick与owning客户端预测，活paused recovery仍由真实Tick恢复。默认及最终媒体六模式、四人40次死亡／重生、三完整往返、退出重连及真主机丢失、四类待恢复工作回收和08／09／10／23回归通过；旧活动能力、Avatar、输入及UI监听归零。详见[任务25](Task25/Lifecycle.md)。任务26补齐必需Action软类屏障、authority场景Ready与真实UI挂载观察、Loaded后权威失败复制、60秒期限及坏前端退出；Dedicated跳过本地Travel／UI。19故障、四角色、三端失败与正常／弱网RPC及既有回归通过，见[任务26](Task26/FaultNetworkRegression.md)。任务27已记录真实四窗口1080p性能与五次再开资源趋势，加入首版画质／60FPS上限；严格四窗口60未达，Committed增长保留调查边界，见[任务27](Task27/Performance.md)。下一入口为任务28生产Cook与最终包。
 
 ## 归档实现的目标
 

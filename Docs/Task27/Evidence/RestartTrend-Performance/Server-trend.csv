@@ -1,0 +1,7 @@
+"Peer","Cycle","GCPolicy","Actors","Components","PlayerStates","Pawns","Controllers","OwnedInventoryEntries","GlobalObjects","ClaimedObjectSlots","OldWorldWeakAlive","WorkingSetBytes","CommittedBytes","VMBindings","HUDMessageListeners","HeroBindings","AbilitySpecs","DiagnosticArrayStringBytes","WorkingSetDelta","CommittedDelta","ObjectDelta"
+"Server","1","Natural; no forced GC","69","125","4","4","4","8","45255","55897","0","387657728","3524718592","16","6","16","4","35516",,,
+"Server","2","Natural; no forced GC","69","125","4","4","4","8","45152","55793","0","641675264","3357761536","16","6","16","4","70128","254017536","-166957056","-103"
+"Server","3","Natural; no forced GC","69","125","4","4","4","8","45131","55772","0","613482496","3359846400","16","6","16","4","97104","-28192768","2084864","-21"
+"Server","4","Natural; no forced GC","69","125","4","4","4","8","45131","55772","0","607629312","3380576256","16","6","16","4","135262","-5853184","20729856","0"
+"Server","5","Natural; no forced GC","69","125","4","4","4","8","45152","55793","0","586776576","3380572160","16","6","16","4","186288","-20852736","-4096","21"
+"Server","6","Natural; no forced GC","69","125","4","4","4","8","45110","55751","0","613879808","3404255232","16","6","16","4","187650","27103232","23683072","-42"
